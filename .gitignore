@@ -30,3 +30,4 @@ replay_pid*
 **builds/
 builds
 **.gradle/
+**.settings/

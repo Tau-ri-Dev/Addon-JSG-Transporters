@@ -1,4 +1,4 @@
-package dev.tauri.jsgtransporters;
+package dev.tauri.jsgTransporters;
 
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;

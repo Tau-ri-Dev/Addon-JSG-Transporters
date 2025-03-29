@@ -1,7 +1,7 @@
-package dev.tauri.jsgtransporters.client.listener;
+package dev.tauri.jsgTransporters.client.listener;
 
-import dev.tauri.jsgtransporters.JSGTransporters;
-import dev.tauri.jsgtransporters.client.loader.LoadersHolder;
+import dev.tauri.jsgTransporters.JSGTransporters;
+import dev.tauri.jsgTransporters.client.loader.LoadersHolder;
 import net.minecraft.util.Unit;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
