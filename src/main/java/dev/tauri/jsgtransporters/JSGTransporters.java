@@ -1,0 +1,76 @@
+package dev.tauri.jsgtransporters;
+
+import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.api.JSGAddon;
+import dev.tauri.jsgtransporters.common.registry.BlockEntityRegistry;
+import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
+import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
+import dev.tauri.jsgtransporters.common.registry.TabRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Mod(JSGTransporters.MOD_ID)
+public class JSGTransporters implements JSGAddon {
+    public static final String MOD_ID = "jsg_transporters";
+    public static final String MOD_NAME = "Just Stargate Mod: Transporters Addon";
+    public static Logger logger;
+
+    public static String MOD_VERSION = "";
+    public static final String MC_VERSION = "1.20.1";
+
+    public JSGTransporters() {
+        logger = LoggerFactory.getLogger(MOD_NAME);
+
+        ModList.get().getModContainerById(MOD_ID).ifPresentOrElse(container -> MOD_VERSION = MC_VERSION + "-" + container.getModInfo().getVersion().getQualifier(), () -> {
+        });
+        JSGTransporters.logger.info("Loading JSG:Transporters Addon version {}", JSGTransporters.MOD_VERSION);
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        MinecraftForge.EVENT_BUS.register(this);
+        Constants.load();
+
+
+        ItemRegistry.register(modEventBus);
+        BlockRegistry.register(modEventBus);
+        TabRegistry.register(modEventBus);
+        BlockEntityRegistry.register(modEventBus);
+        modEventBus.addListener(BlockEntityRegistry::registerBERs);
+
+
+        AddressTypeRegistry.register();
+        SymbolTypeRegistry.register();
+
+        JSG.registerAddon(this);
+    }
+
+    @SubscribeEvent
+    public void onServerStarting(ServerStartingEvent event) {
+        var currentServer = event.getServer();
+        new RingsNetwork().register(currentServer.overworld().getDataStorage());
+    }
+
+    @Override
+    public String getName() {
+        return MOD_NAME;
+    }
+
+    @Override
+    public String getId() {
+        return MOD_ID;
+    }
+
+    @Override
+    public String getVersion() {
+        return MOD_VERSION;
+    }
+}
