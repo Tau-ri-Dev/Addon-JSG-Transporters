@@ -17,8 +17,8 @@ public class ClientModListener {
         event.registerReloadListener((pPreparationBarrier, pResourceManager, pPreparationsProfiler, pReloadProfiler, pBackgroundExecutor, pGameExecutor) ->
                 pPreparationBarrier.wait(Unit.INSTANCE).thenRunAsync(() -> {
                     pReloadProfiler.startTick();
-                    pReloadProfiler.push("jsg_destiny_resources");
-                    ProgressMeter progress = StartupMessageManager.addProgressBar("JSG: Destiny Addon - TESR loading", 2);
+                    pReloadProfiler.push("jsg_transporters_resources");
+                    ProgressMeter progress = StartupMessageManager.addProgressBar("JSG: Transporters Addon - TESR loading", 2);
                     LoadersHolder.TEXTURE_LOADER.loadResources();
                     progress.increment();
                     LoadersHolder.MODEL_LOADER.loadResources();
