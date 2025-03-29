@@ -38,7 +38,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
 
     @Override
     public BlockPos m_58899_() {
-        return getBlockPos();
+        return worldPosition;
     }
 
     private boolean needRegenerate = false;
