@@ -1,0 +1,22 @@
+{
+	"parent": "block/cube_all",
+	"textures": {
+		"normal": "jsg_transporters:blocks/transportrings/transportrings_ori_side",
+		"up": "jsg_transporters:blocks/transportrings/transportrings_ori_top",
+		"down": "jsg_transporters:blocks/transportrings/transportrings_ori_bottom",
+		"particle": "jsg_transporters:blocks/transportrings/transportrings_ori_side"
+	},
+	"elements": [
+		{   "from": [ 0, 0, 0 ],
+			"to": [ 16, 16, 16 ],
+			"faces": {
+				"down":  { "texture": "#down", "cullface": "down" },
+				"up":    { "texture": "#up", "cullface": "up" },
+				"north": { "texture": "#normal", "cullface": "north" },
+				"south": { "texture": "#normal", "cullface": "south" },
+				"west":  { "texture": "#normal", "cullface": "west" },
+				"east":  { "texture": "#normal", "cullface": "east" }
+			}
+		}
+	]
+}
