@@ -7,6 +7,7 @@ import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsgTransporters.JSGTransporters;
+import dev.tauri.jsgTransporters.common.network.rings.RingsNetwork;
 import dev.tauri.jsgTransporters.common.state.StateProvider;
 import dev.tauri.jsgTransporters.common.state.StateType;
 import dev.tauri.jsg.util.ITickable;
