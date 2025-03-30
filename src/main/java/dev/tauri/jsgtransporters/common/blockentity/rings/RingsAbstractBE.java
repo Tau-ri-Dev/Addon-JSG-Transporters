@@ -6,22 +6,31 @@ import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.packet.JSGPacketHandler;
+import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsg.util.ITickable;
+import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 // Contemplating making rings a multiblock
@@ -43,18 +52,51 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         return worldPosition;
     }
 
+    @Nonnull
+    public Level getLevelNotNull() {
+        return Objects.requireNonNull(getLevel());
+    }
+
+    public long getTime() {
+        return getLevelNotNull().getGameTime();
+    }
+
     private boolean needRegenerate = false;
 
     @Override
     public void tick() {
+        // Scheduled tasks
+        ScheduledTask.iterate(scheduledTasks, getTime());
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Scheduled tasks
+
+    /**
+     * List of scheduled tasks to be performed on {@link ITickable#tick()()}.
+     */
+    protected List<ScheduledTask> scheduledTasks = new ArrayList<>();
+
+    @Override
+    public void addTask(ScheduledTask task) {
+        task.setExecutor(this);
+        task.setTaskCreated(getTime());
+        scheduledTasks.add(task);
     }
 
     @Override
-    public void addTask(ScheduledTask arg0) {
-    }
-
-    @Override
-    public void executeTask(EnumScheduledTask arg0, CompoundTag arg1) {
+    public void executeTask(EnumScheduledTask task, CompoundTag context) {
+        switch (task) {
+            case RINGS_START_ANIMATION:
+                if (level == null) break;
+                rendererState.startAnimation(level.getGameTime());
+                setChanged();
+                getAndSendState(StateTypeEnum.RENDERER_STATE);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -63,7 +105,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
             return;
         }
         if (targetPoint != null) {
-            JSGPacketHandler.sendToClient(state, targetPoint);
+            JSGPacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
         } else {
             JSGTransporters.logger.debug("targetPoint as null trying to send {} from {}", this, this.getClass().getCanonicalName());
         }
@@ -103,9 +145,17 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
     }
 
     @Override
+    public AABB getRenderBoundingBox() {
+        return new JSGAxisAlignedBB(
+                getBlockPos().offset(-3, -5, -3),
+                getBlockPos().offset(3, 5, 3)
+        );
+    }
+
+    @Override
     public State getState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
-            case RENDERER_STATE -> rendererState;
+            case RENDERER_STATE -> getRendererStateClient();
             default -> null;
         };
     }
@@ -123,9 +173,18 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         switch (stateType) {
             case RENDERER_STATE:
                 rendererState = (RingsRendererState) state;
+                setChanged();
                 break;
             default:
                 break;
         }
+    }
+
+
+    public static final int RING_ANIMATION_LENGTH = (int) (20 * 4.91f);
+
+    public void test() {
+        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
+        JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
     }
 }

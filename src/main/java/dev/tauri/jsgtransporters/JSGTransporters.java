@@ -2,10 +2,7 @@ package dev.tauri.jsgtransporters;
 
 import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
-import dev.tauri.jsgtransporters.common.registry.BlockEntityRegistry;
-import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
-import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
-import dev.tauri.jsgtransporters.common.registry.TabRegistry;
+import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
@@ -39,11 +36,11 @@ public class JSGTransporters implements JSGAddon {
         MinecraftForge.EVENT_BUS.register(this);
         Constants.load();
 
-
         ItemRegistry.register(modEventBus);
         BlockRegistry.register(modEventBus);
         TabRegistry.register(modEventBus);
         BlockEntityRegistry.register(modEventBus);
+        SoundRegistry.register(modEventBus);
         modEventBus.addListener(BlockEntityRegistry::registerBERs);
 
 

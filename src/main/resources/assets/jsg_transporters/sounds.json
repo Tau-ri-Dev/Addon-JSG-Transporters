@@ -1,25 +1,9 @@
 {
-  "rings_transport": {
+  "block.rings.transport": {
     "category": "ambient",
-    "subtitle": "jsg.subtitle.rings_transport",
+    "subtitle": "jsg_transporters.subtitle.block.rings.transport",
     "sounds": [
-      "jsg_transporters:transportrings/rings_transport"
-    ]
-  },
-  "rings_controller_goauld_button": {
-    "category": "ambient",
-    "subtitle": "jsg.subtitle.rings_controller_button",
-    "sounds": [
-      "jsg_transporters:transportrings/goauld/rings_controller_button1",
-      "jsg_transporters:transportrings/goauld/rings_controller_button2",
-      "jsg_transporters:transportrings/goauld/rings_controller_button3"
-    ]
-  },
-  "rings_controller_goauld_button_final": {
-    "category": "ambient",
-    "subtitle": "jsg.subtitle.rings_controller_button",
-    "sounds": [
-      "jsg_transporters:transportrings/goauld/rings_controller_button_final"
+      "jsg_transporters:rings/rings_transport"
     ]
   }
 }
