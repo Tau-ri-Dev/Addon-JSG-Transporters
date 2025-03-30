@@ -4,7 +4,6 @@ import dev.tauri.jsg.blockentity.util.IUpgradable;
 import dev.tauri.jsg.config.ingame.ITileConfig;
 import dev.tauri.jsg.config.ingame.JSGConfigOption;
 import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
-import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import net.minecraft.core.BlockPos;
@@ -55,31 +54,5 @@ public abstract class RingsClassicBE extends RingsAbstractBE implements IUpgrada
     @Override
     public String getDeviceType() {
         return "TR_CLASSIC";
-    }
-
-    @Override
-    public State getState(StateTypeEnum stateType) {
-        return switch (stateType) {
-            case GUI_STATE -> null; // TODO rings container gui state
-            case GUI_UPDATE -> null; // TODO rings container gui update
-            default -> null;
-        };
-    }
-
-    @Override
-    public State createState(StateTypeEnum stateType) {
-        return switch (stateType) {
-            case GUI_STATE -> null; // TODO rings container gui state
-            case GUI_UPDATE -> null; // TODO rings container gui update
-            default -> null;
-        };
-    }
-
-    @Override
-    public void setState(StateTypeEnum stateType, State state) {
-        switch (stateType) {
-            default -> {
-            }
-        }
     }
 }

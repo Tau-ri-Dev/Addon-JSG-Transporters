@@ -21,9 +21,9 @@ public class BlockRegistry {
     /**
      * TRANSPORT RINGS
      */
-    public static final RegistryObject<Block> RING_ANCIENT = REGISTER.register("ring_ancient", RingsAncient::new);
-    public static final RegistryObject<Block> RING_GOAULD = REGISTER.register("ring_goauld", RingsGoauld::new);
-    public static final RegistryObject<Block> RING_ORI = REGISTER.register("ring_ori", RingsOri::new);
+    public static final RegistryObject<Block> RINGS_ANCIENT = REGISTER.register("rings_ancient_block", RingsAncient::new);
+    public static final RegistryObject<Block> RINGS_GOAULD = REGISTER.register("rings_goauld_block", RingsGoauld::new);
+    public static final RegistryObject<Block> RINGS_ORI = REGISTER.register("rings_ori_block", RingsOri::new);
     /**
      * ATLANTIS TRANSPORTER
      */

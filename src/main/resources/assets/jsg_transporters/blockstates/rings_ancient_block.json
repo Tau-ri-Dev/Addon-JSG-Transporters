@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"facing=north": {
+			"model": "jsg_transporters:block/rings_ancient_block"
+		},
+		"facing=west": {
+			"model": "jsg_transporters:block/rings_ancient_block",
+			"y": 270
+		},
+		"facing=south": {
+			"model": "jsg_transporters:block/rings_ancient_block",
+			"y": 180
+		},
+		"facing=east": {
+			"model": "jsg_transporters:block/rings_ancient_block",
+			"y": 90
+		}
+	}
+}

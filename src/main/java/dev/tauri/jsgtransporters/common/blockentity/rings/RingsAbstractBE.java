@@ -13,12 +13,14 @@ import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
+import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -92,5 +94,38 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
     @Override
     public ComputerDeviceHolder getDeviceHolder() {
         return deviceHolder;
+    }
+
+    public RingsRendererState rendererState = new RingsRendererState();
+
+    public RingsRendererState getRendererStateClient() {
+        return rendererState;
+    }
+
+    @Override
+    public State getState(@NotNull StateTypeEnum stateType) {
+        return switch (stateType) {
+            case RENDERER_STATE -> rendererState;
+            default -> null;
+        };
+    }
+
+    @Override
+    public State createState(@NotNull StateTypeEnum stateType) {
+        return switch (stateType) {
+            case RENDERER_STATE -> new RingsRendererState();
+            default -> null;
+        };
+    }
+
+    @Override
+    public void setState(@NotNull StateTypeEnum stateType, @NotNull State state) {
+        switch (stateType) {
+            case RENDERER_STATE:
+                rendererState = (RingsRendererState) state;
+                break;
+            default:
+                break;
+        }
     }
 }

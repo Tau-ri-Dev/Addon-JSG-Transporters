@@ -26,12 +26,9 @@ public class BlockEntityRegistry {
     /**
      * TRANSPORT RINGS
      */
-    public static final RegistryObject<BlockEntityType<RingsAncientBE>> RINGS_ANCIENT_BE = registerBR("ring_ancient",
-            RingsAncientBE::new, BlockRegistry.RING_ANCIENT);
-    public static final RegistryObject<BlockEntityType<RingsGoauldBE>> RINGS_GOAULD_BE = registerBR("ring_goauld",
-            RingsGoauldBE::new, BlockRegistry.RING_GOAULD);
-    public static final RegistryObject<BlockEntityType<RingsOriBE>> RINGS_ORI_BE = registerBR("ring_ori",
-            RingsOriBE::new, BlockRegistry.RING_ORI);
+    public static final RegistryObject<BlockEntityType<RingsAncientBE>> RINGS_ANCIENT_BE = registerBR("rings_ancient_block", RingsAncientBE::new, BlockRegistry.RINGS_ANCIENT);
+    public static final RegistryObject<BlockEntityType<RingsGoauldBE>> RINGS_GOAULD_BE = registerBR("rings_goauld_block", RingsGoauldBE::new, BlockRegistry.RINGS_GOAULD);
+    public static final RegistryObject<BlockEntityType<RingsOriBE>> RINGS_ORI_BE = registerBR("rings_ori_block", RingsOriBE::new, BlockRegistry.RINGS_ORI);
 
 
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBR(String name, BlockEntityType.BlockEntitySupplier<T> beSupplier, Supplier<? extends Block> blockSupplier) {

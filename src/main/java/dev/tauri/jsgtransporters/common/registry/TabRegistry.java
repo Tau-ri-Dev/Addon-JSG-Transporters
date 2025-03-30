@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class TabRegistry {
     public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, JSGTransporters.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> TAB_RINGS = Constants.TAB_HELPER.createCreativeTab("rings", () -> BlockRegistry.RING_GOAULD);
+    public static final RegistryObject<CreativeModeTab> TAB_RINGS = Constants.TAB_HELPER.createCreativeTab("rings", () -> BlockRegistry.RINGS_GOAULD);
 
 
     public static void register(IEventBus bus) {

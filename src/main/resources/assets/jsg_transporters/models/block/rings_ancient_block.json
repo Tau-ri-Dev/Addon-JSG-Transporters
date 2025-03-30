@@ -1,0 +1,12 @@
+{
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"particle": "jsg_transporters:block/rings/rings_ancient_side",
+		"north": "jsg_transporters:block/rings/rings_ancient_side",
+		"south": "jsg_transporters:block/rings/rings_ancient_side",
+		"west": "jsg_transporters:block/rings/rings_ancient_side",
+		"east": "jsg_transporters:block/rings/rings_ancient_side",
+		"up": "jsg_transporters:block/rings/rings_ancient_top",
+		"down": "jsg_transporters:block/rings/rings_ancient_bottom"
+	}
+}
