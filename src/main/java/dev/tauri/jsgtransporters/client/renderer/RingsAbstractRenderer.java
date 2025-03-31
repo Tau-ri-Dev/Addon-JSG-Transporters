@@ -1,11 +1,15 @@
 package dev.tauri.jsgtransporters.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import dev.tauri.jsg.loader.model.OBJModel;
 import dev.tauri.jsg.util.math.MathFunctionImpl;
+import dev.tauri.jsg.util.vectors.Vector2f;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
+import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,7 +17,12 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE.RING_ANIMATION_LENGTH;
 
@@ -112,6 +121,8 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
             stack.popPose();
         }
 
+        renderWhiteFlash();
+
         stack.popPose();
         stack.popPose();
         RenderSystem.disableDepthTest();
@@ -129,5 +140,80 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         var coef = (float) (time / (double) RING_ANIMATION_LENGTH);
         var value = RING_ANIMATION.apply(coef, index);
         return value * (3f - ((3f / getRingsCount()) * index) + 0.25f);
+    }
+
+    public void renderWhiteFlash() {
+        List<Pair<Double, Pair<Vector2f, Vector2f>>> mapped = new ArrayList<>();
+        if (Minecraft.getInstance().player == null) return;
+        var pPos = Minecraft.getInstance().player.position();
+        for (var v : WHITE_FLASH_VERTEXES) {
+            var pos = tileEntity.getBlockPos().getCenter().add(v.first().getX(), 0, v.first().getY());
+            var dist = pPos.distanceTo(pos);
+            mapped.add(Pair.of(dist, v));
+        }
+        var sorted = mapped.stream().sorted((e1, e2) -> e2.first().compareTo(e1.first())).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        stack.pushPose();
+        stack.translate(0, 0.5f, 0);
+        stack.scale(1.65f, 0, 1.65f);
+
+        RenderSystem.enableBlend();
+        RenderSystem.disableCull();
+        RenderSystem.enableDepthTest();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        for (var quad : sorted) {
+            drawWhiteFlashQuad(quad.second().first(), quad.second().second());
+        }
+        RenderSystem.disableBlend();
+
+
+        stack.popPose();
+    }
+
+    private static final LinkedList<Pair<Vector2f, Vector2f>> WHITE_FLASH_VERTEXES = new LinkedList<>();
+
+    static {
+        var step = (360f / 36f);
+        Vector2f lastVec = null;
+        for (var i = 0f; i <= 360f; i += step) {
+            var angle = Math.toRadians(i);
+            var x = (float) Math.cos(angle);
+            var z = (float) Math.sin(angle);
+            if (lastVec == null) lastVec = new Vector2f(x, z);
+            else {
+                WHITE_FLASH_VERTEXES.addLast(Pair.of(lastVec, new Vector2f(x, z)));
+                lastVec = new Vector2f(x, z);
+            }
+        }
+    }
+
+    private void drawWhiteFlashQuad(Vector2f start, Vector2f end) {
+        stack.pushPose();
+        var t = Tesselator.getInstance();
+        var b = t.getBuilder();
+        var matrix = stack.last().pose();
+        b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        // bottom
+        b.vertex(matrix, start.x, 0, start.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, end.x, 0, end.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, end.x, 1 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, 1 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+
+        // middle
+        b.vertex(matrix, start.x, 1 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 1 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 2 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, 2 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+
+        // top
+        b.vertex(matrix, start.x, 2 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 2 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 1, end.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, start.x, 1, start.y).color(1f, 1f, 1f, 0f).endVertex();
+
+        BufferUploader.drawWithShader(b.end());
+        stack.popPose();
     }
 }

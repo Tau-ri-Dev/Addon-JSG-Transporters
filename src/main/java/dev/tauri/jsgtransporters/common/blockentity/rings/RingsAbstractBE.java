@@ -92,7 +92,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         if (!getLevelNotNull().isClientSide) {
             if (!addedToNetwork) {
                 addedToNetwork = true;
-                getDeviceHolder().connectToWirelessNetwork();
+                //getDeviceHolder().connectToWirelessNetwork();
             }
         }
     }

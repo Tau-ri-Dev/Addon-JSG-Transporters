@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 @Mod(JSGTransporters.MOD_ID)
 public class JSGTransporters implements JSGAddon {
     public static final String MOD_ID = "jsg_transporters";
-    public static final String MOD_NAME = "Just Stargate Mod: Transporters Addon";
+    public static final String MOD_NAME = "JSG: Rings and Transporters";
     public static Logger logger;
 
     public static String MOD_VERSION = "";
