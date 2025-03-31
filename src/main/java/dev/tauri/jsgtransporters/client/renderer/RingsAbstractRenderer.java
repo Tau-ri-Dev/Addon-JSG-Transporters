@@ -77,6 +77,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
     public final BiFunction<Float, Integer, Float> RING_ANIMATION = (x, index) -> {
         x = x * 6;
+        if (getStartingOffset() < 0) index = getRingsCount() - index - 1;
 
         var startX = 0.25f * index;
         var endX = 5f - (0.25f * index);
@@ -111,7 +112,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
         for (var i = 0; i < getRingsCount(); i++) {
             var y = getYOffset(i);
-            if (y == 0 && i != (getRingsCount() - 1)) continue;
+            if (y == 0 && i != (getStartingOffset() >= 0 ? (getRingsCount() - 1) : 0)) continue;
             stack.pushPose();
             stack.translate(0, y, 0);
             OBJModel.packedLight = getCombinedLight((int) Math.ceil(y));
@@ -141,6 +142,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         return value * ((getStartingOffset() - 1f) + (3f - ((3f / getRingsCount()) * index) + 0.25f));
     }
 
+    // should be ranged (>= 1 || <= -4) -> if not rings will overlap in the animation
     public double getStartingOffset() {
         return CommandTest.y + 1;
     }
@@ -150,7 +152,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         if (time < 0) return;
         var coef = (float) (time / ((4.96 - 3.834) * 20));
         if (coef > 1.1f) return;
-        var y = getStartingOffset() + (coef * 3f) - 1f;
+        var y = getStartingOffset() + (getStartingOffset() < 0 ? (coef * 3f) : (3f - (coef * 3f))) - 1f;
 
 
         List<Pair<Double, Pair<Vector2f, Vector2f>>> mapped = new ArrayList<>();
