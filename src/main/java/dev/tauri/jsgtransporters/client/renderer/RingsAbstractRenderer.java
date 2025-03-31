@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters.client.renderer;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import dev.tauri.jsg.command.commands.CommandTest;
 import dev.tauri.jsg.loader.model.OBJModel;
 import dev.tauri.jsg.util.math.MathFunctionImpl;
 import dev.tauri.jsg.util.vectors.Vector2f;
@@ -67,16 +68,14 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         return LightTexture.pack((int) (blockSum / count2), (int) (skySum / count));
     }
 
-    private static final MathFunctionImpl START_FUNC = new MathFunctionImpl((x) -> {
+    private final MathFunctionImpl START_FUNC = new MathFunctionImpl((x) -> {
         var sin = Math.sin(x * Math.PI);
-        return (float) ((-Math.cos(x * Math.PI) + (sin * sin) / 1.035f + Math.sin(x * Math.PI * 2) / 5f + 1f) / 2f);
+        var c = 25f;
+        return (float) ((-Math.cos(x * Math.PI) + ((sin * sin) / (1.035f * (1 + (Math.abs(getStartingOffset() - 1f) / c)))) + Math.sin(x * Math.PI * 2) / (5f * (1 + (Math.abs(getStartingOffset() - 1f) / c) * 5f)) + 1f) / 2f);
     });
-    private static final MathFunctionImpl END_FUNC = new MathFunctionImpl((x) -> {
-        var sin = Math.sin(x * Math.PI);
-        return (float) ((-Math.cos((x + 1) * Math.PI) - (sin * sin) / 1.035f - Math.sin(x * Math.PI * 2) / 5f + 1f) / 2f);
-    });
+    private static final MathFunctionImpl END_FUNC = new MathFunctionImpl((x) -> (float) ((-Math.cos((x + 1) * Math.PI) + 1f) / 2f));
 
-    public static final BiFunction<Float, Integer, Float> RING_ANIMATION = (x, index) -> {
+    public final BiFunction<Float, Integer, Float> RING_ANIMATION = (x, index) -> {
         x = x * 6;
 
         var startX = 0.25f * index;
@@ -139,10 +138,21 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         var time = rendererState.getAnimationTick(level.getGameTime(), partialTicks);
         var coef = (float) (time / (double) RING_ANIMATION_LENGTH);
         var value = RING_ANIMATION.apply(coef, index);
-        return value * (3f - ((3f / getRingsCount()) * index) + 0.25f);
+        return value * ((getStartingOffset() - 1f) + (3f - ((3f / getRingsCount()) * index) + 0.25f));
+    }
+
+    public double getStartingOffset() {
+        return CommandTest.y + 1;
     }
 
     public void renderWhiteFlash() {
+        var time = (rendererState.getAnimationTick(level.getGameTime(), partialTicks) - ((3.834 - 1.674) * 20));
+        if (time < 0) return;
+        var coef = (float) (time / ((4.96 - 3.834) * 20));
+        if (coef > 1.1f) return;
+        var y = getStartingOffset() + (coef * 3f) - 1f;
+
+
         List<Pair<Double, Pair<Vector2f, Vector2f>>> mapped = new ArrayList<>();
         if (Minecraft.getInstance().player == null) return;
         var pPos = Minecraft.getInstance().player.position();
@@ -154,8 +164,8 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         var sorted = mapped.stream().sorted((e1, e2) -> e2.first().compareTo(e1.first())).collect(Collectors.toCollection(LinkedHashSet::new));
 
         stack.pushPose();
-        stack.translate(0, 0.5f, 0);
-        stack.scale(1.65f, 0, 1.65f);
+        stack.translate(0, y, 0);
+        stack.scale(1.65f, 1, 1.65f);
 
         RenderSystem.enableBlend();
         RenderSystem.disableCull();
@@ -196,22 +206,22 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         // bottom
-        b.vertex(matrix, start.x, 0, start.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, end.x, 0, end.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, end.x, 1 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, start.x, 1 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, -0.75f, start.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, end.x, -0.75f, end.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, end.x, 1 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, 1 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
 
         // middle
-        b.vertex(matrix, start.x, 1 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 1 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 2 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, start.x, 2 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, 1 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 1 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 2 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, start.x, 2 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
 
         // top
-        b.vertex(matrix, start.x, 2 / 3f, start.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 2 / 3f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 1, end.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, start.x, 1, start.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, start.x, 2 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 2 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.vertex(matrix, end.x, 0.75f, end.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.vertex(matrix, start.x, 0.75f, start.y).color(1f, 1f, 1f, 0f).endVertex();
 
         BufferUploader.drawWithShader(b.end());
         stack.popPose();
