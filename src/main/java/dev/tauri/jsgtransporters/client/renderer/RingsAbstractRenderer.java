@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.tauri.jsg.loader.model.OBJModel;
 import dev.tauri.jsg.util.math.MathFunctionImpl;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -59,8 +58,14 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         return LightTexture.pack((int) (blockSum / count2), (int) (skySum / count));
     }
 
-    private static final MathFunctionImpl START_FUNC = new MathFunctionImpl((x) -> (float) ((-Math.cos(x * Math.PI) + 1f) / 2f));
-    private static final MathFunctionImpl END_FUNC = new MathFunctionImpl((x) -> (float) ((-Math.cos((x + 1) * Math.PI) + 1f) / 2f));
+    private static final MathFunctionImpl START_FUNC = new MathFunctionImpl((x) -> {
+        var sin = Math.sin(x * Math.PI);
+        return (float) ((-Math.cos(x * Math.PI) + (sin * sin) / 1.035f + Math.sin(x * Math.PI * 2) / 5f + 1f) / 2f);
+    });
+    private static final MathFunctionImpl END_FUNC = new MathFunctionImpl((x) -> {
+        var sin = Math.sin(x * Math.PI);
+        return (float) ((-Math.cos((x + 1) * Math.PI) - (sin * sin) / 1.035f - Math.sin(x * Math.PI * 2) / 5f + 1f) / 2f);
+    });
 
     public static final BiFunction<Float, Integer, Float> RING_ANIMATION = (x, index) -> {
         x = x * 6;
@@ -125,9 +130,4 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         var value = RING_ANIMATION.apply(coef, index);
         return value * (3f - ((3f / getRingsCount()) * index) + 0.25f);
     }
-
-    // 0 - 1.67 intro
-    // 1.67 - 3.54 up
-    // 3.54 - 5 tp
-    // 5 - 6.58 down
 }

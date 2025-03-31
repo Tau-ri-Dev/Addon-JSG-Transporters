@@ -13,10 +13,12 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,6 +37,30 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         this.registerDefaultState(
                 defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.NORTH)
         );
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
+        super.playerWillDestroy(level, pos, blockState, player);
+        if (!level.isClientSide()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof RingsAbstractBE rings) {
+                rings.onBroken();
+            }
+        }
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public void wasExploded(Level level, BlockPos pos, Explosion explosion) {
+        super.wasExploded(level, pos, explosion);
+        if (!level.isClientSide()) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof RingsAbstractBE rings) {
+                rings.onBroken();
+            }
+        }
     }
 
     @NotNull

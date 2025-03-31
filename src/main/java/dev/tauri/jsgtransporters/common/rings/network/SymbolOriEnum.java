@@ -21,14 +21,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public enum SymbolGoauldEnum implements SymbolInterface {
-    AMUN(0, 0, "Amun"),
-    SERKET(1, 1, "Serket"),
-    KHEPRI(2, 3, "Khepri"),
-    RA(3, 2, "Ra"),
-    FELLUCA(4, 4, "Felluca"),
-    COBRA(5, 5, "Cobra"),
-    LIGHT(6, 6, "Light");
+public enum SymbolOriEnum implements SymbolInterface {
+    ALPHA(0, 0, "Alpha"),
+    BETA(1, 1, "Beta"),
+    GAMMA(2, 2, "Gamma"),
+    DELTA(3, 3, "Delta"),
+    EPSILON(4, 4, "Epsilon"),
+    ZETA(5, 5, "Zeta"),
+    ETA(6, 6, "Eta"),
+    THETA(7, 7, "Theta"),
+    IOTA(8, 8, "Iota"),
+    KAPPA(9, 9, "Kappa"),
+    LAMBDA(10, 10, "Lambda"),
+    MU(11, 11, "Mu"),
+    NU(12, 12, "Nu"),
+    XI(13, 13, "Xi"),
+    OMICRON(14, 14, "Omicron"),
+    PI(14, 14, "Pi"),
+    RHO(15, 15, "Rho"),
+    LIGHT(16, 16, "Light");
 
     public final int id;
     public final int angleIndex;
@@ -38,20 +49,20 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     public final ResourceLocation iconResource;
     public final ResourceLocation modelResource;
 
-    SymbolGoauldEnum(int id, int angleIndex, String englishName) {
+    SymbolOriEnum(int id, int angleIndex, String englishName) {
         this.id = id;
 
         this.angleIndex = angleIndex;
 
         this.englishName = englishName;
-        this.translationKey = "glyph.jsg_transporters.transportrings.goauld." + englishName.toLowerCase().replace(" ", "_");
-        this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/goauld/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/goauld/goauld_button_" + (id + 1) + ".obj");
+        this.translationKey = "glyph.jsg_transporters.transportrings.ori." + englishName.toLowerCase().replace(" ", "_");
+        this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
+        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/ori_button_" + (id + 1) + ".obj");
     }
 
     @Override
     public boolean origin() {
-        return this == COBRA;
+        return this == ALPHA;
     }
 
     @Override
@@ -86,7 +97,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
 
     @Override
     public SymbolTypeEnum<?> getSymbolType() {
-        return SymbolTypeRegistry.GOAULD;
+        return SymbolTypeRegistry.ORI;
     }
 
     @Override
@@ -99,9 +110,9 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         var id = this.getId();
         while (true) {
             id += (previous ? -1 : 1);
-            if (id < 0) id = 5;
-            id = id % 6;
-            var symbol = SymbolTypeRegistry.GOAULD.valueOf(id);
+            if (id < 0) id = 15;
+            id = id % 16;
+            var symbol = SymbolTypeRegistry.ORI.valueOf(id);
             if (symbol != null && symbol.isValidForAddress()) return symbol;
         }
     }
@@ -109,7 +120,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     // ------------------------------------------------------------
     // Static
 
-    public static class Provider extends SymbolTypeEnum<SymbolGoauldEnum> {
+    public static class Provider extends SymbolTypeEnum<SymbolOriEnum> {
 
         // used for rings gui - the title (u, v of the texture)
         @Override
@@ -135,18 +146,18 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public SymbolGoauldEnum[] getValues() {
-            return SymbolGoauldEnum.values();
+        public SymbolOriEnum[] getValues() {
+            return SymbolOriEnum.values();
         }
 
         @Override
         public Block getBaseBlock() {
-            return BlockRegistry.RINGS_GOAULD.get();
+            return BlockRegistry.RINGS_ORI.get();
         }
 
         @Override
         public Item getGlyphUpgrade() {
-            return ItemRegistry.CRYSTAL_GLYPH_GOAULD.get();
+            return ItemRegistry.CRYSTAL_GLYPH_ORI.get();
         }
 
         @Override
@@ -156,11 +167,11 @@ public enum SymbolGoauldEnum implements SymbolInterface {
 
         @Override
         public String getId() {
-            return "goauld";
+            return "ori";
         }
 
         @Override
-        public SymbolGoauldEnum getBRB() {
+        public SymbolOriEnum getBRB() {
             return LIGHT;
         }
 
@@ -175,18 +186,18 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public SymbolGoauldEnum getRandomSymbol(Random random) {
+        public SymbolOriEnum getRandomSymbol(Random random) {
             int id;
             do {
                 id = random.nextInt(16);
-            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == COBRA.id);
+            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == ALPHA.id);
 
             return valueOf(id);
         }
 
         @Override
-        public SymbolGoauldEnum getOrigin() {
-            return COBRA;
+        public SymbolOriEnum getOrigin() {
+            return ALPHA;
         }
 
         @Override
@@ -213,38 +224,38 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public SymbolGoauldEnum getSymbolByAngle(float angle) {
-            return COBRA;
+        public SymbolOriEnum getSymbolByAngle(float angle) {
+            return ALPHA;
         }
 
         @Override
-        public SymbolGoauldEnum getTopSymbol() {
-            return COBRA;
+        public SymbolOriEnum getTopSymbol() {
+            return ALPHA;
         }
 
-        private static final Map<Integer, SymbolGoauldEnum> ID_MAP = new HashMap<>();
-        private static final Map<String, SymbolGoauldEnum> ENGLISH_NAME_MAP = new HashMap<>();
+        private static final Map<Integer, SymbolOriEnum> ID_MAP = new HashMap<>();
+        private static final Map<String, SymbolOriEnum> ENGLISH_NAME_MAP = new HashMap<>();
 
         static {
-            for (SymbolGoauldEnum symbol : SymbolGoauldEnum.values()) {
+            for (SymbolOriEnum symbol : SymbolOriEnum.values()) {
                 ID_MAP.put(symbol.id, symbol);
                 ENGLISH_NAME_MAP.put(symbol.englishName.toLowerCase(), symbol);
             }
         }
 
         @Override
-        public SymbolGoauldEnum valueOf(int id) {
+        public SymbolOriEnum valueOf(int id) {
             return ID_MAP.get(id);
         }
 
         @Override
-        public SymbolGoauldEnum fromEnglishName(String englishName) {
+        public SymbolOriEnum fromEnglishName(String englishName) {
             return ENGLISH_NAME_MAP.get(englishName.toLowerCase());
         }
 
         @Override
-        public SymbolGoauldEnum getFirstValidForAddress() {
-            return AMUN;
+        public SymbolOriEnum getFirstValidForAddress() {
+            return BETA;
         }
     }
 }

@@ -9,6 +9,7 @@ import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.StateTypeEnum;
@@ -16,7 +17,10 @@ import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
+import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -27,11 +31,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 // Contemplating making rings a multiblock
 public abstract class RingsAbstractBE extends BlockEntity implements ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
@@ -39,6 +42,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }
+
+    protected Map<SymbolTypeEnum<?>, RingsAddress> addressMap = new HashMap<>();
+    protected RingsPos ringsPos;
 
     @Override
     public boolean prepareBE() {
@@ -61,12 +67,76 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         return getLevelNotNull().getGameTime();
     }
 
+    protected TargetPoint targetPoint;
+    protected BlockPos pos;
+
+    @Override
+    public void onLoad() {
+        if (!Objects.requireNonNull(getLevel()).isClientSide) {
+            this.pos = getBlockPos();
+            this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
+
+            generateAddresses(false);
+        }
+        super.onLoad();
+    }
+
     private boolean needRegenerate = false;
+
+    private boolean addedToNetwork;
 
     @Override
     public void tick() {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, getTime());
+        if (!getLevelNotNull().isClientSide) {
+            if (!addedToNetwork) {
+                addedToNetwork = true;
+                getDeviceHolder().connectToWirelessNetwork();
+            }
+        }
+    }
+
+    public void onBroken() {
+        initRingsPos();
+        RingsNetwork.INSTANCE.removeRings(ringsPos);
+    }
+
+    @Nullable
+    public RingsAddress getRingsAddress(SymbolTypeEnum<?> symbolType) {
+        if (addressMap == null) return null;
+
+        return addressMap.get(symbolType);
+    }
+
+    public void generateAddresses(boolean reset) {
+        if (reset && ringsPos != null)
+            RingsNetwork.INSTANCE.removeRings(ringsPos);
+        Random random = new Random(pos.hashCode() * 31L + getLevelNotNull().dimension().location().hashCode());
+
+        for (SymbolTypeEnum<?> symbolType : SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+            var address = getRingsAddress(symbolType);
+
+            if (address == null || reset) {
+                address = new RingsAddress(symbolType);
+                address.generate(random);
+            }
+
+            this.setRingsAddress(symbolType, address);
+        }
+    }
+
+    public abstract SymbolTypeEnum<?> getSymbolType();
+
+    protected void initRingsPos() {
+        ringsPos = new RingsPos(getLevelNotNull().dimension(), getBlockPos(), getSymbolType());
+    }
+
+    public void setRingsAddress(SymbolTypeEnum<?> symbolType, RingsAddress address) {
+        initRingsPos();
+        addressMap.put(symbolType, address);
+        RingsNetwork.INSTANCE.putRings(address, ringsPos);
+        setChanged();
     }
 
 
@@ -108,26 +178,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
             JSGPacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
         } else {
             JSGTransporters.logger.debug("targetPoint as null trying to send {} from {}", this, this.getClass().getCanonicalName());
-        }
-    }
-
-    protected TargetPoint targetPoint;
-    protected BlockPos pos;
-
-    @Override
-    public void onLoad() {
-        if (!Objects.requireNonNull(getLevel()).isClientSide) {
-            this.pos = getBlockPos();
-            this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
-
-            generateAddress(false);
-        }
-        super.onLoad();
-    }
-
-    public void generateAddress(boolean reset) {
-        if (reset) {
-            RingsNetwork.INSTANCE.removeRings(pos);
         }
     }
 
@@ -186,5 +236,24 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
     public void test() {
         addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
         JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
+    }
+
+    // ------------------------------------------------------------------------
+    // NBT
+    @Override
+    public void saveAdditional(@NotNull CompoundTag compound) {
+        for (var address : addressMap.values()) {
+            compound.put("address_" + address.getSymbolType(), address.serializeNBT());
+        }
+        super.saveAdditional(compound);
+    }
+
+    @Override
+    public void load(@NotNull CompoundTag compound) {
+        for (SymbolTypeEnum<?> symbolType : SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+            if (compound.contains("address_" + symbolType))
+                addressMap.put(symbolType, new RingsAddress(compound.getCompound("address_" + symbolType)));
+        }
+        super.load(compound);
     }
 }

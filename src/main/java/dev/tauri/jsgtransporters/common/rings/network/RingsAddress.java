@@ -1,38 +1,174 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
+import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.stargate.network.IAddress;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
+import dev.tauri.jsgtransporters.JSGTransporters;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.List;
+import java.util.Random;
 
 public class RingsAddress implements IAddress {
 
-    public RingsAddress(CompoundTag compoundTag) {
-        deserializeNBT(compoundTag);
+    public RingsAddress(SymbolTypeEnum<?> symbolType) {
+        this.symbolType = symbolType;
+    }
+
+    public RingsAddress(ByteBuf byteBuf) {
+        fromBytes(byteBuf);
+    }
+
+    public RingsAddress(CompoundTag compound) {
+        deserializeNBT(compound);
+    }
+
+    protected int getSavedSymbols() {
+        return 4;
+    }
+
+
+    // ---------------------------------------------------------------------------------
+    // Address
+    protected SymbolTypeEnum<?> symbolType;
+    protected List<SymbolInterface> address = new ArrayList<>(4);
+
+    @Override
+    public SymbolTypeEnum<?> getSymbolType() {
+        return symbolType;
+    }
+
+    /**
+     * Generates new random address.
+     *
+     * @param random {@link Random} instance.
+     */
+    public RingsAddress generate(Random random) {
+        if (!address.isEmpty()) {
+            JSGTransporters.logger.error("Tried to regenerate address already containing symbols", new ConcurrentModificationException());
+            for (var s : address)
+                JSGTransporters.logger.error(s.getEnglishName());
+            return this;
+        }
+
+        while (address.size() < 4) {
+            SymbolInterface symbol = symbolType.getRandomSymbol(random);
+
+            if (!address.contains(symbol))
+                address.add(symbol);
+        }
+
+        return this;
     }
 
     @Override
     public SymbolInterface get(int symbolIndex) {
-        return null;
+        return address.get(symbolIndex);
+    }
+
+    public void set(int index, SymbolInterface symbol) {
+        address.set(index, symbol);
+    }
+
+    public SymbolInterface getLast() {
+        if (address.isEmpty())
+            return null;
+
+        return address.get(address.size() - 1);
+    }
+
+    public List<String> getNameList() {
+        List<String> out = new ArrayList<>(address.size());
+
+        for (SymbolInterface symbol : address) {
+            out.add(symbol.getEnglishName());
+        }
+
+        return out;
+    }
+
+    public List<SymbolInterface> subList(int start, int end) {
+        return address.subList(start, end);
     }
 
     @Override
     public int getSize() {
-        return 0;
+        return address.size();
     }
 
-    @Override
-    public SymbolTypeEnum<?> getSymbolType() {
-        return null;
-    }
+
+    // ---------------------------------------------------------------------------------
+    // Serialization
 
     @Override
     public CompoundTag serializeNBT() {
-        return new CompoundTag();
+        CompoundTag compound = new CompoundTag();
+
+        compound.putString("symbolType", symbolType.getId());
+
+        for (int i = 0; i < getSavedSymbols(); i++)
+            compound.putInt("symbol" + i, address.get(i).getId());
+
+        return compound;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(CompoundTag compound) {
+        if (!address.isEmpty()) {
+            JSG.logger.error("Tried to deserialize address already containing symbols", new ConcurrentModificationException());
+            for (var s : address)
+                JSG.logger.error(s.getEnglishName());
+            return;
+        }
 
+        symbolType = SymbolTypeEnum.byId(compound.getString("symbolType"));
+
+        for (int i = 0; i < getSavedSymbols(); i++)
+            address.add(symbolType.valueOf(compound.getInt("symbol" + i)));
+    }
+
+    public void toBytes(ByteBuf buf) {
+        buf.writeByte(SymbolTypeEnum.getId(symbolType));
+
+        for (int i = 0; i < getSavedSymbols(); i++)
+            buf.writeByte(address.get(i).getId());
+    }
+
+    public void fromBytes(ByteBuf buf) {
+        if (!address.isEmpty()) {
+            JSG.logger.error("Tried to deserialize address already containing symbols");
+            return;
+        }
+
+        symbolType = SymbolTypeEnum.byId(buf.readByte());
+
+        for (int i = 0; i < getSavedSymbols(); i++)
+            address.add(symbolType.valueOf(buf.readByte()));
+    }
+
+
+    // ---------------------------------------------------------------------------------
+    // Hashing
+
+    @Override
+    public String toString() {
+        var stringAddress = new StringBuilder();
+        for (var symbol : address) {
+            stringAddress.append(symbol.getEnglishName()).append(", ");
+        }
+        return "{symbolType: " + symbolType + ", address: [" + stringAddress + "]}";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((address == null) ? 0 : address.subList(0, 4).hashCode());
+        result = prime * result + ((symbolType == null) ? 0 : symbolType.hashCode());
+        return result;
     }
 }
