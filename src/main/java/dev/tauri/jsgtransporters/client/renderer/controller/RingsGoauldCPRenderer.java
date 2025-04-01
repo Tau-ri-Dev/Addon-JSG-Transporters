@@ -3,15 +3,17 @@ package dev.tauri.jsgtransporters.client.renderer.controller;
 import com.mojang.math.Axis;
 import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.property.JSGProperties;
+import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
 import dev.tauri.jsgtransporters.common.raycaster.GoauldCPRaycaster;
-import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolGoauldEnum;
+import dev.tauri.jsgtransporters.common.state.renderer.RingsGoauldCPRendererState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 
-public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsControlPanelRendererState, RingsGoauldCPBE> {
+public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCPRendererState, RingsGoauldCPBE> {
     public RingsGoauldCPRenderer(BlockEntityRendererProvider.Context ignored) {
         super(ignored);
     }
@@ -39,8 +41,6 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsControlP
     @Override
     protected void renderController() {
         translateToPos();
-        ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
-        ModelsHolder.RINGS_CONTROLLER_GOAULD_LIGHT.bindTextureAndRender(stack);
 
         if (JSGConfig.Debug.renderBoundingBoxes.get() || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
             this.stack.pushPose();
@@ -48,6 +48,18 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsControlP
                 btn.render(stack);
             }
             this.stack.popPose();
+        }
+
+        ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
+
+        Constants.LOADERS_HOLDER.texture().getTexture(rendererState.getButtonTexture(SymbolGoauldEnum.LIGHT, rendererState.getBiomeOverlay())).bindTexture();
+        ModelsHolder.RINGS_CONTROLLER_GOAULD_LIGHT.render(stack, rendererState.isButtonActive(SymbolGoauldEnum.LIGHT));
+
+        for (var symbol : SymbolGoauldEnum.values()) {
+            if (symbol.brb()) continue;
+            var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
+            Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
+            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
         }
     }
 }

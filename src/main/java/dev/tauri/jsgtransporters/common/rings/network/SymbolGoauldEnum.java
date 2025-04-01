@@ -55,6 +55,11 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     }
 
     @Override
+    public boolean brb() {
+        return this == LIGHT;
+    }
+
+    @Override
     public float getAngle() {
         return angleIndex;
     }

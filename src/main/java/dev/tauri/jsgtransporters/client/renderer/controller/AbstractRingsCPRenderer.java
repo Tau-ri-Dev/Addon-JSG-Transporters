@@ -57,5 +57,7 @@ public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendere
         stack.pushPose();
         renderController();
         stack.popPose();
+
+        rendererState.iterate(level, partialTicks);
     }
 }

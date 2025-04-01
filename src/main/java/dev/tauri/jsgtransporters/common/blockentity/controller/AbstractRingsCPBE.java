@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class AbstractRingsCPBE extends BlockEntity implements ITickable, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class AbstractRingsCPBE extends BlockEntity implements ITickable, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
     public AbstractRingsCPBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }
@@ -61,9 +61,5 @@ public class AbstractRingsCPBE extends BlockEntity implements ITickable, Schedul
 
     }
 
-    protected RingsControlPanelRendererState rendererState = new RingsControlPanelRendererState();
-
-    public RingsControlPanelRendererState getRendererStateClient() {
-        return rendererState;
-    }
+    public abstract RingsControlPanelRendererState getRendererStateClient();
 }
