@@ -4,13 +4,16 @@ import dev.tauri.jsg.blockentity.IPreparable;
 import dev.tauri.jsg.blockentity.util.ScheduledTask;
 import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsg.util.ITickable;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -62,4 +65,8 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ITickable
     }
 
     public abstract RingsControlPanelRendererState getRendererStateClient();
+
+    public void pushSymbolButton(SymbolInterface symbol, @Nullable ServerPlayer player, boolean force) {
+        JSGTransporters.logger.info("Pushed button on the server! {}", symbol.getEnglishName());
+    }
 }

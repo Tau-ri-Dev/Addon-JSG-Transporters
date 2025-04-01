@@ -4,8 +4,10 @@ import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.raycaster.Raycaster;
 import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsg.util.vectors.Vector3f;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.block.controller.RingsGoauldCPBlock;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
+import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -104,10 +106,9 @@ public class GoauldCPRaycaster extends Raycaster {
     }
 
     @Override
-    protected boolean buttonClicked(Level level, Player player, int button, BlockPos blockPos, InteractionHand interactionHand) {
+    protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(interactionHand);
-        JSGTransporters.logger.info(button + "");
-        //JSGPacketHandler.INSTANCE.sendToServer(new TRControllerActivatedToServer(pos, button, SymbolTypeTransportRingsEnum.GOAULD));
+        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.GOAULD.valueOf(button), false));
         return true;
     }
 }

@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters;
 
 import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.raycaster.GoauldCPRaycaster;
 import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
@@ -48,6 +49,7 @@ public class JSGTransporters implements JSGAddon {
         AddressTypeRegistry.register();
         SymbolTypeRegistry.register();
         GoauldCPRaycaster.register();
+        JSGTPacketHandler.init();
 
         JSG.registerAddon(this);
     }
