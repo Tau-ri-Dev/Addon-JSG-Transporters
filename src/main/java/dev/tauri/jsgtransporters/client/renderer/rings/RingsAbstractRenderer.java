@@ -1,4 +1,4 @@
-package dev.tauri.jsgtransporters.client.renderer;
+package dev.tauri.jsgtransporters.client.renderer.rings;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -31,7 +32,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     public RingsAbstractRenderer(BlockEntityRendererProvider.Context ignored) {
     }
 
-    public RingsAbstractBE tileEntity;
+    public T tileEntity;
     public PoseStack stack;
     public MultiBufferSource source;
     public int combinedLight;
@@ -40,6 +41,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     public S rendererState;
 
     @Override
+    @ParametersAreNonnullByDefault
     public boolean shouldRenderOffScreen(T pBlockEntity) {
         return true;
     }
@@ -89,6 +91,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     };
 
     @Override
+    @ParametersAreNonnullByDefault
     @SuppressWarnings("unchecked")
     public void render(T pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
         tileEntity = pBlockEntity;

@@ -1,12 +1,12 @@
-package dev.tauri.jsgtransporters.client.renderer;
+package dev.tauri.jsgtransporters.client.renderer.rings;
 
 import dev.tauri.jsgtransporters.client.ModelsHolder;
-import dev.tauri.jsgtransporters.common.blockentity.rings.RingsGoauldBE;
+import dev.tauri.jsgtransporters.common.blockentity.rings.RingsOriBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RingsGoauldRenderer extends RingsAbstractRenderer<RingsRendererState, RingsGoauldBE> {
-    public RingsGoauldRenderer(BlockEntityRendererProvider.Context ignored) {
+public class RingsOriRenderer extends RingsAbstractRenderer<RingsRendererState, RingsOriBE> {
+    public RingsOriRenderer(BlockEntityRendererProvider.Context ignored) {
         super(ignored);
     }
 
@@ -14,6 +14,6 @@ public class RingsGoauldRenderer extends RingsAbstractRenderer<RingsRendererStat
     public void renderRing(int index) {
         var size = 0.48f;
         stack.scale(size, size, size);
-        ModelsHolder.RING_GOAULD.bindTextureAndRender(stack);
+        ModelsHolder.RING_ORI.bindTextureAndRender(stack);
     }
 }

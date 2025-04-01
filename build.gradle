@@ -128,7 +128,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly "dev.tauri:jsg:${jsg_version}"
+    compileOnly fg.deobf("dev.tauri:jsg:${jsg_version}")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

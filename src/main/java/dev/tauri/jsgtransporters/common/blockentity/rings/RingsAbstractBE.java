@@ -53,11 +53,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         return true;
     }
 
-    @Override
-    public BlockPos m_58899_() {
-        return worldPosition;
-    }
-
     @Nonnull
     public Level getLevelNotNull() {
         return Objects.requireNonNull(getLevel());

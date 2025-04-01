@@ -14,7 +14,10 @@ import java.util.Map;
 public enum ModelsHolder {
     RING_GOAULD("rings/rings_goauld.obj", "rings/rings_goauld.jpg", false),
     RING_ANCIENT("rings/rings_ancient.obj", "rings/rings_ancient.jpg", false),
-    RING_ORI("rings/rings_ori.obj", "rings/rings_ori.jpg", false)
+    RING_ORI("rings/rings_ori.obj", "rings/rings_ori.jpg", false),
+
+    RINGS_CONTROLLER_GOAULD("rings/controller/goauld/plate_goauld.obj", "rings/controller/goauld/goauld_panel.jpg", true),
+    RINGS_CONTROLLER_GOAULD_LIGHT("rings/controller/goauld/indicator_lights.obj", "rings/controller/goauld/goauld_light.jpg", true),
     ;
     public final ResourceLocation model;
     public final Map<BiomeOverlayEnum, ResourceLocation> biomeTextureResourceMap = new HashMap<>();
