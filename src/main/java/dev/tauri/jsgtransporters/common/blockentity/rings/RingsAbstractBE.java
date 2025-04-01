@@ -13,9 +13,11 @@ import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.StateTypeEnum;
+import dev.tauri.jsg.util.ILinkable;
 import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
@@ -37,7 +39,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 // Contemplating making rings a multiblock
-public abstract class RingsAbstractBE extends BlockEntity implements ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
 
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
@@ -240,6 +242,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
         for (var address : addressMap.values()) {
             compound.put("address_" + address.getSymbolType(), address.serializeNBT());
         }
+        if (isLinked(true))
+            compound.putLong("linkedPos", linkedPos.asLong());
+
         super.saveAdditional(compound);
     }
 
@@ -249,6 +254,35 @@ public abstract class RingsAbstractBE extends BlockEntity implements ITickable, 
             if (compound.contains("address_" + symbolType))
                 addressMap.put(symbolType, new RingsAddress(compound.getCompound("address_" + symbolType)));
         }
+        if (compound.contains("linkedPos"))
+            linkedPos = BlockPos.of(compound.getLong("linkedPos"));
+
         super.load(compound);
+    }
+
+    private BlockPos linkedPos;
+
+    @Override
+    public boolean canLinkTo() {
+        return (linkedPos == null);
+    }
+
+    @Override
+    public void setLinkedDevice(BlockPos blockPos) {
+        linkedPos = blockPos;
+        setChanged();
+    }
+
+    @Override
+    public @Nullable AbstractRingsCPBE getLinkedDevice() {
+        if (level == null) return null;
+        if (linkedPos == null) return null;
+        if (level.getBlockEntity(linkedPos) instanceof AbstractRingsCPBE cp) return cp;
+        return null;
+    }
+
+    @Override
+    public @Nullable BlockPos getLinkedPos() {
+        return linkedPos;
     }
 }
