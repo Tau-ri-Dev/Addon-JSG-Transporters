@@ -1,6 +1,8 @@
 package dev.tauri.jsgtransporters.common.registry;
 
+import dev.tauri.jsgtransporters.client.renderer.RingsAncientRenderer;
 import dev.tauri.jsgtransporters.client.renderer.RingsGoauldRenderer;
+import dev.tauri.jsgtransporters.client.renderer.RingsOriRenderer;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAncientBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsGoauldBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsOriBE;
@@ -54,5 +56,7 @@ public class BlockEntityRegistry {
     @SubscribeEvent
     public static void registerBERs(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(RINGS_GOAULD_BE.get(), RingsGoauldRenderer::new);
+        event.registerBlockEntityRenderer(RINGS_ORI_BE.get(), RingsOriRenderer::new);
+        event.registerBlockEntityRenderer(RINGS_ANCIENT_BE.get(), RingsAncientRenderer::new);
     }
 }
