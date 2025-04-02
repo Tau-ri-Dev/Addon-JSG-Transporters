@@ -1,10 +1,12 @@
 package dev.tauri.jsgtransporters.common.registry;
 
 import dev.tauri.jsgtransporters.client.renderer.controller.RingsGoauldCPRenderer;
+import dev.tauri.jsgtransporters.client.renderer.controller.RingsOriCPRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsAncientRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsGoauldRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsOriRenderer;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
+import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAncientBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsGoauldBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsOriBE;
@@ -36,6 +38,7 @@ public class BlockEntityRegistry {
     public static final RegistryObject<BlockEntityType<RingsOriBE>> RINGS_ORI_BE = registerBR("rings_ori_block", RingsOriBE::new, BlockRegistry.RINGS_ORI);
 
     public static final RegistryObject<BlockEntityType<RingsGoauldCPBE>> RINGS_CP_GOAULD_BE = registerBR("rings_goauld_control_panel_block", RingsGoauldCPBE::new, BlockRegistry.RINGS_CP_GOAULD);
+    public static final RegistryObject<BlockEntityType<RingsOriCPBE>> RINGS_CP_ORI_BE = registerBR("rings_ori_control_panel_block", RingsOriCPBE::new, BlockRegistry.RINGS_CP_ORI);
 
 
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBR(String name, BlockEntityType.BlockEntitySupplier<T> beSupplier, Supplier<? extends Block> blockSupplier) {
@@ -64,5 +67,6 @@ public class BlockEntityRegistry {
         event.registerBlockEntityRenderer(RINGS_ANCIENT_BE.get(), RingsAncientRenderer::new);
 
         event.registerBlockEntityRenderer(RINGS_CP_GOAULD_BE.get(), RingsGoauldCPRenderer::new);
+        event.registerBlockEntityRenderer(RINGS_CP_ORI_BE.get(), RingsOriCPRenderer::new);
     }
 }

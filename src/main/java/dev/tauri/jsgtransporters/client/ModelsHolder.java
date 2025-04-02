@@ -18,6 +18,7 @@ public enum ModelsHolder {
 
     RINGS_CONTROLLER_GOAULD("rings/controller/goauld/plate_goauld.obj", "rings/controller/goauld/goauld_panel.jpg", true),
     RINGS_CONTROLLER_GOAULD_LIGHT("rings/controller/goauld/indicator_lights.obj", "rings/controller/goauld/goauld_light.jpg", true),
+    RINGS_CONTROLLER_ORI_BASE("rings/controller/ori/base.obj", "rings/controller/ori/base.png", false),
     ;
     public final ResourceLocation model;
     public final Map<BiomeOverlayEnum, ResourceLocation> biomeTextureResourceMap = new HashMap<>();

@@ -4,6 +4,7 @@ import dev.tauri.jsg.block.IItemBlock;
 import dev.tauri.jsg.item.ITabbedItem;
 import dev.tauri.jsg.item.JSGBlockItem;
 import dev.tauri.jsgtransporters.common.block.controller.RingsGoauldCPBlock;
+import dev.tauri.jsgtransporters.common.block.controller.RingsOriCPBlock;
 import dev.tauri.jsgtransporters.common.block.rings.RingsAncient;
 import dev.tauri.jsgtransporters.common.block.rings.RingsGoauld;
 import dev.tauri.jsgtransporters.common.block.rings.RingsOri;
@@ -27,6 +28,7 @@ public class BlockRegistry {
     public static final RegistryObject<Block> RINGS_ORI = REGISTER.register("rings_ori_block", RingsOri::new);
 
     public static final RegistryObject<Block> RINGS_CP_GOAULD = REGISTER.register("rings_goauld_control_panel_block", RingsGoauldCPBlock::new);
+    public static final RegistryObject<Block> RINGS_CP_ORI = REGISTER.register("rings_ori_control_panel_block", RingsOriCPBlock::new);
     /**
      * ATLANTIS TRANSPORTER
      */

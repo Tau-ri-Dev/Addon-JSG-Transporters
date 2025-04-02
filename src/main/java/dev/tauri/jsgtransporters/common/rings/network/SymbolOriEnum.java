@@ -39,7 +39,8 @@ public enum SymbolOriEnum implements SymbolInterface {
     OMICRON(14, 14, "Omicron"),
     PI(14, 14, "Pi"),
     RHO(15, 15, "Rho"),
-    LIGHT(16, 16, "Light");
+    SIGMA(16, 16, "Sigma"),
+    LIGHT(17, 17, "Light");
 
     public final int id;
     public final int angleIndex;
@@ -57,7 +58,7 @@ public enum SymbolOriEnum implements SymbolInterface {
         this.englishName = englishName;
         this.translationKey = "glyph.jsg_transporters.transportrings.ori." + englishName.toLowerCase().replace(" ", "_");
         this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/ori_button_" + (id + 1) + ".obj");
+        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/button_" + (id + 1) + ".obj");
     }
 
     @Override
