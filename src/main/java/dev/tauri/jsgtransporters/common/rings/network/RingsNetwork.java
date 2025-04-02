@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RingsNetwork extends SavedData {
     public static RingsNetwork INSTANCE = new RingsNetwork();
@@ -70,6 +67,10 @@ public class RingsNetwork extends SavedData {
         }
 
         setDirty();
+    }
+
+    public List<RingsAddress> getAllAddresses() {
+        return new ArrayList<>(RINGS_MAP_BY_ADDRESS.keySet());
     }
 
     public void putRings(RingsAddress address, RingsPos pos) {

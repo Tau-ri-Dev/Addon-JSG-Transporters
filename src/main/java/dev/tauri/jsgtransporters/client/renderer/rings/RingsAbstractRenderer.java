@@ -2,7 +2,6 @@ package dev.tauri.jsgtransporters.client.renderer.rings;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import dev.tauri.jsg.command.commands.CommandTest;
 import dev.tauri.jsg.loader.model.OBJModel;
 import dev.tauri.jsg.util.math.MathFunctionImpl;
 import dev.tauri.jsg.util.vectors.Vector2f;
@@ -147,7 +146,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
     // should be ranged (>= 1 || <= -4) -> if not rings will overlap in the animation
     public double getStartingOffset() {
-        return CommandTest.y + 1;
+        return tileEntity.getVerticalOffset();
     }
 
     public void renderWhiteFlash() {

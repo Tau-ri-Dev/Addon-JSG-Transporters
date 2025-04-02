@@ -21,12 +21,14 @@ import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
+import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -122,8 +124,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             var address = getRingsAddress(symbolType);
 
             if (address == null || reset) {
-                address = new RingsAddress(symbolType);
-                address.generate(random);
+                do {
+                    address = new RingsAddress(symbolType);
+                    address.generate(random);
+                } while (RingsNetwork.INSTANCE.getAllAddresses().contains(address));
             }
 
             this.setRingsAddress(symbolType, address);
@@ -172,14 +176,30 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     context = new CompoundTag();
                     context.putBoolean("end", true);
                     addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
+
+                    for (int i = 0; i < 3; i++) {
+                        context = new CompoundTag();
+                        context.putBoolean("tp", true);
+                        context.putInt("index", i);
+                        addTask(new ScheduledTask(task, 40 + (i * 10), context));
+                    }
+                    break;
                 } else {
                     if (context.getBoolean("end")) {
                         ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
                         busy = false;
                         targetRings = null;
                         setChanged();
+                        break;
+                    }
+                    if (context.getBoolean("tp")) {
+                        if (targetRings == null) return;
+                        teleportVolumes(context.getInt("index"));
+                        break;
                     }
                 }
+                break;
+            case RINGS_SOLID_BLOCKS:
                 break;
             default:
                 break;
@@ -325,6 +345,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public void addSymbolToAddress(SymbolInterface symbol) {
+        if (dialedAddress.size() > 4) dialedAddress.clear();
         dialedAddress.addSymbol(symbol);
         if (dialedAddress.getSize() > 4) {
             tryConnect();
@@ -359,18 +380,42 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
         targetRings = rings;
         setChanged();
-        teleport();
+        startTeleportAnimation();
 
         ringsBe.targetRings = ringsPos;
         ringsBe.setChanged();
-        ringsBe.teleport();
+        ringsBe.startTeleportAnimation();
         JSGTransporters.logger.info("Target rings OK");
     }
 
-    protected void teleport() {
+    public int getVerticalOffset() {
+        return 2;
+    }
+
+    protected void startTeleportAnimation() {
         if (level == null || level.isClientSide()) return;
+        ignoredEntities.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
         addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
         JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
+    }
+
+    public final List<Entity> ignoredEntities = new ArrayList<>();
+
+    protected void teleportVolumes(int index) {
+        if (targetRings == null) return;
+        if (level == null) return;
+        JSGTransporters.logger.info("Teleporting...");
+        var targetRings = this.targetRings.getBlockEntity();
+
+        var minPos = new BlockPos(-1, getVerticalOffset() + index, -1).offset(getBlockPos());
+        var maxPos = new BlockPos(1, getVerticalOffset() + index, 1).offset(getBlockPos());
+        var poses = BlockPos.betweenClosed(minPos, maxPos);
+        var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
+        for (var e : entities) {
+            if (ignoredEntities.contains(e)) continue;
+            targetRings.ignoredEntities.add(e);
+            TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
+        }
     }
 }
