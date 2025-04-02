@@ -3,12 +3,15 @@ package dev.tauri.jsgtransporters.common.blockentity.rings;
 import dev.tauri.jsg.blockentity.IPreparable;
 import dev.tauri.jsg.blockentity.util.ScheduledTask;
 import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
+import dev.tauri.jsg.chunkloader.ChunkManager;
+import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
@@ -19,14 +22,14 @@ import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
-import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
-import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
-import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
+import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-// Contemplating making rings a multiblock
 public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
 
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
@@ -47,6 +49,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     protected Map<SymbolTypeEnum<?>, RingsAddress> addressMap = new HashMap<>();
     protected RingsPos ringsPos;
+    protected RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
 
     @Override
     public boolean prepareBE() {
@@ -97,6 +100,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public void onBroken() {
         initRingsPos();
         RingsNetwork.INSTANCE.removeRings(ringsPos);
+        if (isLinked()) {
+            Objects.requireNonNull(getLinkedDevice()).setLinkedDevice(null);
+        }
+        setLinkedDevice(null);
     }
 
     @Nullable
@@ -150,6 +157,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         task.setExecutor(this);
         task.setTaskCreated(getTime());
         scheduledTasks.add(task);
+        setChanged();
     }
 
     @Override
@@ -157,9 +165,21 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         switch (task) {
             case RINGS_START_ANIMATION:
                 if (level == null) break;
-                rendererState.startAnimation(level.getGameTime());
-                setChanged();
-                getAndSendState(StateTypeEnum.RENDERER_STATE);
+                if (context == null) {
+                    rendererState.startAnimation(level.getGameTime());
+                    setChanged();
+                    getAndSendState(StateTypeEnum.RENDERER_STATE);
+                    context = new CompoundTag();
+                    context.putBoolean("end", true);
+                    addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
+                } else {
+                    if (context.getBoolean("end")) {
+                        ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
+                        busy = false;
+                        targetRings = null;
+                        setChanged();
+                    }
+                }
                 break;
             default:
                 break;
@@ -230,11 +250,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public static final int RING_ANIMATION_LENGTH = (int) (20 * 4.91f);
 
-    public void test() {
-        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
-        JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
-    }
-
     // ------------------------------------------------------------------------
     // NBT
     @Override
@@ -244,6 +259,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
         if (isLinked(true))
             compound.putLong("linkedPos", linkedPos.asLong());
+        compound.putBoolean("busy", busy);
+        if (targetRings != null)
+            compound.put("targetRings", targetRings.serializeNBT());
+        compound.put("scheduledTasks", ScheduledTask.serializeList(scheduledTasks));
 
         super.saveAdditional(compound);
     }
@@ -256,6 +275,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
         if (compound.contains("linkedPos"))
             linkedPos = BlockPos.of(compound.getLong("linkedPos"));
+        busy = compound.getBoolean("busy");
+        if (compound.contains("targetRings"))
+            targetRings = new RingsPos(compound.getCompound("targetRings"));
+        ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);
 
         super.load(compound);
     }
@@ -284,5 +307,70 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public @Nullable BlockPos getLinkedPos() {
         return linkedPos;
+    }
+
+    public abstract Block getControlPanelBlock();
+
+    public void updateLinkStatus() {
+        pos = getBlockPos();
+        var block = getControlPanelBlock();
+        if (block == null) return;
+        BlockPos closestCP = LinkingHelper.findClosestUnlinked(getLevelNotNull(), pos, LinkingHelper.getDhdRange(), block);
+
+        if (closestCP != null && getLevelNotNull().getBlockEntity(closestCP) instanceof AbstractRingsCPBE be) {
+            be.setLinkedDevice(pos);
+            setLinkedDevice(closestCP);
+            setChanged();
+        }
+    }
+
+    public void addSymbolToAddress(SymbolInterface symbol) {
+        dialedAddress.addSymbol(symbol);
+        if (dialedAddress.getSize() > 4) {
+            tryConnect();
+            dialedAddress.clear();
+        }
+    }
+
+    public boolean busy = false;
+    public RingsPos targetRings;
+
+    public void tryConnect() {
+        if (level == null || level.isClientSide()) return;
+        if (dialedAddress.size() < 5) {
+            JSGTransporters.logger.info("Address < 5");
+            return;
+        }
+        if (!dialedAddress.getLast().origin()) {
+            JSGTransporters.logger.info("Address no origin");
+            return;
+        }
+
+        var rings = RingsNetwork.INSTANCE.getRings(dialedAddress.toImmutable());
+        if (rings == null) {
+            JSGTransporters.logger.info("Target rings null");
+            return;
+        }
+        var ringsBe = rings.getBlockEntity();
+        if (ringsBe.busy) {
+            JSGTransporters.logger.info("Target rings busy");
+            return;
+        }
+
+        targetRings = rings;
+        setChanged();
+        teleport();
+
+        ringsBe.targetRings = ringsPos;
+        ringsBe.setChanged();
+        ringsBe.teleport();
+        JSGTransporters.logger.info("Target rings OK");
+    }
+
+    protected void teleport() {
+        if (level == null || level.isClientSide()) return;
+        ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
+        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
+        JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
     }
 }

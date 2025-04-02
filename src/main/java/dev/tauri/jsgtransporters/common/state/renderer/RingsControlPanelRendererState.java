@@ -1,10 +1,10 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
 import dev.tauri.jsg.renderer.activation.Activation;
-import dev.tauri.jsg.renderer.activation.DHDActivation;
 import dev.tauri.jsg.stargate.BiomeOverlayEnum;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.state.State;
+import dev.tauri.jsgtransporters.common.activation.RingsCPActivation;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -20,9 +20,11 @@ public abstract class RingsControlPanelRendererState extends State {
 
     public List<Activation<SymbolInterface>> activationList = new ArrayList<>();
     public final Map<SymbolInterface, Integer> BUTTON_STATE_MAP = new HashMap<>();
+    public final Map<SymbolInterface, Float> ACTUAL_BUTTON_STATE_MAP = new HashMap<>();
 
     protected BiomeOverlayEnum biomeOverlay;
     public BiomeOverlayEnum biomeOverride;
+    private boolean clearingSymbols;
 
     public BiomeOverlayEnum getBiomeOverlay() {
         if (biomeOverride != null)
@@ -35,8 +37,21 @@ public abstract class RingsControlPanelRendererState extends State {
 
 
     public void activateSymbol(long totalWorldTime, SymbolInterface symbol) {
-        activationList.add(new DHDActivation(symbol, totalWorldTime, false));
+        activationList.add(new RingsCPActivation(symbol, totalWorldTime, false));
+        clearingSymbols = false;
     }
+
+    public void clearSymbols(long totalWorldTime) {
+        activationList.clear();
+        for (var e : BUTTON_STATE_MAP.entrySet()) {
+            if (e.getValue() < 1) continue;
+            activationList.add(new RingsCPActivation(e.getKey(), totalWorldTime, true));
+        }
+        BUTTON_STATE_MAP.clear();
+        ACTUAL_BUTTON_STATE_MAP.clear();
+        clearingSymbols = true;
+    }
+
 
     public void setBiomeOverlay(BiomeOverlayEnum biomeOverlay) {
         this.biomeOverlay = biomeOverlay;
@@ -44,10 +59,9 @@ public abstract class RingsControlPanelRendererState extends State {
 
     public void iterate(Level world, double partialTicks) {
         Activation.iterate(activationList, world.getGameTime(), partialTicks, (symbol, stage) -> {
-            if (stage >= 5 && BUTTON_STATE_MAP.get(symbol) != Math.round(stage)) {
-                activationList.add(new DHDActivation(symbol, world.getGameTime(), true));
-            }
             BUTTON_STATE_MAP.put(symbol, Math.round(stage));
+            if (ACTUAL_BUTTON_STATE_MAP.getOrDefault(symbol, 0f) < stage || clearingSymbols)
+                ACTUAL_BUTTON_STATE_MAP.put(symbol, stage);
         });
     }
 
@@ -55,6 +69,18 @@ public abstract class RingsControlPanelRendererState extends State {
         var val = BUTTON_STATE_MAP.get(symbol);
         if (val == null) return false;
         return val >= 5;
+    }
+
+    public int getButtonState(SymbolInterface symbol) {
+        Integer val = BUTTON_STATE_MAP.get(symbol);
+        if (val == null) val = 0;
+        return val;
+    }
+
+    public float getActualButtonState(SymbolInterface symbol) {
+        Float val = ACTUAL_BUTTON_STATE_MAP.get(symbol);
+        if (val == null) val = 0f;
+        return val;
     }
 
     @Override

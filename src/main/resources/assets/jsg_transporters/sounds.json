@@ -5,5 +5,21 @@
     "sounds": [
       "jsg_transporters:rings/rings_transport"
     ]
+  },
+  "block.rings.goauld.button": {
+    "category": "ambient",
+    "subtitle": "jsg_transporters.subtitle.block.rings.goauld.button",
+    "sounds": [
+      "jsg_transporters:rings/goauld/button1",
+      "jsg_transporters:rings/goauld/button2",
+      "jsg_transporters:rings/goauld/button3"
+    ]
+  },
+  "block.rings.goauld.dial": {
+    "category": "ambient",
+    "subtitle": "jsg_transporters.subtitle.block.rings.goauld.dial",
+    "sounds": [
+      "jsg_transporters:rings/goauld/button_final"
+    ]
   }
 }

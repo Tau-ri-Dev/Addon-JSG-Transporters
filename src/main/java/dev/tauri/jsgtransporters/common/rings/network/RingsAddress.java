@@ -171,4 +171,18 @@ public class RingsAddress implements IAddress {
         result = prime * result + ((symbolType == null) ? 0 : symbolType.hashCode());
         return result;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof RingsAddress other))
+            return false;
+        if (address == null)
+            return other.address == null;
+        if (address.size() < 4) return false;
+        if (other.address.size() < 4) return false;
+        if (!address.subList(0, 4).equals(other.address.subList(0, 4))) return false;
+        return symbolType == other.symbolType;
+    }
 }

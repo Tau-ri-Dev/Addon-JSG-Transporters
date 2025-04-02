@@ -32,8 +32,7 @@ public class RingsGoauldCPRendererState extends RingsControlPanelRendererState {
 
     @Override
     public ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayEnum biomeOverlay) {
-        Integer val = BUTTON_STATE_MAP.get(symbol);
-        if (val == null) val = 0;
+        var val = getButtonState(symbol);
         if (biomeOverlay == null) biomeOverlay = BiomeOverlayEnum.NORMAL;
         if (symbol.brb())
             return BIOME_TEXTURE_MAP_LIGHT.get(biomeOverlay).get(val);
