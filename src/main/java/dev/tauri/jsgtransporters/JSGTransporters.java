@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters;
 
 import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
+import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.raycaster.GoauldCPRaycaster;
 import dev.tauri.jsgtransporters.common.raycaster.OriCPRaycaster;
@@ -38,6 +39,9 @@ public class JSGTransporters implements JSGAddon {
 
         MinecraftForge.EVENT_BUS.register(this);
         Constants.load();
+
+        JSGTConfig.load();
+        JSGTConfig.register();
 
         ItemRegistry.register(modEventBus);
         BlockRegistry.register(modEventBus);

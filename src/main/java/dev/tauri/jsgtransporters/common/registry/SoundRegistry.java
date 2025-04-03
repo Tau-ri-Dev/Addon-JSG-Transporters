@@ -11,7 +11,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class SoundRegistry {
     public static final DeferredRegister<SoundEvent> REGISTER = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, JSGTransporters.MOD_ID);
 
-    public static final SoundPositionedEnum RINGS_TRANSPORT = new SoundPositionedEnum(JSGTransporters.MOD_ID, "block.rings.transport", false, 1).register(() -> REGISTER);
+    public static final SoundEventEnum RINGS_TRANSPORT_START = new SoundEventEnum(JSGTransporters.MOD_ID, "block.rings.transport.start", 1, 110).register(() -> REGISTER);
+    public static final SoundEventEnum RINGS_TRANSPORT_END = new SoundEventEnum(JSGTransporters.MOD_ID, "block.rings.transport.end", 1, 90).register(() -> REGISTER);
 
 
     public static final SoundEventEnum RINGS_GOAULD_BUTTON = new SoundEventEnum(JSGTransporters.MOD_ID, "block.rings.goauld.button", 1, 10).register(() -> REGISTER);

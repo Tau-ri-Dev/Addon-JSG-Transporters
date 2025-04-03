@@ -62,7 +62,7 @@ public class CPButtonClickedToServer extends PositionedPacket {
         ctx.enqueueWork(() -> {
             AbstractRingsCPBE be = (AbstractRingsCPBE) world.getBlockEntity(pos);
             if (be == null) return;
-            be.pushSymbolButton(symbol, player, force);
+            be.pushSymbolButton(symbol, player);
         });
     }
 }

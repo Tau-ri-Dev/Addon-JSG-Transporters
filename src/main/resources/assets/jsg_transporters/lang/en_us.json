@@ -1,0 +1,19 @@
+{
+  "itemGroup.jsg_rings": "JSG: Rings and Transporters",
+
+  "block.jsg_transporters.rings.message.address_malformed": "Address malformed",
+  "block.jsg_transporters.rings.message.out_of_range": "Target Rings are out of range",
+  "block.jsg_transporters.rings.message.no_power": "Not enough power",
+  "block.jsg_transporters.rings.message.no_origin": "Address malformed",
+  "block.jsg_transporters.rings.message.busy": "Rings are busy",
+  "block.jsg_transporters.rings.message.busy_target": "Target rings are busy",
+  "block.jsg_transporters.rings.message.obfuscated": "Rings are obfuscated",
+  "block.jsg_transporters.rings.message.obfuscated_target": "Target rings are obfuscated",
+
+  "block.jsg_transporters.rings_ancient_block": "Ancient Transport Rings",
+  "block.jsg_transporters.rings_goauld_block": "Goauld Transport Rings",
+  "block.jsg_transporters.rings_ori_block": "Ori Transport Rings",
+
+  "block.jsg_transporters.rings_goauld_control_panel_block": "Goauld Rings Control Panel",
+  "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel"
+}
