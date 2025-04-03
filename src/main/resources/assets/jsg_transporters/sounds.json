@@ -1,9 +1,16 @@
 {
-  "block.rings.transport": {
+  "block.rings.transport.start": {
     "category": "ambient",
-    "subtitle": "jsg_transporters.subtitle.block.rings.transport",
+    "subtitle": "jsg_transporters.subtitle.block.rings.transport.start",
     "sounds": [
-      "jsg_transporters:rings/rings_transport"
+      "jsg_transporters:rings/rings_transport_start"
+    ]
+  },
+  "block.rings.transport.end": {
+    "category": "ambient",
+    "subtitle": "jsg_transporters.subtitle.block.rings.transport.end",
+    "sounds": [
+      "jsg_transporters:rings/rings_transport_end"
     ]
   },
   "block.rings.goauld.button": {

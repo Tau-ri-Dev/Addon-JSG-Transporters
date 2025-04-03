@@ -1,14 +1,17 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
 import dev.tauri.jsg.helpers.DimensionsHelper;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import org.jetbrains.annotations.NotNull;
@@ -118,6 +121,34 @@ public class RingsNetwork extends SavedData {
         pos.setName(newName);
         putRings(map, pos);
         setDirty();
+    }
+
+    public boolean isInRange(RingsPos outgoing, RingsPos incoming, boolean hasDimUpgrade) {
+        if (outgoing == null || incoming == null) return false;
+        var pos = outgoing.ringsPos.getCenter().add(0, -outgoing.ringsPos.getCenter().y(), 0);
+        var targetPos = incoming.ringsPos.getCenter().add(0, -incoming.ringsPos.getCenter().y(), 0);
+        var dim = outgoing.dimension;
+        var targetDim = incoming.dimension;
+
+        var horizontalRange = JSGTConfig.General.ringsRange.get();
+        var dimRange = JSGTConfig.General.ringsRangeInterDim.get();
+
+        if (dim != targetDim) {
+            if (!hasDimUpgrade) return false;
+            var sourceEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(dim);
+            var targetEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(targetDim);
+            if (sourceEntry == null || targetEntry == null) return false;
+
+            var distance = Math.abs(sourceEntry.distance - targetEntry.distance);
+            if (distance > dimRange) return false;
+
+            if (targetDim == Level.NETHER)
+                pos = pos.multiply(1f / 8f, 1f / 8f, 1f / 8f);
+            if (dim == Level.NETHER)
+                pos = pos.multiply(8f, 8f, 8f);
+        }
+        var distanceHorizontal = pos.distanceTo(targetPos);
+        return distanceHorizontal <= horizontalRange;
     }
 
 

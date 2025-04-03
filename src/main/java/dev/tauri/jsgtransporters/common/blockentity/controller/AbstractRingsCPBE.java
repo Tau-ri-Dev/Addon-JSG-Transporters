@@ -160,10 +160,12 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
 
     public abstract RingsControlPanelRendererState getRendererStateClient();
 
-    public void pushSymbolButton(SymbolInterface symbol, @Nullable ServerPlayer player, boolean force) {
+    public void pushSymbolButton(SymbolInterface symbol, @Nullable ServerPlayer player) {
         if (busy) return;
-        if (!isLinked() || getLinkedDevice() == null || level == null) return;
-        getLinkedDevice().addSymbolToAddress(symbol);
+        if (!isLinked() || getLinkedDevice() == null || level == null || level.isClientSide()) return;
+        var result = getLinkedDevice().addSymbolToAddress(symbol);
+        if (result != null && !result.ok() && player != null)
+            player.displayClientMessage(result.component(), true);
         busy = true;
         addTask(new ScheduledTask(EnumScheduledTask.RINGS_SYMBOL_DEACTIVATE, 10));
         if (symbol.origin())

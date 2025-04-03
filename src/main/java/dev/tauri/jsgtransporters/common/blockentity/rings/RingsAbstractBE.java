@@ -11,6 +11,7 @@ import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
@@ -85,11 +86,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Override
     public void onLoad() {
-        if (!Objects.requireNonNull(getLevel()).isClientSide) {
-            this.pos = getBlockPos();
-            this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
+        if (level != null) {
+            if (!level.isClientSide) {
+                this.pos = getBlockPos();
+                this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
 
-            generateAddresses(false);
+                generateAddresses(false);
+            } else {
+                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.RENDERER_STATE));
+            }
         }
         super.onLoad();
     }
@@ -182,25 +187,36 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 if (level == null) break;
                 if (level.isClientSide()) break;
                 if (context == null) {
-                    rendererState.startAnimation(level.getGameTime());
-                    setChanged();
-                    getAndSendState(StateTypeEnum.RENDERER_STATE);
-                    var c = new CompoundTag();
-                    c.putBoolean("end", true);
-                    addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, c));
-                    addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, 10));
-                    addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
+                    context = new CompoundTag();
+                    context.putBoolean("start", true);
+                    addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
+                    JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_START);
 
-                    var offset = getVerticalOffset();
-                    for (int i = 0; i < 3; i++) {
-                        var c2 = new CompoundTag();
-                        c2.putBoolean("tp", true);
-                        c2.putInt("index", i);
-                        addTask(new ScheduledTask(task, 40 + ((offset > 0 ? (2 - i) : i) * 10), c2));
-                    }
-                    break;
+                    context = new CompoundTag();
+                    context.putBoolean("playEnd", true);
+                    addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
                 } else {
-                    if (context.getBoolean("end")) {
+                    if (context.getBoolean("playEnd")) {
+                        JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_END);
+                    } else if (context.getBoolean("start")) {
+                        rendererState.startAnimation(level.getGameTime());
+                        setChanged();
+                        getAndSendState(StateTypeEnum.RENDERER_STATE);
+                        context = new CompoundTag();
+                        context.putBoolean("end", true);
+                        addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
+                        addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, 10));
+                        addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
+
+                        var offset = getVerticalOffset();
+                        for (int i = 0; i < 3; i++) {
+                            context = new CompoundTag();
+                            context.putBoolean("tp", true);
+                            context.putInt("index", i);
+                            addTask(new ScheduledTask(task, 40 + ((offset > 0 ? (2 - i) : i) * 10), context));
+                        }
+                        break;
+                    } else if (context.getBoolean("end")) {
                         ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
                         busy = false;
                         targetRings = null;
@@ -385,13 +401,16 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
     }
 
-    public void addSymbolToAddress(SymbolInterface symbol) {
+    @Nullable
+    public RingsConnectResult addSymbolToAddress(SymbolInterface symbol) {
         if (dialedAddress.size() > 4) dialedAddress.clear();
         dialedAddress.addSymbol(symbol);
         if (dialedAddress.getSize() > 4 || symbol.origin()) {
-            tryConnect();
+            var result = tryConnect();
             dialedAddress.clear();
+            return result;
         }
+        return null;
     }
 
     public boolean busy = false;
@@ -409,8 +428,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
 
         var rings = RingsNetwork.INSTANCE.getRings(dialedAddress.toImmutable());
-        if (rings == null) {
+        if (rings == null || rings == ringsPos || (rings.ringsPos == getBlockPos() && rings.dimension == level.dimension())) {
             return RingsConnectResult.ADDRESS_MALFORMED;
+        }
+        if (!RingsNetwork.INSTANCE.isInRange(ringsPos, rings, true)) {
+            return RingsConnectResult.OUT_OF_RANGE;
         }
         var ringsBe = rings.getBlockEntity();
         if (ringsBe.busy) {
@@ -440,8 +462,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (level == null || level.isClientSide()) return;
         ignoredEntities.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
-        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, (int) (1.67f * 20)));
-        JSGSoundHelper.playPositionedSound(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT, true);
+        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, 40));
     }
 
     public final List<Entity> ignoredEntities = new ArrayList<>();
