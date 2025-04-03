@@ -4,6 +4,7 @@ import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.raycaster.Raycaster;
 import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsg.util.vectors.Vector3f;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.block.controller.RingsOriCPBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,8 +79,8 @@ public class OriCPRaycaster extends Raycaster {
 
             new RayCastedButton(8, List.of(
                     new Vector3f(0.139377f, -0.013004f, 0.033244f),
-                    new Vector3f(0.161538f, -0.013004f,0.05503f),
-                    new Vector3f(0.187955f, -0.013004f,0.02032f),
+                    new Vector3f(0.161538f, -0.013004f, 0.05503f),
+                    new Vector3f(0.187955f, -0.013004f, 0.02032f),
                     new Vector3f(0.162571f, -0.013004f, 0.00277f)
 
             )),
@@ -87,8 +88,72 @@ public class OriCPRaycaster extends Raycaster {
             new RayCastedButton(9, List.of(
                     new Vector3f(0.166224f, -0.013004f, -0.002522f),
                     new Vector3f(0.190218f, -0.013004f, 0.011871f),
-                    new Vector3f(0.206586f, -0.013004f,-0.022029f),
+                    new Vector3f(0.206586f, -0.013004f, -0.022029f),
                     new Vector3f(0.178788f, -0.013004f, -0.030848f)
+            )),
+
+            new RayCastedButton(10, List.of(
+                    new Vector3f(0.183035f, -0.013004f, -0.041109f),
+                    new Vector3f(0.210613f, -0.013004f, -0.030953f),
+                    new Vector3f(0.223276f, -0.013004f, -0.07556f),
+                    new Vector3f(0.190311f, -0.013004f, -0.07556f)
+            )),
+
+            new RayCastedButton(11, List.of(
+                    new Vector3f(0.04133f, -0.013004f, 0.054985f),
+                    new Vector3f(0.039854f, -0.013004f, 0.085017f),
+                    new Vector3f(0.06611f, -0.013004f, 0.074377f),
+                    new Vector3f(0.054176f, -0.013004f, 0.048803f)
+            )),
+
+            new RayCastedButton(12, List.of(
+                    new Vector3f(0.061161f, -0.013004f, 0.044651f),
+                    new Vector3f(0.072853f, -0.013004f, 0.071048f),
+                    new Vector3f(0.100268f, -0.013004f, 0.051765f),
+                    new Vector3f(0.082989f, -0.013004f, 0.028576f)
+            )),
+
+            new RayCastedButton(13, List.of(
+                    new Vector3f(0.087827f, -0.013004f, 0.024658f),
+                    new Vector3f(0.104475f, -0.013004f, 0.047861f),
+                    new Vector3f(0.124838f, -0.013004f, 0.027748f),
+                    new Vector3f(0.103879f, -0.013004f, 0.009348f)
+            )),
+
+            new RayCastedButton(14, List.of(
+                    new Vector3f(0.110947f, -0.013004f, 0.0004f),
+                    new Vector3f(0.131255f, -0.013004f, 0.019662f),
+                    new Vector3f(0.14686f, -0.013004f, -0.002191f),
+                    new Vector3f(0.122937f, -0.013004f, -0.016823f)
+            )),
+
+            new RayCastedButton(15, List.of(
+                    new Vector3f(0.12849f, -0.013004f, -0.025304f),
+                    new Vector3f(0.1533f, -0.013004f, -0.010561f),
+                    new Vector3f(0.166765f, -0.013004f, -0.036136f),
+                    new Vector3f(0.138972f, -0.013004f, -0.045024f)
+            )),
+
+            new RayCastedButton(16, List.of(
+                    new Vector3f(0.142736f, -0.013004f, -0.057193f),
+                    new Vector3f(0.170152f, -0.013004f, -0.046017f),
+                    new Vector3f(0.179473f, -0.013004f, -0.076373f),
+                    new Vector3f(0.147612f, -0.013004f, -0.076373f)
+            )),
+
+            new RayCastedButton(17, List.of(
+                    new Vector3f(-0.014048f, -0.021196f, -0.07804f),
+                    new Vector3f(-0.010562f, -0.021196f, -0.07804f),
+                    new Vector3f(-0.008178f, -0.021196f, -0.07804f),
+                    new Vector3f(0.015691f, -0.021196f, -0.106619f),
+                    new Vector3f(0.015691f, -0.021196f, -0.111748f),
+                    new Vector3f(0.015691f, -0.021196f, -0.11528f),
+                    new Vector3f(-0.008178f, -0.021196f, -0.143649f),
+                    new Vector3f(-0.010562f, -0.021196f, -0.143649f),
+                    new Vector3f(-0.014048f, -0.021196f, -0.143649f),
+                    new Vector3f(-0.036658f, -0.021196f, -0.11528f),
+                    new Vector3f(-0.036658f, -0.021196f, -0.111748f),
+                    new Vector3f(-0.036658f, -0.021196f, -0.106619f)
             ))
     );
 
@@ -133,12 +198,14 @@ public class OriCPRaycaster extends Raycaster {
 
     @Override
     protected boolean buttonClicked(Level level, Player player, int buttonId, BlockPos blockPos, InteractionHand interactionHand) {
+        player.swing(InteractionHand.MAIN_HAND, true);
         return true;
     }
 
     @Override
     public boolean onActivated(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand) {
         if (interactionHand != InteractionHand.MAIN_HAND) return false;
+        JSGTransporters.logger.info("CLICKED");
         var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         var rotation = getIntRotation(direction);
         return super.onActivated(level, blockPos, player, rotation, interactionHand);
