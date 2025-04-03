@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.math.Axis;
+import dev.tauri.jsg.command.commands.CommandTest;
 import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsgtransporters.Constants;
@@ -22,20 +23,24 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
         var rotation = level.getBlockState(tileEntity.getBlockPos()).getOptionalValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).orElse(Direction.NORTH);
         switch (rotation) {
             case WEST:
-                //stack.translate(0, 0, 1);
-                stack.mulPose(Axis.YP.rotationDegrees(90));
+                stack.translate(0.97, 0.5, 0.51);
+                stack.mulPose(Axis.YP.rotationDegrees(270));
                 break;
             case SOUTH:
-                //stack.translate(1, 0, 1);
+                stack.translate(0.5, 0.5, 0.03);
+                break;
+            case NORTH:
+                stack.translate(0.5, 0.5, 0.97);
                 stack.mulPose(Axis.YP.rotationDegrees(180));
                 break;
             case EAST:
-                //stack.translate(1, 0, 0);
-                stack.mulPose(Axis.YP.rotationDegrees(270));
+                stack.translate(0.03, 0.5, 0.49);
+                stack.mulPose(Axis.YP.rotationDegrees(90));
                 break;
             default:
                 break;
         }
+        stack.scale(1.5f, 1.5f, 1.5f);
     }
 
     @Override

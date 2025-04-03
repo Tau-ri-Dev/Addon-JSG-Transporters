@@ -1,5 +1,6 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
+import dev.tauri.jsg.block.IHighlightBlock;
 import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.item.ITabbedItem;
@@ -13,8 +14,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.RenderShape;
@@ -29,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem {
+public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock {
     public AbstractRingsCPBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
@@ -67,7 +70,11 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         Player placer = ctx.getPlayer();
         if (placer == null) return defaultBlockState();
-        return defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, placer.getDirection().getOpposite());
+        var direction = ctx.getClickedFace();
+        if (direction.getAxis() == Direction.Axis.Y) return null;
+        if (!canAttachTo(ctx.getLevel(), ctx.getClickedPos().immutable().offset(direction.getOpposite().getNormal()), direction))
+            return null;
+        return defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, direction);
     }
 
     @Override
@@ -111,5 +118,23 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Nonnull
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
+    }
+
+    private boolean canAttachTo(BlockGetter pBlockReader, BlockPos pPos, Direction pDirection) {
+        BlockState blockstate = pBlockReader.getBlockState(pPos);
+        return blockstate.isFaceSturdy(pBlockReader, pPos, pDirection);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
+    public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
+        Direction direction = pState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
+        return this.canAttachTo(pLevel, pPos.relative(direction.getOpposite()), direction);
+    }
+
+    @Override
+    public boolean renderHighlight(BlockState blockState) {
+        return false;
     }
 }

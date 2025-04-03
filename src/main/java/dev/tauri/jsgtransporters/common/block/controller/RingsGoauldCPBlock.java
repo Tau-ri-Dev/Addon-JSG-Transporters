@@ -16,7 +16,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class RingsGoauldCPBlock extends AbstractRingsCPBlock implements IHighlightBlock {
+public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
     public RingsGoauldCPBlock() {
         super(Properties.of().noOcclusion());
     }
@@ -25,11 +25,6 @@ public class RingsGoauldCPBlock extends AbstractRingsCPBlock implements IHighlig
     @ParametersAreNonnullByDefault
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new RingsGoauldCPBE(pPos, pState);
-    }
-
-    @Override
-    public boolean renderHighlight(BlockState blockState) {
-        return false;
     }
 
     @Override
