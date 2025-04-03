@@ -26,9 +26,10 @@ replay_pid*
 **build/
 **bin/
 **.vscode/
-**libs/
 **builds/
 builds
 **.gradle/
 **.settings/
 **.idea/
+
+!**libs/*.jar
