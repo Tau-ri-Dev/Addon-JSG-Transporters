@@ -57,9 +57,7 @@ public class RingsAddress implements IAddress {
 
         while (address.size() < 4) {
             SymbolInterface symbol = symbolType.getRandomSymbol(random);
-
-            if (!address.contains(symbol))
-                address.add(symbol);
+            address.add(symbol);
         }
 
         return this;
