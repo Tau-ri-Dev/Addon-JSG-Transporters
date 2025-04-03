@@ -6,6 +6,12 @@ public enum RingsConnectResult {
     NO_POWER,
     NO_ORIGIN,
     BUSY,
+    OBFUSCATED,
+    OBFUSCATED_TARGET,
 
-    CLIENT
+    CLIENT;
+
+    public boolean ok() {
+        return this == OK;
+    }
 }

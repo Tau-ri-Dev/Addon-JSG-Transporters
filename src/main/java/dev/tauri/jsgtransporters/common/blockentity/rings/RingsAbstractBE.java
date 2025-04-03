@@ -30,10 +30,14 @@ import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -42,6 +46,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -208,7 +213,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
                 break;
             case RINGS_SOLID_BLOCKS:
-                setBorderBlocks(context != null);
+                setBorderBlocks(context != null, false);
                 break;
             default:
                 break;
@@ -216,8 +221,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         setChanged();
     }
 
-    protected void setBorderBlocks(boolean clear) {
-        if (level == null || level.isClientSide()) return;
+    protected boolean setBorderBlocks(boolean clear, boolean simulate) {
+        if (level == null || level.isClientSide()) return false;
+        if (clear && simulate) return true;
         for (int x = -2; x <= 2; x++) {
             for (int z = -2; z <= 2; z++) {
                 if (x != -2 && x != 2 && z != 2 && z != -2) continue;
@@ -229,10 +235,16 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
                         continue;
                     }
-                    level.setBlock(pos, BlockRegistry.INVISIBLE_BLOCK.get().defaultBlockState(), 3);
+                    if (!state.canBeReplaced()) return false;
+                    if (simulate) continue;
+                    var ctx = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(pos.getCenter(), Direction.UP, pos, false));
+                    var stateNew = BlockRegistry.INVISIBLE_BLOCK.get().getStateForPlacement(ctx);
+                    if (stateNew == null) stateNew = BlockRegistry.INVISIBLE_BLOCK.get().defaultBlockState();
+                    level.setBlock(pos, stateNew, 3);
                 }
             }
         }
+        return true;
     }
 
     @Override
@@ -404,6 +416,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (ringsBe.busy) {
             return RingsConnectResult.BUSY;
         }
+
+        if (!ringsBe.setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED_TARGET;
+        if (!setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED;
 
         outbound = true;
         targetRings = rings;
