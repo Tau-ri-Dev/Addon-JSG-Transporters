@@ -152,7 +152,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     public void renderWhiteFlash() {
         var time = (rendererState.getAnimationTick(level.getGameTime(), partialTicks) - ((3.834 - 1.674) * 20));
         if (time < 0) return;
-        var coef = (float) (time / ((4.96 - 3.834) * 20));
+        var coef = (float) (time / ((4.96 - 4.0) * 20));
         if (coef > 1.1f) return;
         var y = getStartingOffset() + (getStartingOffset() < 0 ? (coef * 3f) : (3f - (coef * 3f))) - 1f;
 

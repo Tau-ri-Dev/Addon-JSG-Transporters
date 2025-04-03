@@ -1,6 +1,8 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
 import dev.tauri.jsg.blockentity.IPreparable;
+import dev.tauri.jsg.blockentity.stargate.StargateAbstractBaseBE;
+import dev.tauri.jsg.blockentity.stargate.StargateAbstractMemberBE;
 import dev.tauri.jsg.blockentity.util.ScheduledTask;
 import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.chunkloader.ChunkManager;
@@ -9,6 +11,7 @@ import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
@@ -23,19 +26,27 @@ import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
+import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -169,19 +180,23 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         switch (task) {
             case RINGS_START_ANIMATION:
                 if (level == null) break;
+                if (level.isClientSide()) break;
                 if (context == null) {
                     rendererState.startAnimation(level.getGameTime());
                     setChanged();
                     getAndSendState(StateTypeEnum.RENDERER_STATE);
-                    context = new CompoundTag();
-                    context.putBoolean("end", true);
-                    addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
+                    var c = new CompoundTag();
+                    c.putBoolean("end", true);
+                    addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, c));
+                    addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, 10));
+                    addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
 
+                    var offset = getVerticalOffset();
                     for (int i = 0; i < 3; i++) {
-                        context = new CompoundTag();
-                        context.putBoolean("tp", true);
-                        context.putInt("index", i);
-                        addTask(new ScheduledTask(task, 40 + (i * 10), context));
+                        var c2 = new CompoundTag();
+                        c2.putBoolean("tp", true);
+                        c2.putInt("index", i);
+                        addTask(new ScheduledTask(task, 40 + ((offset > 0 ? (2 - i) : i) * 10), c2));
                     }
                     break;
                 } else {
@@ -189,21 +204,47 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                         ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
                         busy = false;
                         targetRings = null;
-                        setChanged();
                         break;
-                    }
-                    if (context.getBoolean("tp")) {
-                        if (targetRings == null) return;
+                    } else if (context.getBoolean("tp") && context.contains("index")) {
+                        if (targetRings == null) break;
                         teleportVolumes(context.getInt("index"));
                         break;
                     }
                 }
                 break;
             case RINGS_SOLID_BLOCKS:
+                setBorderBlocks(context != null, false);
                 break;
             default:
                 break;
         }
+        setChanged();
+    }
+
+    protected boolean setBorderBlocks(boolean clear, boolean simulate) {
+        if (level == null || level.isClientSide()) return false;
+        if (clear && simulate) return true;
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -2; z <= 2; z++) {
+                if (x != -2 && x != 2 && z != 2 && z != -2) continue;
+                for (int y = 0; y < 3; y++) {
+                    var pos = getBlockPos().offset(x, getVerticalOffset() + y, z);
+                    var state = level.getBlockState(pos);
+                    if (clear) {
+                        if (state.getBlock() != BlockRegistry.INVISIBLE_BLOCK.get()) continue;
+                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                        continue;
+                    }
+                    if (!state.canBeReplaced()) return false;
+                    if (simulate) continue;
+                    var ctx = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(pos.getCenter(), Direction.UP, pos, false));
+                    var stateNew = BlockRegistry.INVISIBLE_BLOCK.get().getStateForPlacement(ctx);
+                    if (stateNew == null) stateNew = BlockRegistry.INVISIBLE_BLOCK.get().defaultBlockState();
+                    level.setBlock(pos, stateNew, 3);
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -347,7 +388,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public void addSymbolToAddress(SymbolInterface symbol) {
         if (dialedAddress.size() > 4) dialedAddress.clear();
         dialedAddress.addSymbol(symbol);
-        if (dialedAddress.getSize() > 4) {
+        if (dialedAddress.getSize() > 4 || symbol.origin()) {
             tryConnect();
             dialedAddress.clear();
         }
@@ -355,37 +396,40 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public boolean busy = false;
     public RingsPos targetRings;
+    public boolean outbound = false;
 
-    public void tryConnect() {
-        if (level == null || level.isClientSide()) return;
+    @NotNull
+    public RingsConnectResult tryConnect() {
+        if (level == null || level.isClientSide()) return RingsConnectResult.CLIENT;
         if (dialedAddress.size() < 5) {
-            JSGTransporters.logger.info("Address < 5");
-            return;
+            return RingsConnectResult.ADDRESS_MALFORMED;
         }
         if (!dialedAddress.getLast().origin()) {
-            JSGTransporters.logger.info("Address no origin");
-            return;
+            return RingsConnectResult.NO_ORIGIN;
         }
 
         var rings = RingsNetwork.INSTANCE.getRings(dialedAddress.toImmutable());
         if (rings == null) {
-            JSGTransporters.logger.info("Target rings null");
-            return;
+            return RingsConnectResult.ADDRESS_MALFORMED;
         }
         var ringsBe = rings.getBlockEntity();
         if (ringsBe.busy) {
-            JSGTransporters.logger.info("Target rings busy");
-            return;
+            return RingsConnectResult.BUSY;
         }
 
+        if (!ringsBe.setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED_TARGET;
+        if (!setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED;
+
+        outbound = true;
         targetRings = rings;
         setChanged();
         startTeleportAnimation();
 
+        ringsBe.outbound = false;
         ringsBe.targetRings = ringsPos;
         ringsBe.setChanged();
         ringsBe.startTeleportAnimation();
-        JSGTransporters.logger.info("Target rings OK");
+        return RingsConnectResult.OK;
     }
 
     public int getVerticalOffset() {
@@ -405,7 +449,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     protected void teleportVolumes(int index) {
         if (targetRings == null) return;
         if (level == null) return;
-        JSGTransporters.logger.info("Teleporting...");
+        if (index < 0) return;
         var targetRings = this.targetRings.getBlockEntity();
 
         var minPos = new BlockPos(-1, getVerticalOffset() + index, -1).offset(getBlockPos());
@@ -417,5 +461,60 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             targetRings.ignoredEntities.add(e);
             TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
         }
+
+        if (!outbound || targetRings.level == null) return;
+        poses.forEach(pos -> {
+            var imPos = pos.immutable();
+            if (imPos == this.getBlockPos()) return;
+            if (imPos == this.getLinkedPos()) return;
+            var relativePos = imPos.subtract(getBlockPos());
+            var targetPos = targetRings.getBlockPos().offset(relativePos);
+
+            var stateTarget = targetRings.level.getBlockState(targetPos);
+            CompoundTag targetTag = null;
+            var entity = targetRings.level.getBlockEntity(targetPos);
+            if (entity instanceof RingsAbstractBE) return;
+            if (entity instanceof StargateAbstractBaseBE) return;
+            if (entity instanceof StargateAbstractMemberBE) return;
+            if (entity != null) {
+                targetTag = entity.serializeNBT();
+                if (entity instanceof Container chest) {
+                    chest.clearContent();
+                    chest.setChanged();
+                }
+            }
+            var thisState = level.getBlockState(imPos);
+            CompoundTag thisTag = null;
+            entity = level.getBlockEntity(imPos);
+            if (entity instanceof RingsAbstractBE) return;
+            if (entity instanceof StargateAbstractBaseBE) return;
+            if (entity instanceof StargateAbstractMemberBE) return;
+            if (entity != null) {
+                thisTag = entity.serializeNBT();
+                if (entity instanceof Container chest) {
+                    chest.clearContent();
+                    chest.setChanged();
+                }
+            }
+
+            var flag = 2 | 32 | 16;
+
+            level.setBlock(imPos, Blocks.AIR.defaultBlockState(), flag);
+            targetRings.level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), flag);
+
+            targetRings.level.setBlock(targetPos, thisState, flag);
+            entity = targetRings.level.getBlockEntity(targetPos);
+            if (thisTag != null && entity != null) {
+                entity.deserializeNBT(thisTag);
+                entity.setChanged();
+            }
+
+            level.setBlock(imPos, stateTarget, flag);
+            entity = level.getBlockEntity(imPos);
+            if (targetTag != null && entity != null) {
+                entity.deserializeNBT(targetTag);
+                entity.setChanged();
+            }
+        });
     }
 }
