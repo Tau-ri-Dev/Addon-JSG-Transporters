@@ -48,6 +48,7 @@ public class JSGTransporters implements JSGAddon {
         TabRegistry.register(modEventBus);
         BlockEntityRegistry.register(modEventBus);
         SoundRegistry.register(modEventBus);
+        MenuTypeRegistry.register(modEventBus);
         modEventBus.addListener(BlockEntityRegistry::registerBERs);
 
 
