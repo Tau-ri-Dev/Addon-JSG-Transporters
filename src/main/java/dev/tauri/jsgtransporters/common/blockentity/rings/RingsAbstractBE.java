@@ -27,6 +27,7 @@ import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
+import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
@@ -492,6 +493,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             var targetPos = targetRings.getBlockPos().offset(relativePos);
 
             var stateTarget = targetRings.level.getBlockState(targetPos);
+            if (stateTarget.is(TagsRegistry.UNTRANSPORTABLE_BLOCK)) return;
             CompoundTag targetTag = null;
             var entity = targetRings.level.getBlockEntity(targetPos);
             if (entity instanceof RingsAbstractBE) return;
@@ -505,6 +507,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
             }
             var thisState = level.getBlockState(imPos);
+            if (thisState.is(TagsRegistry.UNTRANSPORTABLE_BLOCK)) return;
             CompoundTag thisTag = null;
             entity = level.getBlockEntity(imPos);
             if (entity instanceof RingsAbstractBE) return;
