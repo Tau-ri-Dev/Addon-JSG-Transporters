@@ -20,7 +20,7 @@ public class OriCPRaycaster extends Raycaster {
 
     public static final OriCPRaycaster INSTANCE = new OriCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
-            new RayCastedButton(0, List.of( //Button_1
+            new RayCastedButton(0, List.of(
                     new Vector3f(-0.18155f, -0.013004f, -0.082774f),
                     new Vector3f(-0.23455f, -0.013004f, -0.073187f),
                     new Vector3f(-0.21676f, -0.013004f, -0.020849f),

@@ -14,50 +14,55 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+
 public class GoauldCPRaycaster extends Raycaster {
+
     public static final GoauldCPRaycaster INSTANCE = new GoauldCPRaycaster();
-    public static final ArrayList<RayCastedButton> BUTTONS = new ArrayList<>() {{
-        add(new RayCastedButton(0, Arrays.asList(
-                new Vector3f(0.566581f, -0.961707f, 0.387802f),
-                new Vector3f(0.565342f, -0.961707f, 0.468747f),
-                new Vector3f(0.684695f, -0.961707f, 0.468747f),
-                new Vector3f(0.683045f, -0.96172f, 0.387804f)
-        )));
-        add(new RayCastedButton(1, Arrays.asList(
-                new Vector3f(0.315226f, -0.961707f, 0.382972f),
-                new Vector3f(0.315226f, -0.961707f, 0.468873f),
-                new Vector3f(0.431275f, -0.961707f, 0.46846f),
-                new Vector3f(0.432101f, -0.961707f, 0.386276f)
-        )));
-        add(new RayCastedButton(2, Arrays.asList(
-                new Vector3f(0.3144f, -0.961707f, 0.283443f),
-                new Vector3f(0.315226f, -0.961707f, 0.382972f),
-                new Vector3f(0.432101f, -0.961707f, 0.386276f),
-                new Vector3f(0.430864f, -0.96172f, 0.282202f)
-        )));
-        add(new RayCastedButton(3, Arrays.asList(
-                new Vector3f(0.564515f, -0.96172f, 0.28662f),
-                new Vector3f(0.566581f, -0.961707f, 0.387802f),
-                new Vector3f(0.683045f, -0.96172f, 0.387804f),
-                new Vector3f(0.682219f, -0.96172f, 0.285381f)
-        )));
-        add(new RayCastedButton(4, Arrays.asList(
-                new Vector3f(0.566167f, -0.96172f, 0.199477f),
-                new Vector3f(0.564515f, -0.96172f, 0.28662f),
-                new Vector3f(0.682219f, -0.96172f, 0.285381f),
-                new Vector3f(0.682219f, -0.96172f, 0.201129f)
-        )));
-        add(new RayCastedButton(5, Arrays.asList(
-                new Vector3f(0.314399f, -0.96172f, 0.201255f),
-                new Vector3f(0.3144f, -0.961707f, 0.283443f),
-                new Vector3f(0.430864f, -0.96172f, 0.282202f),
-                new Vector3f(0.431277f, -0.96172f, 0.200429f)
-        )));
-    }};
+    public static final List<RayCastedButton> BUTTONS = List.of(
+            new RayCastedButton(0, List.of(
+                    new Vector3f(0.682164f, -0.96202f, 0.467285f),
+                    new Vector3f(0.567919f, -0.96202f, 0.467285f),
+                    new Vector3f(0.567919f, -0.96202f, 0.405885f),
+                    new Vector3f(0.682164f, -0.96202f, 0.405885f)
+            )),
+
+            new RayCastedButton(1, List.of(
+                    new Vector3f(0.429659f, -0.96202f, 0.467285f),
+                    new Vector3f(0.315479f, -0.96202f, 0.467285f),
+                    new Vector3f(0.315479f, -0.96202f, 0.405885f),
+                    new Vector3f(0.429659f, -0.96202f, 0.405885f)
+            )),
+
+            new RayCastedButton(2, List.of(
+                    new Vector3f(0.429659f, -0.96202f, 0.367759f),
+                    new Vector3f(0.315479f, -0.96202f, 0.367759f),
+                    new Vector3f(0.315479f, -0.96202f, 0.306547f),
+                    new Vector3f(0.429659f, -0.96202f, 0.306547f)
+            )),
+
+            new RayCastedButton(3, List.of(
+                    new Vector3f(0.682164f, -0.96202f, 0.367759f),
+                    new Vector3f(0.567919f, -0.96202f, 0.367759f),
+                    new Vector3f(0.567919f, -0.96202f, 0.306547f),
+                    new Vector3f(0.682164f, -0.96202f, 0.306547f)
+            )),
+
+            new RayCastedButton(4, List.of(
+                    new Vector3f(0.682164f, -0.96202f, 0.26352f),
+                    new Vector3f(0.567919f, -0.96202f, 0.26352f),
+                    new Vector3f(0.567919f, -0.96202f, 0.202186f),
+                    new Vector3f(0.682164f, -0.96202f, 0.202186f)
+            )),
+
+            new RayCastedButton(5, List.of(
+                    new Vector3f(0.429659f, -0.96202f, 0.26352f),
+                    new Vector3f(0.315479f, -0.96202f, 0.26352f),
+                    new Vector3f(0.315479f, -0.96202f, 0.202186f),
+                    new Vector3f(0.429659f, -0.96202f, 0.202186f)
+            ))
+    );
 
     public static void register() {
         Raycaster.register(RingsGoauldCPBlock.class, INSTANCE);
