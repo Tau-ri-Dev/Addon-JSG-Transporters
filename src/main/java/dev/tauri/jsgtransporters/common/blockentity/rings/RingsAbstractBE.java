@@ -1,20 +1,28 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
+import dev.tauri.jsg.blockentity.IAddressProvider;
 import dev.tauri.jsg.blockentity.IPreparable;
 import dev.tauri.jsg.blockentity.stargate.StargateAbstractBaseBE;
 import dev.tauri.jsg.blockentity.stargate.StargateAbstractMemberBE;
+import dev.tauri.jsg.blockentity.util.IUpgradable;
 import dev.tauri.jsg.blockentity.util.ScheduledTask;
 import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.chunkloader.ChunkManager;
+import dev.tauri.jsg.config.ingame.ITileConfig;
+import dev.tauri.jsg.config.ingame.JSGConfigOption;
+import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
+import dev.tauri.jsg.loader.OriginsLoader;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
+import dev.tauri.jsg.stargate.BiomeOverlayEnum;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.network.IAddress;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.State;
@@ -25,6 +33,7 @@ import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
+import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
@@ -34,6 +43,7 @@ import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
@@ -56,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, ITileConfig, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
 
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
@@ -130,6 +140,21 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (addressMap == null) return null;
 
         return addressMap.get(symbolType);
+    }
+
+    @Override
+    public int getPageProgress() {
+        return 0;
+    }
+
+    @Override
+    public IAddress getAddress(SymbolTypeEnum<?> symbolTypeEnum) {
+        return getRingsAddress(symbolTypeEnum);
+    }
+
+    @Override
+    public int getOriginId() {
+        return 0;
     }
 
     public void generateAddresses(boolean reset) {
@@ -540,5 +565,48 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 entity.setChanged();
             }
         });
+    }
+
+    private ResourceLocation getConfigType() {
+        return BlockConfigOptionRegistry.RINGS_COMMON;
+    }
+
+    JSGTileEntityConfig config;
+
+    @Override
+    public JSGTileEntityConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void initConfig() {
+        this.config = new JSGTileEntityConfig(getConfigType());
+    }
+
+
+    @Override
+    public void setConfig(JSGTileEntityConfig newConfig) {
+        boolean changed = false;
+        for (JSGConfigOption<?> opt : newConfig.getOptions()) {
+            changed = changed || this.config.getOption(opt.getLabel()).setValue(opt.getValue().toString());
+        }
+        if (changed) {
+            setChanged();
+        }
+    }
+
+    @Override
+    public void setConfigAndUpdate(JSGTileEntityConfig newConfig) {
+        setConfig(newConfig);
+        sendState(StateTypeEnum.GUI_STATE, getState(StateTypeEnum.GUI_STATE));
+    }
+
+    @Override
+    public String getDeviceType() {
+        return "RINGS";
+    }
+
+    public EnumSet<BiomeOverlayEnum> getSupportedOverlays() {
+        return EnumSet.of(BiomeOverlayEnum.NORMAL);
     }
 }

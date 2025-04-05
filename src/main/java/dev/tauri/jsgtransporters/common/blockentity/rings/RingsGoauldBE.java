@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class RingsGoauldBE extends RingsClassicBE {
+public class RingsGoauldBE extends RingsAbstractBE {
     public RingsGoauldBE(BlockPos pPos, BlockState pBlockState) {
         super(BlockEntityRegistry.RINGS_GOAULD_BE.get(), pPos, pBlockState);
     }
