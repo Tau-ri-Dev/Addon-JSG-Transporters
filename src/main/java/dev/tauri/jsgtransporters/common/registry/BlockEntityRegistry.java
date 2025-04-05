@@ -1,10 +1,12 @@
 package dev.tauri.jsgtransporters.common.registry;
 
+import dev.tauri.jsgtransporters.client.renderer.controller.RingsAncientCPRenderer;
 import dev.tauri.jsgtransporters.client.renderer.controller.RingsGoauldCPRenderer;
 import dev.tauri.jsgtransporters.client.renderer.controller.RingsOriCPRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsAncientRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsGoauldRenderer;
 import dev.tauri.jsgtransporters.client.renderer.rings.RingsOriRenderer;
+import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAncientBE;
@@ -39,6 +41,7 @@ public class BlockEntityRegistry {
 
     public static final RegistryObject<BlockEntityType<RingsGoauldCPBE>> RINGS_CP_GOAULD_BE = registerBR("rings_goauld_control_panel_block", RingsGoauldCPBE::new, BlockRegistry.RINGS_CP_GOAULD);
     public static final RegistryObject<BlockEntityType<RingsOriCPBE>> RINGS_CP_ORI_BE = registerBR("rings_ori_control_panel_block", RingsOriCPBE::new, BlockRegistry.RINGS_CP_ORI);
+    public static final RegistryObject<BlockEntityType<RingsAncientCPBE>> RINGS_CP_ANCIENT_BE = registerBR("rings_ancient_control_panel_block", RingsAncientCPBE::new, BlockRegistry.RINGS_CP_ANCIENT);
 
 
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> registerBR(String name, BlockEntityType.BlockEntitySupplier<T> beSupplier, Supplier<? extends Block> blockSupplier) {
@@ -68,5 +71,6 @@ public class BlockEntityRegistry {
 
         event.registerBlockEntityRenderer(RINGS_CP_GOAULD_BE.get(), RingsGoauldCPRenderer::new);
         event.registerBlockEntityRenderer(RINGS_CP_ORI_BE.get(), RingsOriCPRenderer::new);
+        event.registerBlockEntityRenderer(RINGS_CP_ANCIENT_BE.get(), RingsAncientCPRenderer::new);
     }
 }
