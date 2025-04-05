@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters;
 
 import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
+import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.raycaster.AncientCPRaycaster;
@@ -11,12 +12,15 @@ import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,5 +85,13 @@ public class JSGTransporters implements JSGAddon {
     @Override
     public String getVersion() {
         return MOD_VERSION;
+    }
+
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            event.enqueueWork(() -> MenuScreens.register(MenuTypeRegistry.RINGS_MENU_TYPE.get(), RingsGui::new));
+        }
     }
 }
