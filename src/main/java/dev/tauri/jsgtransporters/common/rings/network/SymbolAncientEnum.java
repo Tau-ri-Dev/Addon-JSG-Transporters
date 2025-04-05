@@ -49,7 +49,7 @@ public enum SymbolAncientEnum implements SymbolInterface {
         this.englishName = englishName;
         this.translationKey = "glyph.jsg_transporters.transportrings.ancient." + englishName.toLowerCase().replace(" ", "_");
         this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ancient/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ancient/ancient_button_" + (id + 1) + ".obj");
+        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ancient/button_" + (id + 1) + ".obj");
     }
 
     @Override

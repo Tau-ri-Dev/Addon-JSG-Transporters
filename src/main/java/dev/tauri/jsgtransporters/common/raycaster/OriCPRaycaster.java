@@ -6,6 +6,9 @@ import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.block.controller.RingsOriCPBlock;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
+import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -197,24 +200,17 @@ public class OriCPRaycaster extends Raycaster {
     }
 
     @Override
-    protected boolean buttonClicked(Level level, Player player, int buttonId, BlockPos blockPos, InteractionHand interactionHand) {
+    protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(InteractionHand.MAIN_HAND, true);
+        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.ORI.valueOf(button), false));
         return true;
     }
 
     @Override
     public boolean onActivated(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand) {
         if (interactionHand != InteractionHand.MAIN_HAND) return false;
-        JSGTransporters.logger.info("CLICKED");
         var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         var rotation = getIntRotation(direction);
         return super.onActivated(level, blockPos, player, rotation, interactionHand);
-    }
-
-    @Override
-    public boolean doesRayIntersectPolygon(Vec3 eye, Vec3 direction, List<Vec3> polygon) {
-        var copy = new ArrayList<Vec3>();
-        polygon.forEach(v -> copy.add(v.multiply(1.5f, 1.5f, 1.5f)));
-        return super.doesRayIntersectPolygon(eye, direction, copy);
     }
 }

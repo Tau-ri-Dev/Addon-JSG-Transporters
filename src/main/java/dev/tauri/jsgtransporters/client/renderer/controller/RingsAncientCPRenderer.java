@@ -39,7 +39,6 @@ public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncient
             default:
                 break;
         }
-        stack.scale(1.5f, 1.5f, 1.5f);
     }
 
     @Override

@@ -40,7 +40,6 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
             default:
                 break;
         }
-        stack.scale(1.5f, 1.5f, 1.5f);
     }
 
     @Override

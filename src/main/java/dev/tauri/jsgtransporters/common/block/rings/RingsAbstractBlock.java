@@ -77,7 +77,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         if (!level.isClientSide()) {
             var be = level.getBlockEntity(pos);
             if (be instanceof RingsAbstractBE rings) {
-                var nbt = PageNotebookItemFilled.getCompoundFromAddress(rings.getRingsAddress(SymbolTypeRegistry.GOAULD), List.of(1, 2, 3, 4, 9), "minecraft:plains", 0, AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+                var nbt = PageNotebookItemFilled.getCompoundFromAddress(rings.getRingsAddress(SymbolTypeRegistry.ANCIENT), List.of(1, 2, 3, 4, 9), "minecraft:plains", 0, AddressTypeRegistry.RINGS_ADDRESS_TYPE);
                 var page = new ItemStack(ItemRegistry.NOTEBOOK_PAGE_FILLED.get());
                 page.setTag(nbt);
                 player.addItem(page);
