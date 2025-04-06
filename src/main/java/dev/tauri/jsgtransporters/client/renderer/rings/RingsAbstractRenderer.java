@@ -269,7 +269,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
         stack.pushPose();
         var playerRot = p.getViewYRot(partialTicks);
-        stack.mulPose(Axis.YP.rotationDegrees(playerRot));
+        stack.mulPose(Axis.YN.rotationDegrees(playerRot));
         for (int i = 0; i < 2; i++) {
             stack.pushPose();
             if (i == 1)
