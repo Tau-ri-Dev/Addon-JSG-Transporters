@@ -14,7 +14,6 @@ import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
-import dev.tauri.jsg.loader.OriginsLoader;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
@@ -39,6 +38,7 @@ import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
+import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -97,14 +97,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Override
     public void onLoad() {
+        this.pos = getBlockPos();
         if (level != null) {
             if (!level.isClientSide) {
-                this.pos = getBlockPos();
                 this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
 
                 generateAddresses(false);
             } else {
                 JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.RENDERER_STATE));
+                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.GUI_STATE));
             }
         }
         super.onLoad();
@@ -122,6 +123,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             if (!addedToNetwork) {
                 addedToNetwork = true;
                 //getDeviceHolder().connectToWirelessNetwork();
+            }
+        } else {
+            // Client -> request to update client config
+            if (getConfig() == null || getConfig().getOptions().isEmpty()) {
+                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.GUI_STATE));
             }
         }
     }
@@ -325,6 +331,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public State getState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
+            case GUI_STATE -> new RingsContainerGuiState(addressMap, getConfig());
             case RENDERER_STATE -> getRendererStateClient();
             default -> null;
         };
@@ -333,6 +340,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public State createState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
+            case GUI_STATE -> new RingsContainerGuiState();
             case RENDERER_STATE -> new RingsRendererState();
             default -> null;
         };
@@ -343,6 +351,12 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         switch (stateType) {
             case RENDERER_STATE:
                 rendererState = (RingsRendererState) state;
+                setChanged();
+                break;
+            case GUI_STATE:
+                var guiState = (RingsContainerGuiState) state;
+                addressMap = guiState.addressMap;
+                setConfig(guiState.config);
                 setChanged();
                 break;
             default:
@@ -367,11 +381,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             compound.put("targetRings", targetRings.serializeNBT());
         compound.put("scheduledTasks", ScheduledTask.serializeList(scheduledTasks));
 
+        compound.put("config", getConfig().serializeNBT());
+
         super.saveAdditional(compound);
     }
 
     @Override
     public void load(@NotNull CompoundTag compound) {
+        super.load(compound);
         for (SymbolTypeEnum<?> symbolType : SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
             if (compound.contains("address_" + symbolType))
                 addressMap.put(symbolType, new RingsAddress(compound.getCompound("address_" + symbolType)));
@@ -383,7 +400,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             targetRings = new RingsPos(compound.getCompound("targetRings"));
         ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);
 
-        super.load(compound);
+        getConfig().deserializeNBT(compound.getCompound("config"));
     }
 
     private BlockPos linkedPos;
@@ -571,16 +588,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return BlockConfigOptionRegistry.RINGS_COMMON;
     }
 
-    JSGTileEntityConfig config;
+    protected final JSGTileEntityConfig config = new JSGTileEntityConfig(getConfigType());
 
     @Override
     public JSGTileEntityConfig getConfig() {
         return config;
-    }
-
-    @Override
-    public void initConfig() {
-        this.config = new JSGTileEntityConfig(getConfigType());
     }
 
 
