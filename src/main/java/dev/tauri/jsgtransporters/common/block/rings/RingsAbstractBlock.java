@@ -3,17 +3,17 @@ package dev.tauri.jsgtransporters.common.block.rings;
 import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.item.ITabbedItem;
+import dev.tauri.jsg.item.notebook.PageNotebookItemFilled;
 import dev.tauri.jsg.property.JSGProperties;
+import dev.tauri.jsg.registry.ItemRegistry;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
 import dev.tauri.jsgtransporters.common.registry.TabRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -28,12 +28,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem {
 
@@ -77,9 +77,15 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         if (!level.isClientSide()) {
             var be = level.getBlockEntity(pos);
             if (be instanceof RingsAbstractBE rings) {
+                var nbt = PageNotebookItemFilled.getCompoundFromAddress(rings.getRingsAddress(SymbolTypeRegistry.GOAULD), List.of(1, 2, 3, 4, 9), "minecraft:plains", 0, AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+                var page = new ItemStack(ItemRegistry.NOTEBOOK_PAGE_FILLED.get());
+                page.setTag(nbt);
+                player.addItem(page);
+                /*.
+                // TODO: Fix config nullpointer and then uncomment this
                 if (player instanceof ServerPlayer sp) {
                     NetworkHooks.openScreen(sp, new SimpleMenuProvider((id, pInv, p) -> new RingsContainer(id, pInv, rings), Component.empty()), pos);
-                }
+                }*/
                 return InteractionResult.SUCCESS;
             }
         }
