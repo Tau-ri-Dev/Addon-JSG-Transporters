@@ -1,7 +1,6 @@
 package dev.tauri.jsgtransporters.common.registry;
 
 import dev.tauri.jsg.item.JSGItem;
-import dev.tauri.jsg.registry.TabRegistry;
 import dev.tauri.jsgtransporters.Constants;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,11 +16,11 @@ public class ItemRegistry {
      * Glyph crystals
      */
     public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ANCIENT = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_ancient", TabRegistry.TAB_UPGRADES);
+            "crystal_glyph_rings_ancient", TabRegistry.TAB_RINGS);
     public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_GOAULD = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_goauld", TabRegistry.TAB_UPGRADES);
+            "crystal_glyph_rings_goauld", TabRegistry.TAB_RINGS);
     public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_ori", TabRegistry.TAB_UPGRADES);
+            "crystal_glyph_rings_ori", TabRegistry.TAB_RINGS);
 
 
     public static void register(IEventBus bus) {
