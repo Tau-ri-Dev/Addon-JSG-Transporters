@@ -40,5 +40,21 @@ public class JSGTConfig {
                         "To setup space between dimensions, use the JSG dimensional config",
                         "SIDE: SERVER"
                 ).defineInRange("Rings Dimension Range", 8, 0, 64);
+
+        public enum FluidTreatmentModes{
+          Always,
+          Never,
+          ByTag,
+          ExcludeTag
+        }
+                public static final ForgeConfigSpec.EnumValue<FluidTreatmentModes> ringsFluidTreatmentMode = BUILDER
+                .comment(
+                        "When to affect fluids when transporting them",
+                        "SIDE: SERVER",
+                        "\"Always\" always converts source blocks to flowing blocks when transporting them",
+                        "\"Never\" never converts",
+                        "\"ByTag\" only converts fluids contained within the jsg_transporters:transporter_fluids tag",
+                        "\"ExcludeTag\" (Default) converts all fluids except those within the tag"
+                ).defineEnum("Rings fluid treatment mode", FluidTreatmentModes.ExcludeTag);
     }
 }

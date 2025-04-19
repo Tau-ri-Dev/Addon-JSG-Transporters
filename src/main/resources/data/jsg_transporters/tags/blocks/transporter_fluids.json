@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:lava",
+    "jsg:titanium_molten_still",
+    "jsg:naquadah_molten_still",
+    "jsg:naquadah_molten_alloy_still",
+    "jsg:naquadah_molten_refined_still",
+    "jsg:trinium_molten_still"
+  ]
+}
