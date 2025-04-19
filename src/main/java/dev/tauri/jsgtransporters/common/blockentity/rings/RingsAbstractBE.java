@@ -563,19 +563,19 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
             }
 
-            var flag = 2 | 32 | 16;
+            var flag = 2 | 32 | 16 | 64;
 
             level.setBlock(imPos, Blocks.AIR.defaultBlockState(), flag);
             targetRings.level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), flag);
 
-            targetRings.level.setBlock(targetPos, thisState, flag);
+            targetRings.level.setBlock(targetPos, TeleportHelper.applyStateChanges(thisState), flag);
             entity = targetRings.level.getBlockEntity(targetPos);
             if (thisTag != null && entity != null) {
                 entity.deserializeNBT(thisTag);
                 entity.setChanged();
             }
 
-            level.setBlock(imPos, stateTarget, flag);
+            level.setBlock(imPos, TeleportHelper.applyStateChanges(stateTarget), flag);
             entity = level.getBlockEntity(imPos);
             if (targetTag != null && entity != null) {
                 entity.deserializeNBT(targetTag);

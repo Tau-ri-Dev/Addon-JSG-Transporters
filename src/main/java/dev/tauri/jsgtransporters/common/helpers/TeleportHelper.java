@@ -1,11 +1,17 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
+import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
 import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+
 import org.joml.Vector3d;
 
 import java.util.Objects;
@@ -28,5 +34,18 @@ public class TeleportHelper {
 
             entity.changeDimension(Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)), new JSGGateTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), new Vector3f(), entity.getYRot(), null, false, null));
         }
+    }
+
+    public static BlockState applyStateChanges(BlockState oldState){
+      FluidState fluidState = oldState.getFluidState();
+      if (fluidState.isSource()){
+        Fluid fluid = fluidState.getType();
+        if (fluid instanceof FlowingFluid flowFluid){
+          FluidState newState = flowFluid.getFlowing().defaultFluidState().setValue(FlowingFluid.LEVEL, 7);
+          return newState.createLegacyBlock();
+        }
+        // return newFluid.defaultFluidState().setValue(Fluid.FLUID_STATE_REGISTRY., oldState.getFluidState().getValue(FlowingFluid.LEVEL)).createLegacyBlock();}
+      }
+      return oldState;
     }
 }
