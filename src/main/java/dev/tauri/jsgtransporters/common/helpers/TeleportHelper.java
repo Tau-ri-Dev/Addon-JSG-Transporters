@@ -1,11 +1,13 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
 import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.registry.FluidRegistry;
 import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
 import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -14,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.Tags.Fluids;
 
 import org.joml.Vector3d;
 
@@ -42,12 +45,14 @@ public class TeleportHelper {
     public static BlockState applyStateChanges(BlockState oldState){
       FluidState fluidState = oldState.getFluidState();
       if (oldState.getBlock() instanceof LiquidBlock block && fluidState.isSource()){
+        // temp
+        JSG.logger.info(fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS)+" "+fluidState.getFluidType()); // temp
         Fluid fluid = fluidState.getType();
         if (fluid instanceof FlowingFluid flowFluid && switch(JSGTConfig.General.ringsFluidTreatmentMode.get()){
           case Always -> true;
           case Never -> false;
-          case ByTag -> oldState.is(TagsRegistry.TRANSPORTER_FLUIDS);
-          case ExcludeTag -> !oldState.is(TagsRegistry.TRANSPORTER_FLUIDS);
+          case ByTag -> fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS);
+          case ExcludeTag -> !fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS);
         }){
           FluidState newState = flowFluid.getFlowing().defaultFluidState().setValue(FlowingFluid.LEVEL, 7);
           return newState.createLegacyBlock();
