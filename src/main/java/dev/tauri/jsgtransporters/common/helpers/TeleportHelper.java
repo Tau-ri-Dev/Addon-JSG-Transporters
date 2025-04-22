@@ -4,15 +4,19 @@ import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.registry.FluidRegistry;
 import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
 import dev.tauri.jsg.util.vectors.Vector3f;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FlowingFluid;
@@ -77,5 +81,31 @@ public class TeleportHelper {
       return oldState.setValue(BlockStateProperties.WATERLOGGED, false);
     }
     return oldState;
+  }
+  public static sealed interface BlockToTeleport {
+    public static final int PLACE_FLAGS = 2 | 32 | 16 | 64;
+    public void place();
+    public record block(BlockState state, BlockPos pos, Level level) implements BlockToTeleport{
+
+      @Override
+      public void place() {
+        level().setBlock(pos, state, PLACE_FLAGS);
+      }
+    }
+    public record blockEntity(BlockState state, CompoundTag nbt, BlockPos pos, Level level) implements BlockToTeleport {
+
+
+      @Override
+      public void place() {
+        level().setBlock(pos, state, PLACE_FLAGS);
+        var entity = level.getBlockEntity(pos);
+        if (entity == null) {
+          JSGTransporters.logger.error("Expected block entity at %s in %s but no block entity found", pos, level);
+          return;
+        }
+        entity.deserializeNBT(nbt);
+        entity.setChanged();
+      }
+    }
   }
 }

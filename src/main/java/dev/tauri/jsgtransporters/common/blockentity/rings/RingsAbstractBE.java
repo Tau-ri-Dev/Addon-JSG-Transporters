@@ -34,6 +34,7 @@ import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
+import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.BlockToTeleport;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
@@ -65,6 +66,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, ITileConfig, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
 
@@ -518,7 +521,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
         var minPos = new BlockPos(-1, getVerticalOffset() + index, -1).offset(getBlockPos());
         var maxPos = new BlockPos(1, getVerticalOffset() + index, 1).offset(getBlockPos());
-        var poses = BlockPos.betweenClosed(minPos, maxPos);
+        var poses = StreamSupport.stream(BlockPos.betweenClosed(minPos, maxPos).spliterator(), false);
         var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
         for (var e : entities) {
             if (ignoredEntities.contains(e)) continue;
@@ -527,61 +530,35 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
 
         if (!outbound || targetRings.level == null) return;
-        poses.forEach(pos -> {
-            var imPos = pos.immutable();
-            if (imPos == this.getBlockPos()) return;
-            if (imPos == this.getLinkedPos()) return;
-            var relativePos = imPos.subtract(getBlockPos());
-            var targetPos = targetRings.getBlockPos().offset(relativePos);
-
-            var stateTarget = targetRings.level.getBlockState(targetPos);
-            if (stateTarget.is(TagsRegistry.UNTRANSPORTABLE_BLOCK)) return;
-            CompoundTag targetTag = null;
-            var entity = targetRings.level.getBlockEntity(targetPos);
-            if (entity instanceof RingsAbstractBE) return;
-            if (entity instanceof StargateAbstractBaseBE) return;
-            if (entity instanceof StargateAbstractMemberBE) return;
-            if (entity != null) {
-                targetTag = entity.serializeNBT();
-                if (entity instanceof Container chest) {
-                    chest.clearContent();
-                    chest.setChanged();
-                }
-            }
-            var thisState = level.getBlockState(imPos);
-            if (thisState.is(TagsRegistry.UNTRANSPORTABLE_BLOCK)) return;
-            CompoundTag thisTag = null;
-            entity = level.getBlockEntity(imPos);
-            if (entity instanceof RingsAbstractBE) return;
-            if (entity instanceof StargateAbstractBaseBE) return;
-            if (entity instanceof StargateAbstractMemberBE) return;
-            if (entity != null) {
-                thisTag = entity.serializeNBT();
-                if (entity instanceof Container chest) {
-                    chest.clearContent();
-                    chest.setChanged();
-                }
-            }
-
-            var flag = 2 | 32 | 16 | 64;
-
-            level.setBlock(imPos, Blocks.AIR.defaultBlockState(), flag);
-            targetRings.level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), flag);
-
-            targetRings.level.setBlock(targetPos, TeleportHelper.applyStateChanges(thisState), flag);
-            entity = targetRings.level.getBlockEntity(targetPos);
-            if (thisTag != null && entity != null) {
-                entity.deserializeNBT(thisTag);
-                entity.setChanged();
-            }
-
-            level.setBlock(imPos, TeleportHelper.applyStateChanges(stateTarget), flag);
-            entity = level.getBlockEntity(imPos);
-            if (targetTag != null && entity != null) {
-                entity.deserializeNBT(targetTag);
-                entity.setChanged();
-            }
+        var toPlace = poses.map(BlockPos::immutable).filter(imPos -> {
+            if (imPos == this.getBlockPos()) return false;
+            if (imPos == this.getLinkedPos()) return false;
+            return true;
+        }).map(p -> {var relPos = p.subtract(getBlockPos());
+          return Map.entry(p, targetRings.getBlockPos().offset(relPos));
+        })
+        .filter(
+          pp -> {
+            return !(level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)
+              || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));}
+          )
+          .map(pp -> {
+            var local = pp.getKey(); var remote = pp.getValue();
+          var localBlock = TeleportHelper.applyStateChanges(level.getBlockState(local));
+          var remoteBlock = TeleportHelper.applyStateChanges(targetRings.level.getBlockState(remote));
+          var retLocal = Optional.ofNullable(level.getBlockEntity(local))
+                          .map(BlockEntity::serializeNBT)
+                          .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(localBlock, nbt, remote, targetRings.level))
+                          .orElseGet(()->new BlockToTeleport.block(localBlock, remote, targetRings.level));
+          level.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+          var retRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
+          .map(BlockEntity::serializeNBT)
+          .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(remoteBlock, nbt, local, level))
+          .orElseGet(()->new BlockToTeleport.block(remoteBlock, local, level));
+          targetRings.level.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+          return Map.entry(retLocal, retRemote);
         });
+        toPlace.forEach(pp -> {pp.getKey().place();pp.getValue().place();});
     }
 
     private ResourceLocation getConfigType() {
