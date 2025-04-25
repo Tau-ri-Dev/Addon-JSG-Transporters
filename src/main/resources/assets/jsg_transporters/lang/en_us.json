@@ -14,6 +14,15 @@
   "block.jsg_transporters.rings_goauld_block": "Goauld Transport Rings",
   "block.jsg_transporters.rings_ori_block": "Ori Transport Rings",
 
+  "block.jsg_transporters.rings_ancient_control_panel_block": "Ancient Rings Control Panel",
   "block.jsg_transporters.rings_goauld_control_panel_block": "Goauld Rings Control Panel",
-  "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel"
+  "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel",
+
+  "item.jsg_transporters.crystal_glyph_rings_ancient": "Ancient Glyph Crystal",
+  "item.jsg_transporters.crystal_glyph_rings_goauld": "Goauld Glyph Crystal",
+  "item.jsg_transporters.crystal_glyph_rings_ori": "Ori Glyph Crystal",
+
+  "gui.rings.ancient_address": "Ancient Address",
+  "gui.rings.goauld_address": "Goauld Address",
+  "gui.rings.ori_address": "Ori Address"
 }

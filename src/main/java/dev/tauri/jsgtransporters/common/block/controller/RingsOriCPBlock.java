@@ -1,10 +1,19 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
+import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.item.JSGBlockItem;
+import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
+import dev.tauri.jsgtransporters.Constants;
+import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
+import dev.tauri.jsgtransporters.common.item.ControllerItem;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolAncientEnum;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolOriEnum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,6 +25,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RingsOriCPBlock extends AbstractRingsCPBlock {
+    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSG.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
+
     public RingsOriCPBlock() {
         super(Properties.of().noOcclusion());
     }
@@ -57,5 +68,24 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
                 Math.min(Math.abs(min.getX() / 16D), Math.abs(max.getX() / 16D)), Math.min(Math.abs(min.getY() / 16D), Math.abs(max.getY() / 16D)), Math.min(Math.abs(min.getZ() / 16D), Math.abs(max.getZ() / 16D)),
                 Math.max(Math.abs(min.getX() / 16D), Math.abs(max.getX() / 16D)), Math.max(Math.abs(min.getY() / 16D), Math.abs(max.getY() / 16D)), Math.max(Math.abs(min.getZ() / 16D), Math.abs(max.getZ() / 16D))
         ));
+    }
+
+    @Override
+    public JSGBlockItem getItemBlock() {
+        return new ControllerItem(this) {
+            @Override
+            public JSGModelOBJInGUIRenderer.RenderPartInterface getRenderPartInterface() {
+                return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
+                    ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTextureAndRender(stack);
+
+                    for (var symbol : SymbolOriEnum.values()) {
+                        stack.pushPose();
+                        Constants.LOADERS_HOLDER.texture().getTexture(SYMBOLS_TEX).bindTexture();
+                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack);
+                        stack.popPose();
+                    }
+                };
+            }
+        };
     }
 }

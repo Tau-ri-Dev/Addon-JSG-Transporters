@@ -1,3 +1,17 @@
 {
-	"parent": "jsg_transporters:block/rings_goauld_control_panel_block"
+	"loader": "jsg:handheld_item_model",
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "jsg:block/wip"
+	},
+	"custom_render_types": [
+		"THIRD_PERSON_LEFT_HAND",
+		"THIRD_PERSON_RIGHT_HAND",
+		"FIRST_PERSON_LEFT_HAND",
+		"FIRST_PERSON_RIGHT_HAND",
+		"HEAD",
+		"GROUND",
+		"FIXED",
+		"GUI"
+	]
 }

@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
 import dev.tauri.jsg.block.IHighlightBlock;
+import dev.tauri.jsg.block.IItemBlock;
 import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.item.ITabbedItem;
@@ -36,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock {
+public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock {
     public AbstractRingsCPBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
