@@ -2,18 +2,19 @@ package dev.tauri.jsgtransporters.common.blockentity.rings;
 
 import dev.tauri.jsg.blockentity.IAddressProvider;
 import dev.tauri.jsg.blockentity.IPreparable;
-import dev.tauri.jsg.blockentity.stargate.StargateAbstractBaseBE;
-import dev.tauri.jsg.blockentity.stargate.StargateAbstractMemberBE;
 import dev.tauri.jsg.blockentity.util.IUpgradable;
 import dev.tauri.jsg.blockentity.util.ScheduledTask;
 import dev.tauri.jsg.blockentity.util.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.chunkloader.ChunkManager;
 import dev.tauri.jsg.config.ingame.ITileConfig;
 import dev.tauri.jsg.config.ingame.JSGConfigOption;
+import dev.tauri.jsg.config.ingame.JSGIntRangeConfigOption;
 import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
+import dev.tauri.jsg.config.util.JSGConfigUtil;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
+import dev.tauri.jsg.item.energy.CapacitorItemBlock;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
@@ -27,14 +28,14 @@ import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.StateTypeEnum;
-import dev.tauri.jsg.util.ILinkable;
-import dev.tauri.jsg.util.ITickable;
-import dev.tauri.jsg.util.JSGAxisAlignedBB;
+import dev.tauri.jsg.state.stargate.StargateBiomeOverrideState;
+import dev.tauri.jsg.util.*;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.BlockToTeleport;
+import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
@@ -46,9 +47,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ChunkPos;
@@ -60,13 +61,15 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, ITileConfig, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
@@ -78,6 +81,115 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     protected Map<SymbolTypeEnum<?>, RingsAddress> addressMap = new HashMap<>();
     protected RingsPos ringsPos;
     protected RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
+
+    public static final int BIOME_OVERRIDE_SLOT = 10;
+
+    protected final JSGItemStackHandler inventory = new JSGItemStackHandler(11) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            Item item = stack.getItem();
+            boolean isItemCapacitor = (item instanceof CapacitorItemBlock);
+            switch (slot) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    return RingsUpgradeEnum.contains(item) && !hasUpgrade(item);
+
+                case 4:
+                case 5:
+                case 6:
+                    return isItemCapacitor && getSupportedCapacitors() >= (slot - 3);
+
+                case 7:
+                case 8:
+                case 9:
+                    return item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
+
+                case BIOME_OVERRIDE_SLOT:
+                    BiomeOverlayEnum override = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(Block.byItem(stack.getItem()));
+                    if (override == null) return false;
+
+                    return getSupportedOverlays().contains(override);
+                default:
+                    return true;
+            }
+        }
+
+        @Override
+        protected int getStackLimit(int slot, @NotNull ItemStack stack) {
+            return 1;
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
+            switch (slot) {
+                case 4:
+                case 5:
+                case 6:
+                    //updatePowerTier();
+                    break;
+
+                case BIOME_OVERRIDE_SLOT:
+                    sendState(StateTypeEnum.BIOME_OVERRIDE_STATE, new StargateBiomeOverrideState(determineBiomeOverride()));
+                    break;
+                default:
+                    break;
+            }
+
+            setChanged();
+        }
+    };
+
+    // Server
+    private BiomeOverlayEnum determineBiomeOverride() {
+        ItemStack stack = inventory.getStackInSlot(BIOME_OVERRIDE_SLOT);
+
+        if (stack.isEmpty()) {
+            return null;
+        }
+
+        BiomeOverlayEnum biomeOverlay = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(Block.byItem(stack.getItem()));
+
+        if (getSupportedOverlays().contains(biomeOverlay)) {
+            return biomeOverlay;
+        }
+
+        return null;
+    }
+
+    public int getSupportedCapacitors() {
+        return ((JSGIntRangeConfigOption) getConfig().getOption("maxCapacitors")).getValue();
+    }
+
+    public enum RingsUpgradeEnum implements EnumKeyInterface<Item> {
+        GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get()),
+        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get()),
+        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get());
+
+        public final Item item;
+
+        RingsUpgradeEnum(Item item) {
+            this.item = item;
+        }
+
+        @Override
+        public Item getKey() {
+            return item;
+        }
+
+        private static final EnumKeyMap<Item, RingsUpgradeEnum> idMap = new EnumKeyMap<>(values());
+
+        public static RingsUpgradeEnum valueOf(Item item) {
+            return idMap.valueOf(item);
+        }
+
+        public static boolean contains(Item item) {
+            return idMap.contains(item);
+        }
+    }
 
     @Override
     public boolean prepareBE() {
@@ -385,6 +497,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         compound.put("scheduledTasks", ScheduledTask.serializeList(scheduledTasks));
 
         compound.put("config", getConfig().serializeNBT());
+        compound.put("itemHandler", inventory.serializeNBT());
 
         super.saveAdditional(compound);
     }
@@ -404,6 +517,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);
 
         getConfig().deserializeNBT(compound.getCompound("config"));
+        inventory.deserializeNBT(compound.getCompound("itemHandler"));
     }
 
     private BlockPos linkedPos;
@@ -530,35 +644,34 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
 
         if (!outbound || targetRings.level == null) return;
-        var toPlace = poses.map(BlockPos::immutable).filter(imPos -> {
-            if (imPos == this.getBlockPos()) return false;
-            if (imPos == this.getLinkedPos()) return false;
-            return true;
-        }).map(p -> {var relPos = p.subtract(getBlockPos());
-          return Map.entry(p, targetRings.getBlockPos().offset(relPos));
-        })
-        .filter(
-          pp -> {
-            return !(level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)
-              || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));}
-          )
-          .map(pp -> {
-            var local = pp.getKey(); var remote = pp.getValue();
-          var localBlock = TeleportHelper.applyStateChanges(level.getBlockState(local));
-          var remoteBlock = TeleportHelper.applyStateChanges(targetRings.level.getBlockState(remote));
-          var retLocal = Optional.ofNullable(level.getBlockEntity(local))
-                          .map(BlockEntity::serializeNBT)
-                          .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(localBlock, nbt, remote, targetRings.level))
-                          .orElseGet(()->new BlockToTeleport.block(localBlock, remote, targetRings.level));
-          level.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-          var retRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
-          .map(BlockEntity::serializeNBT)
-          .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(remoteBlock, nbt, local, level))
-          .orElseGet(()->new BlockToTeleport.block(remoteBlock, local, level));
-          targetRings.level.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-          return Map.entry(retLocal, retRemote);
+        var toPlace = poses.map(BlockPos::immutable)
+                .filter(imPos -> imPos != this.getBlockPos() && imPos != this.getLinkedPos())
+                .map(p -> {
+                    var relPos = p.subtract(getBlockPos());
+                    return Map.entry(p, targetRings.getBlockPos().offset(relPos));
+                })
+                .filter(pp -> !(level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)))
+                .map(pp -> {
+                    var local = pp.getKey();
+                    var remote = pp.getValue();
+                    var localBlock = TeleportHelper.applyStateChanges(level.getBlockState(local));
+                    var remoteBlock = TeleportHelper.applyStateChanges(targetRings.level.getBlockState(remote));
+                    var retLocal = Optional.ofNullable(level.getBlockEntity(local))
+                            .map(BlockEntity::serializeNBT)
+                            .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(localBlock, nbt, remote, targetRings.level))
+                            .orElseGet(() -> new BlockToTeleport.block(localBlock, remote, targetRings.level));
+                    level.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+                    var retRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
+                            .map(BlockEntity::serializeNBT)
+                            .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(remoteBlock, nbt, local, level))
+                            .orElseGet(() -> new BlockToTeleport.block(remoteBlock, local, level));
+                    targetRings.level.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+                    return Map.entry(retLocal, retRemote);
+                });
+        toPlace.forEach(pp -> {
+            pp.getKey().place();
+            pp.getValue().place();
         });
-        toPlace.forEach(pp -> {pp.getKey().place();pp.getValue().place();});
     }
 
     private ResourceLocation getConfigType() {
@@ -597,5 +710,19 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public EnumSet<BiomeOverlayEnum> getSupportedOverlays() {
         return EnumSet.of(BiomeOverlayEnum.NORMAL);
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
+        if (capability == ForgeCapabilities.ITEM_HANDLER) {
+            return LazyOptional.of(() -> inventory).cast();
+        }
+        /*.if (capability == ForgeCapabilities.ENERGY) {
+            return LazyOptional.of(this::getEnergyStorage).cast();
+        }
+        var computerCaps = getDeviceHolder().getOrCreateDeviceBasedOnCap(capability);
+        if (computerCaps.isPresent())
+            return computerCaps;*/
+        return super.getCapability(capability, facing);
     }
 }
