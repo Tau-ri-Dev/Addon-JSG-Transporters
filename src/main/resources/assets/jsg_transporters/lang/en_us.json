@@ -22,7 +22,7 @@
   "item.jsg_transporters.crystal_glyph_rings_goauld": "Goauld Glyph Crystal",
   "item.jsg_transporters.crystal_glyph_rings_ori": "Ori Glyph Crystal",
 
-  "gui.rings.ancient_address": "Ancient Address",
-  "gui.rings.goauld_address": "Goauld Address",
-  "gui.rings.ori_address": "Ori Address"
+  "gui.stargate.ancient_address": "Ancient Address",
+  "gui.stargate.goauld_address": "Goauld Address",
+  "gui.stargate.ori_address": "Ori Address"
 }

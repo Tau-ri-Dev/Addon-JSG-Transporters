@@ -79,7 +79,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
                     .setOpenX(-128)
                     .setHiddenX(-6)
                     .setTabSize(128, 113)
-                    .setTabTitle(I18n.format("gui.rings." + type.getId() + "_address"))
+                    .setTabTitle(I18n.format("gui.stargate." + type.getId() + "_address"))
                     .setTabSide(TabSideEnum.LEFT);
             tab = type.finalizeAddressTab(tab);
             addressTabs.put(type, (TabAddress) tab.build());

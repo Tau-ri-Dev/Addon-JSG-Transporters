@@ -171,8 +171,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public enum RingsUpgradeEnum implements EnumKeyInterface<Item> {
         GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get(), 0),
-        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get(), 1),
-        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get(), 2),
+        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get(), 1),
+        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get(), 2),
         EFFICIENCY(dev.tauri.jsg.registry.ItemRegistry.CRYSTAL_UPGRADE_EFFICIENCY.get(), 3);
 
         public final Item item;

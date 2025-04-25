@@ -4,7 +4,6 @@ import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.raycaster.Raycaster;
 import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsg.util.vectors.Vector3f;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.block.controller.RingsOriCPBlock;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
@@ -14,9 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OriCPRaycaster extends Raycaster {
@@ -35,7 +32,6 @@ public class OriCPRaycaster extends Raycaster {
                     new Vector3f(-0.21486f, -0.013004f, -0.015658f),
                     new Vector3f(-0.18983f, -0.013004f, 0.025606f),
                     new Vector3f(-0.15499f, -0.013004f, -0.003318f)
-
             )),
 
             new RayCastedButton(2, List.of(
@@ -85,7 +81,6 @@ public class OriCPRaycaster extends Raycaster {
                     new Vector3f(0.161538f, -0.013004f, 0.05503f),
                     new Vector3f(0.187955f, -0.013004f, 0.02032f),
                     new Vector3f(0.162571f, -0.013004f, 0.00277f)
-
             )),
 
             new RayCastedButton(9, List.of(
@@ -148,12 +143,15 @@ public class OriCPRaycaster extends Raycaster {
                     new Vector3f(-0.014048f, -0.021196f, -0.07804f),
                     new Vector3f(-0.010562f, -0.021196f, -0.07804f),
                     new Vector3f(-0.008178f, -0.021196f, -0.07804f),
+
                     new Vector3f(0.015691f, -0.021196f, -0.106619f),
                     new Vector3f(0.015691f, -0.021196f, -0.111748f),
                     new Vector3f(0.015691f, -0.021196f, -0.11528f),
+
                     new Vector3f(-0.008178f, -0.021196f, -0.143649f),
                     new Vector3f(-0.010562f, -0.021196f, -0.143649f),
                     new Vector3f(-0.014048f, -0.021196f, -0.143649f),
+
                     new Vector3f(-0.036658f, -0.021196f, -0.11528f),
                     new Vector3f(-0.036658f, -0.021196f, -0.111748f),
                     new Vector3f(-0.036658f, -0.021196f, -0.106619f)

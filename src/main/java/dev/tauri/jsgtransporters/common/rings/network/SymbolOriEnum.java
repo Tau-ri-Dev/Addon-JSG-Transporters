@@ -62,7 +62,7 @@ public enum SymbolOriEnum implements SymbolInterface {
 
     @Override
     public boolean origin() {
-        return this == ALPHA;
+        return this == LIGHT;
     }
 
     @Override
@@ -193,14 +193,14 @@ public enum SymbolOriEnum implements SymbolInterface {
             int id;
             do {
                 id = random.nextInt(16);
-            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == ALPHA.id);
+            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == LIGHT.id);
 
             return valueOf(id);
         }
 
         @Override
         public SymbolOriEnum getOrigin() {
-            return ALPHA;
+            return LIGHT;
         }
 
         @Override
