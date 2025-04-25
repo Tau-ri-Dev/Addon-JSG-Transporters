@@ -4,6 +4,8 @@ import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
+import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
+import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.raycaster.AncientCPRaycaster;
 import dev.tauri.jsgtransporters.common.raycaster.GoauldCPRaycaster;
@@ -63,6 +65,9 @@ public class JSGTransporters implements JSGAddon {
         OriCPRaycaster.register();
         AncientCPRaycaster.register();
         JSGTPacketHandler.init();
+
+        OCDevicesRegistry.load();
+        CCDevicesRegistry.load();
         JSG.registerAddon(this);
     }
 

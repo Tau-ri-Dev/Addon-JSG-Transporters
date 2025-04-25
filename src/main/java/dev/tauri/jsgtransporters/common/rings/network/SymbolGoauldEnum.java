@@ -1,6 +1,5 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.screen.element.tabs.Tab;
 import dev.tauri.jsg.screen.element.tabs.TabAddress;
 import dev.tauri.jsg.stargate.BiomeOverlayEnum;
@@ -119,18 +118,16 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         // used for rings gui - the title (u, v of the texture)
         @Override
         public int[] getAncientTitlePos() {
-            // todo: make it work when GUI is there
-            return new int[]{0, 0};
+            return new int[]{330, 0};
         }
 
         @Override
         public Tab.TabBuilder finalizeAddressTab(Tab.TabBuilder builder) {
-            // todo: this is copy from mw symbols... make it work when GUI is there
-            return builder.setTexture(new ResourceLocation(JSG.MOD_ID, "textures/gui/container_stargate.png"), 512)
+            return builder.setTexture(new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
                     .setBackgroundTextureLocation(176, 0)
                     .setIconRenderPos(0, 6)
                     .setIconSize(22, 22)
-                    .setIconTextureLocation(304, 0);
+                    .setIconTextureLocation(304, 22);
         }
 
         @Override

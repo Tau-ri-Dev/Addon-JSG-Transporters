@@ -1,5 +1,6 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
+import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.blockentity.IAddressProvider;
 import dev.tauri.jsg.blockentity.IPreparable;
 import dev.tauri.jsg.blockentity.util.IUpgradable;
@@ -15,9 +16,11 @@ import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.item.energy.CapacitorItemBlock;
+import dev.tauri.jsg.item.notebook.PageNotebookItemFilled;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
+import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.BiomeOverlayEnum;
@@ -41,6 +44,7 @@ import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
+import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiUpdate;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -64,6 +68,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -94,7 +99,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 case 1:
                 case 2:
                 case 3:
-                    return RingsUpgradeEnum.contains(item) && !hasUpgrade(item);
+                    return RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
 
                 case 4:
                 case 5:
@@ -165,14 +170,17 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public enum RingsUpgradeEnum implements EnumKeyInterface<Item> {
-        GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get()),
-        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get()),
-        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get());
+        GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get(), 0),
+        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get(), 1),
+        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get(), 2),
+        EFFICIENCY(dev.tauri.jsg.registry.ItemRegistry.CRYSTAL_UPGRADE_EFFICIENCY.get(), 3);
 
         public final Item item;
+        public final int slot;
 
-        RingsUpgradeEnum(Item item) {
+        RingsUpgradeEnum(Item item, int slot) {
             this.item = item;
+            this.slot = slot;
         }
 
         @Override
@@ -189,6 +197,82 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         public static boolean contains(Item item) {
             return idMap.contains(item);
         }
+    }
+
+    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
+
+        @Override
+        protected void onEnergyChanged() {
+            setChanged();
+        }
+    };
+
+    private int energyStoredLastTick = 0;
+    protected int energyTransferredLastTick = 0;
+
+    public int getEnergyTransferredLastTick() {
+        return energyTransferredLastTick;
+    }
+
+    public LargeEnergyStorage getEnergyStorage() {
+        return energyStorage;
+    }
+
+    public int getEnergyStored() {
+        return getEnergyStorage().getEnergyStored();
+    }
+
+    public int currentPowerTier = 1;
+
+    public int getPowerTier() {
+        return currentPowerTier;
+    }
+
+    public void updatePowerTier() {
+        int powerTier = 1;
+
+        for (int i = 4; i < 7; i++) {
+            if (!inventory.getStackInSlot(i).isEmpty()) {
+                powerTier++;
+            }
+        }
+
+        if (powerTier != currentPowerTier) {
+            currentPowerTier = powerTier;
+
+            energyStorage.clearStorages();
+
+            for (int i = 4; i < 7; i++) {
+                ItemStack stack = inventory.getStackInSlot(i);
+
+                if (!stack.isEmpty()) {
+                    LazyOptional<IEnergyStorage> capCapability = stack.getCapability(ForgeCapabilities.ENERGY, null);
+                    if (capCapability.isPresent() && capCapability.resolve().isPresent()) {
+                        energyStorage.addStorage(capCapability.resolve().get());
+                    }
+                }
+            }
+
+            JSG.logger.debug("Updated to power tier: {}", powerTier);
+        }
+    }
+
+    // -----------------------------------------------------------------------------
+    // Page conversion
+
+    private short pageProgress = 0;
+    private int pageSlotId;
+    private boolean doPageProgress;
+    private ScheduledTask givePageTask;
+    private boolean lockPage;
+
+    @Override
+    public int getPageProgress() {
+        return pageProgress;
+    }
+
+    public void setPageProgress(int pageProgress) {
+        this.pageProgress = (short) pageProgress;
     }
 
     @Override
@@ -237,7 +321,50 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (!getLevelNotNull().isClientSide) {
             if (!addedToNetwork) {
                 addedToNetwork = true;
-                //getDeviceHolder().connectToWirelessNetwork();
+                getDeviceHolder().connectToWirelessNetwork();
+            }
+
+            if (givePageTask != null) {
+                if (givePageTask.update(getTime())) {
+                    givePageTask = null;
+                }
+            }
+
+            if (doPageProgress) {
+                if (getTime() % 2 == 0) {
+                    pageProgress++;
+
+                    if (pageProgress > 18) {
+                        pageProgress = 0;
+                        doPageProgress = false;
+                    }
+                }
+
+                if (inventory.getStackInSlot(pageSlotId).isEmpty()) {
+                    lockPage = false;
+                    doPageProgress = false;
+                    pageProgress = 0;
+                    givePageTask = null;
+                }
+            } else {
+                if (lockPage && inventory.getStackInSlot(pageSlotId).isEmpty()) {
+                    lockPage = false;
+                }
+
+                if (!lockPage) {
+                    for (int i = 7; i < 10; i++) {
+                        if (!inventory.getStackInSlot(i).isEmpty()) {
+                            doPageProgress = true;
+                            lockPage = true;
+                            pageSlotId = i;
+                            givePageTask = new ScheduledTask(EnumScheduledTask.STARGATE_GIVE_PAGE, 36);
+                            givePageTask.setTaskCreated(getTime());
+                            givePageTask.setExecutor(this);
+
+                            break;
+                        }
+                    }
+                }
             }
         } else {
             // Client -> request to update client config
@@ -261,11 +388,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (addressMap == null) return null;
 
         return addressMap.get(symbolType);
-    }
-
-    @Override
-    public int getPageProgress() {
-        return 0;
     }
 
     @Override
@@ -378,10 +500,41 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             case RINGS_SOLID_BLOCKS:
                 setBorderBlocks(context != null, false);
                 break;
+            case STARGATE_GIVE_PAGE:
+                if (pageSlotId < 7) break;
+                SymbolTypeEnum<?> symbolType = null;
+                switch (pageSlotId) {
+                    case 7:
+                        symbolType = SymbolTypeRegistry.GOAULD;
+                        break;
+                    case 8:
+                        symbolType = SymbolTypeRegistry.ANCIENT;
+                        break;
+                    case 9:
+                        symbolType = SymbolTypeRegistry.ORI;
+                        break;
+                    default:
+                        break;
+                }
+                if (symbolType == null) break;
+                var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
+                inventory.setStackInSlot(pageSlotId, stack);
+
+                break;
             default:
                 break;
         }
         setChanged();
+    }
+
+    public ItemStack getAddressPage(SymbolTypeEnum<?> symbolType, int[] symbolsToDisplay) {
+        JSG.logger.info("Giving Notebook page of address {}", symbolType);
+
+        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getRegistryPathFromWorld(getLevelNotNull(), pos), getOriginId(), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+
+        var stack = new ItemStack(dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get(), 1);
+        stack.setTag(compound);
+        return stack;
     }
 
     protected boolean setBorderBlocks(boolean clear, boolean simulate) {
@@ -447,6 +600,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public State getState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
             case GUI_STATE -> new RingsContainerGuiState(addressMap, getConfig());
+            case GUI_UPDATE -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress);
             case RENDERER_STATE -> getRendererStateClient();
             default -> null;
         };
@@ -456,6 +610,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public State createState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
             case GUI_STATE -> new RingsContainerGuiState();
+            case GUI_UPDATE -> new RingsContainerGuiUpdate();
             case RENDERER_STATE -> new RingsRendererState();
             default -> null;
         };
@@ -472,6 +627,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 var guiState = (RingsContainerGuiState) state;
                 addressMap = guiState.addressMap;
                 setConfig(guiState.config);
+                setChanged();
+                break;
+
+            case GUI_UPDATE:
+                RingsContainerGuiUpdate guiUpdate = (RingsContainerGuiUpdate) state;
+                energyStorage.setEnergyStoredInternally(guiUpdate.energyStored);
+                energyTransferredLastTick = guiUpdate.transferedLastTick;
+                pageProgress = (short) guiUpdate.pageProgress;
                 setChanged();
                 break;
             default:
@@ -717,10 +880,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (capability == ForgeCapabilities.ITEM_HANDLER) {
             return LazyOptional.of(() -> inventory).cast();
         }
-        /*.if (capability == ForgeCapabilities.ENERGY) {
+        if (capability == ForgeCapabilities.ENERGY) {
             return LazyOptional.of(this::getEnergyStorage).cast();
         }
-        var computerCaps = getDeviceHolder().getOrCreateDeviceBasedOnCap(capability);
+        /*.var computerCaps = getDeviceHolder().getOrCreateDeviceBasedOnCap(capability);
         if (computerCaps.isPresent())
             return computerCaps;*/
         return super.getCapability(capability, facing);

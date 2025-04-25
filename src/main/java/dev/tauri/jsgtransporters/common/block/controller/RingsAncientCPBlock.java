@@ -23,12 +23,4 @@ public class RingsAncientCPBlock extends AbstractRingsCPBlock {
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new RingsAncientCPBE(pPos, pState);
     }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    @ParametersAreNonnullByDefault
-    @Nonnull
-    public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-        return Shapes.block();
-    }
 }
