@@ -123,8 +123,8 @@ public class RingsNetwork extends SavedData {
         setDirty();
     }
 
-    public boolean isInRange(RingsPos outgoing, RingsPos incoming, boolean hasDimUpgrade) {
-        if (outgoing == null || incoming == null) return false;
+    public boolean isOutOfRange(RingsPos outgoing, RingsPos incoming, boolean hasDimUpgrade) {
+        if (outgoing == null || incoming == null) return true;
         var pos = outgoing.ringsPos.getCenter().add(0, -outgoing.ringsPos.getCenter().y(), 0);
         var targetPos = incoming.ringsPos.getCenter().add(0, -incoming.ringsPos.getCenter().y(), 0);
         var dim = outgoing.dimension;
@@ -134,13 +134,13 @@ public class RingsNetwork extends SavedData {
         var dimRange = JSGTConfig.General.ringsRangeInterDim.get();
 
         if (dim != targetDim) {
-            if (!hasDimUpgrade) return false;
+            if (!hasDimUpgrade) return true;
             var sourceEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(dim);
             var targetEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(targetDim);
-            if (sourceEntry == null || targetEntry == null) return false;
+            if (sourceEntry == null || targetEntry == null) return true;
 
             var distance = Math.abs(sourceEntry.distance - targetEntry.distance);
-            if (distance > dimRange) return false;
+            if (distance > dimRange) return true;
 
             if (targetDim == Level.NETHER)
                 pos = pos.multiply(1f / 8f, 1f / 8f, 1f / 8f);
@@ -148,7 +148,24 @@ public class RingsNetwork extends SavedData {
                 pos = pos.multiply(8f, 8f, 8f);
         }
         var distanceHorizontal = pos.distanceTo(targetPos);
-        return distanceHorizontal <= horizontalRange;
+        return distanceHorizontal > horizontalRange;
+    }
+
+    @Nullable
+    public RingsPos getNearestRings(RingsPos source) {
+        RingsPos nearest = null;
+        double distance = Double.MAX_VALUE;
+        for (var entry : RINGS_MAP_BY_POS.entrySet()) {
+            var pos = entry.getKey();
+            if (pos.dimension != source.dimension) continue;
+            if (pos.ringsPos == source.ringsPos || Math.sqrt(source.ringsPos.distSqr(pos.ringsPos)) < 3) continue;
+            var newDist = pos.ringsPos.distSqr(source.ringsPos);
+            if (newDist > distance) continue;
+            if (isOutOfRange(source, pos, false)) continue;
+            distance = newDist;
+            nearest = pos;
+        }
+        return nearest;
     }
 
 

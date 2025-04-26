@@ -380,6 +380,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public void onBroken() {
         initRingsPos();
+        setBorderBlocks(true, false);
         RingsNetwork.INSTANCE.removeRings(ringsPos);
         if (isLinked()) {
             Objects.requireNonNull(getLinkedDevice()).setLinkedDevice(null);
@@ -748,20 +749,29 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @NotNull
     public RingsConnectResult tryConnect() {
         if (level == null || level.isClientSide()) return RingsConnectResult.CLIENT;
-        if (dialedAddress.size() < 5) {
-            return RingsConnectResult.ADDRESS_MALFORMED;
-        }
-        if (!dialedAddress.getLast().origin()) {
-            return RingsConnectResult.NO_ORIGIN;
-        }
+        RingsPos rings;
+        if (dialedAddress.size() == 1 && dialedAddress.get(0).origin()) {
+            // only one symbol - origin -> connect to nearest rings
+            rings = RingsNetwork.INSTANCE.getNearestRings(this.ringsPos);
+        } else {
 
-        var rings = RingsNetwork.INSTANCE.getRings(dialedAddress.toImmutable());
-        if (rings == null || rings == ringsPos || (rings.ringsPos == getBlockPos() && rings.dimension == level.dimension())) {
+            if (dialedAddress.size() < 5) {
+                return RingsConnectResult.ADDRESS_MALFORMED;
+            }
+            if (!dialedAddress.getLast().origin()) {
+                return RingsConnectResult.NO_ORIGIN;
+            }
+
+            rings = RingsNetwork.INSTANCE.getRings(dialedAddress.toImmutable());
+            if (rings == null || rings == ringsPos || (rings.ringsPos == getBlockPos() && rings.dimension == level.dimension())) {
+                return RingsConnectResult.ADDRESS_MALFORMED;
+            }
+            if (RingsNetwork.INSTANCE.isOutOfRange(ringsPos, rings, canTransportCrossDim())) {
+                return RingsConnectResult.OUT_OF_RANGE;
+            }
+        }
+        if (rings == null)
             return RingsConnectResult.ADDRESS_MALFORMED;
-        }
-        if (!RingsNetwork.INSTANCE.isInRange(ringsPos, rings, canTransportCrossDim())) {
-            return RingsConnectResult.OUT_OF_RANGE;
-        }
         var ringsBe = rings.getBlockEntity();
         if (ringsBe.busy) {
             return RingsConnectResult.BUSY;
