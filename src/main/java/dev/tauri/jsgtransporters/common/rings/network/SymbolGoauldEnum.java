@@ -45,7 +45,10 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         this.englishName = englishName;
         this.translationKey = "glyph.jsg_transporters.transportrings.goauld." + englishName.toLowerCase().replace(" ", "_");
         this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/goauld/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/goauld/goauld_button_" + (id + 1) + ".obj");
+        if (id == 6)
+            this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/goauld/indicator_lights.obj");
+        else
+            this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/goauld/goauld_button_" + (id + 1) + ".obj");
     }
 
     @Override

@@ -1,15 +1,15 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.JSG;
+import com.mojang.math.Axis;
 import dev.tauri.jsg.item.JSGBlockItem;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.Constants;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.item.ControllerItem;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolAncientEnum;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolOriEnum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RingsOriCPBlock extends AbstractRingsCPBlock {
-    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSG.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
+    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
 
     public RingsOriCPBlock() {
         super(Properties.of().noOcclusion());
@@ -38,7 +38,6 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     @Nonnull
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
@@ -76,6 +75,9 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
             @Override
             public JSGModelOBJInGUIRenderer.RenderPartInterface getRenderPartInterface() {
                 return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
+                    stack.translate(0, 0.5, 0);
+                    stack.scale(3, 3, 3);
+                    stack.mulPose(Axis.YP.rotationDegrees(180));
                     ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTextureAndRender(stack);
 
                     for (var symbol : SymbolOriEnum.values()) {

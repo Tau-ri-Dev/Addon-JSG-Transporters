@@ -52,14 +52,15 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
 
         ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
 
-        Constants.LOADERS_HOLDER.texture().getTexture(rendererState.getButtonTexture(SymbolGoauldEnum.LIGHT, rendererState.getBiomeOverlay())).bindTexture();
-        ModelsHolder.RINGS_CONTROLLER_GOAULD_LIGHT.render(stack, rendererState.isButtonActive(SymbolGoauldEnum.LIGHT));
+        //.Constants.LOADERS_HOLDER.texture().getTexture(rendererState.getButtonTexture(SymbolGoauldEnum.LIGHT, rendererState.getBiomeOverlay())).bindTexture();
+        //ModelsHolder.RINGS_CONTROLLER_GOAULD_LIGHT.render(stack, rendererState.isButtonActive(SymbolGoauldEnum.LIGHT));
 
         for (var symbol : SymbolGoauldEnum.values()) {
-            if (symbol.brb()) continue;
+            //if (symbol.brb()) continue;
             stack.pushPose();
             var state = rendererState.getActualButtonState(symbol) / 15f;
-            stack.translate(0, 0, 0.01f * (state + 1.8f));
+            if (!symbol.brb())
+                stack.translate(0, 0, 0.01f * (state + 1.8f));
             var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
             Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
             Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));

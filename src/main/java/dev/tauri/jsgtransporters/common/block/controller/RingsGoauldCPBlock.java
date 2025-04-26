@@ -1,13 +1,12 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.item.JSGBlockItem;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsgtransporters.Constants;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
 import dev.tauri.jsgtransporters.common.item.ControllerItem;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolAncientEnum;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolGoauldEnum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -17,8 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
-    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSG.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_button_0.jpg");
-    public static final ResourceLocation LIGHT_TEX = new ResourceLocation(JSG.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_light_0.jpg");
+    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_button_0.jpg");
+    public static final ResourceLocation LIGHT_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_light_0.jpg");
 
     public RingsGoauldCPBlock() {
         super(Properties.of().noOcclusion());
@@ -36,6 +35,8 @@ public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
             @Override
             public JSGModelOBJInGUIRenderer.RenderPartInterface getRenderPartInterface() {
                 return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
+                    stack.translate(-0.9, -0.4, 0);
+                    stack.scale(1.8f, 1.8f, 1.8f);
                     ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
 
                     for (var symbol : SymbolGoauldEnum.values()) {
