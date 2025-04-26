@@ -21,6 +21,8 @@ public class ItemRegistry {
             "crystal_glyph_rings_goauld", TabRegistry.TAB_RINGS);
     public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
             "crystal_glyph_rings_ori", TabRegistry.TAB_RINGS);
+    public static final RegistryObject<JSGItem> CRYSTAL_UPGRADE_DIM_TUNNELING = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
+            "crystal_upgrade_dimensional_tunneling", TabRegistry.TAB_RINGS);
 
 
     public static void register(IEventBus bus) {

@@ -15,14 +15,30 @@
   "block.jsg_transporters.rings_ori_block": "Ori Transport Rings",
 
   "block.jsg_transporters.rings_ancient_control_panel_block": "Ancient Rings Control Panel",
+  "item.jsg.block.jsg_transporters.rings_ancient_control_panel_block.tooltip": "Lorem ipsum",
   "block.jsg_transporters.rings_goauld_control_panel_block": "Goauld Rings Control Panel",
+  "item.jsg.block.jsg_transporters.rings_goauld_control_panel_block.tooltip": "Lorem ipsum",
   "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel",
+  "item.jsg.block.jsg_transporters.rings_ori_control_panel_block.tooltip": "Lorem ipsum",
 
   "item.jsg_transporters.crystal_glyph_rings_ancient": "Ancient Glyph Crystal",
+  "item.jsg.crystal_glyph_rings_ancient.tooltip": "Lorem ipsum",
+  "item.jsg.crystal_glyph_rings_ancient.tooltip.extended": "fdzxzcfbucb",
   "item.jsg_transporters.crystal_glyph_rings_goauld": "Goauld Glyph Crystal",
+  "item.jsg.crystal_glyph_rings_goauld.tooltip": "Lorem ipsum",
+  "item.jsg.crystal_glyph_rings_goauld.tooltip.extended": "fdzxzcfbucb",
   "item.jsg_transporters.crystal_glyph_rings_ori": "Ori Glyph Crystal",
+  "item.jsg.crystal_glyph_rings_ori.tooltip": "Lorem ipsum",
+  "item.jsg.crystal_glyph_rings_ori.tooltip.extended": "fdzxzcfbucb",
+  "item.jsg_transporters.crystal_upgrade_dimensional_tunneling": "Dimensional Tunneling Upgrade Crystal",
+  "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip": "Lorem ipsum",
+  "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip.extended": "fdzxzcfbucb",
 
   "gui.stargate.ancient_address": "Ancient Address",
   "gui.stargate.goauld_address": "Goauld Address",
-  "gui.stargate.ori_address": "Ori Address"
+  "gui.stargate.ori_address": "Ori Address",
+
+  "__comment": "Symbols",
+
+  ""
 }

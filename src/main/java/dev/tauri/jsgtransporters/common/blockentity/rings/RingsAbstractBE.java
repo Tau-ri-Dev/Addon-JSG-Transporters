@@ -173,7 +173,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get(), 0),
         ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get(), 1),
         ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get(), 2),
-        EFFICIENCY(dev.tauri.jsg.registry.ItemRegistry.CRYSTAL_UPGRADE_EFFICIENCY.get(), 3);
+        DIMENSIONAL_TUNNELING(ItemRegistry.CRYSTAL_UPGRADE_DIM_TUNNELING.get(), 3);
 
         public final Item item;
         public final int slot;
@@ -197,6 +197,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         public static boolean contains(Item item) {
             return idMap.contains(item);
         }
+    }
+
+    public boolean canTransportCrossDim() {
+        return inventory.getStackInSlot(3).getItem() == RingsUpgradeEnum.DIMENSIONAL_TUNNELING.item;
     }
 
     private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
@@ -367,8 +371,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
             }
         } else {
-            // Client -> request to update client config
-            if (getConfig() == null || getConfig().getOptions().isEmpty()) {
+            // Client -> request to update client config & request addresses from the server
+            if (getConfig() == null || getConfig().getOptions().isEmpty() || addressMap.isEmpty()) {
                 JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.GUI_STATE));
             }
         }
@@ -600,7 +604,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public State getState(@NotNull StateTypeEnum stateType) {
         return switch (stateType) {
             case GUI_STATE -> new RingsContainerGuiState(addressMap, getConfig());
-            case GUI_UPDATE -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress);
+            case GUI_UPDATE ->
+                    new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress);
             case RENDERER_STATE -> getRendererStateClient();
             default -> null;
         };
@@ -754,7 +759,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (rings == null || rings == ringsPos || (rings.ringsPos == getBlockPos() && rings.dimension == level.dimension())) {
             return RingsConnectResult.ADDRESS_MALFORMED;
         }
-        if (!RingsNetwork.INSTANCE.isInRange(ringsPos, rings, true)) {
+        if (!RingsNetwork.INSTANCE.isInRange(ringsPos, rings, canTransportCrossDim())) {
             return RingsConnectResult.OUT_OF_RANGE;
         }
         var ringsBe = rings.getBlockEntity();

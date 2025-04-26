@@ -41,13 +41,14 @@ public class JSGTConfig {
                         "SIDE: SERVER"
                 ).defineInRange("Rings Dimension Range", 8, 0, 64);
 
-        public enum FluidTreatmentModes{
-          Always,
-          Never,
-          ByTag,
-          ExcludeTag
+        public enum FluidTreatmentModes {
+            Always,
+            Never,
+            ByTag,
+            ExcludeTag
         }
-                public static final ForgeConfigSpec.EnumValue<FluidTreatmentModes> ringsFluidTreatmentMode = BUILDER
+
+        public static final ForgeConfigSpec.EnumValue<FluidTreatmentModes> ringsFluidTreatmentMode = BUILDER
                 .comment(
                         "When to affect fluids when transporting them",
                         "SIDE: SERVER",
