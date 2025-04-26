@@ -61,7 +61,7 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
         for (var symbol : SymbolOriEnum.values()) {
             stack.pushPose();
             var state = rendererState.getActualButtonState(symbol) / 15f;
-            stack.translate(0, 0, -0.01f * state);
+            stack.translate(0, 0, -0.008f * state);
             var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
             Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
             Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
