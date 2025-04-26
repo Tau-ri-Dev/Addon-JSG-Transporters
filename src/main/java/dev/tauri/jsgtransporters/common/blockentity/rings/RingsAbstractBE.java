@@ -611,10 +611,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Override
     public AABB getRenderBoundingBox() {
-        return new JSGAxisAlignedBB(
-                getBlockPos().offset(-3, -5, -3),
-                getBlockPos().offset(3, 5, 3)
-        );
+        return INFINITE_EXTENT_AABB;
     }
 
     @Override
@@ -816,11 +813,12 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public int getVerticalOffset() {
-        return verticalOffset;
+        return verticalOffset + 2;
     }
 
     public void setVerticalOffset(int verticalOffset) {
-        this.verticalOffset = verticalOffset;
+        if (verticalOffset < 1 && verticalOffset > -4) verticalOffset = -4;
+        this.verticalOffset = verticalOffset - 2;
         setChanged();
         getAndSendState(StateTypeEnum.RENDERER_STATE);
     }
@@ -854,8 +852,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         var toPlace = poses.map(BlockPos::immutable)
                 .filter(imPos -> imPos != this.getBlockPos() && imPos != this.getLinkedPos())
                 .map(p -> {
-                    var relPos = p.subtract(getBlockPos());
-                    return Map.entry(p, targetRings.getBlockPos().offset(relPos));
+                    var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
+                    return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
                 })
                 .filter(pp -> !(level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)))
                 .map(pp -> {
@@ -927,9 +925,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (capability == ForgeCapabilities.ENERGY) {
             return LazyOptional.of(this::getEnergyStorage).cast();
         }
-        /*.var computerCaps = getDeviceHolder().getOrCreateDeviceBasedOnCap(capability);
+        var computerCaps = getDeviceHolder().getOrCreateDeviceBasedOnCap(capability);
         if (computerCaps.isPresent())
-            return computerCaps;*/
+            return computerCaps;
         return super.getCapability(capability, facing);
     }
 }

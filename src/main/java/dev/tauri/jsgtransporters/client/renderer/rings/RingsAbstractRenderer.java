@@ -175,9 +175,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
     // should be ranged (>= 1 || <= -4) -> if not rings will overlap in the animation
     public double getStartingOffset() {
-        var offset = tileEntity.getVerticalOffset() + 2;
-        if (offset < 1 && offset > -4) offset = -4;
-        return offset;
+        return tileEntity.getVerticalOffset();
     }
 
     @Nullable
