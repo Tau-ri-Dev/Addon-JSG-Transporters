@@ -45,6 +45,7 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
     @Override
     protected void renderController() {
         translateToPos();
+        stack.scale(1.5f, 1.5f, 1.5f);
 
         if (JSGConfig.Debug.renderBoundingBoxes.get() || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
             this.stack.pushPose();

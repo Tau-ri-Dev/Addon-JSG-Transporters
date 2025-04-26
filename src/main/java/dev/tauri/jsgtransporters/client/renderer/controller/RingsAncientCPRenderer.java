@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.math.Axis;
+import dev.tauri.jsg.command.commands.CommandTest;
 import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsgtransporters.Constants;
@@ -44,6 +45,7 @@ public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncient
     @Override
     protected void renderController() {
         translateToPos();
+        stack.scale(2, 2, 2);
 
         if (JSGConfig.Debug.renderBoundingBoxes.get() || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
             this.stack.pushPose();

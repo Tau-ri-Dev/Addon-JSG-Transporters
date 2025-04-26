@@ -40,5 +40,11 @@
 
   "__comment": "Symbols",
 
-  ""
+  "glyph.jsg_transporters.transportrings.goauld.amun": "Amun",
+  "glyph.jsg_transporters.transportrings.goauld.serket": "Serket",
+  "glyph.jsg_transporters.transportrings.goauld.khepri": "Khepri",
+  "glyph.jsg_transporters.transportrings.goauld.ra": "Ra",
+  "glyph.jsg_transporters.transportrings.goauld.felluca": "Felluca",
+  "glyph.jsg_transporters.transportrings.goauld.cobra": "Cobra",
+  "glyph.jsg_transporters.transportrings.goauld.light": "Light"
 }

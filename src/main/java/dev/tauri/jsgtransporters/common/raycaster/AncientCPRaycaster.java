@@ -100,6 +100,11 @@ public class AncientCPRaycaster extends Raycaster {
         return getTranslation(facing);
     }
 
+    @Override
+    public float getScale() {
+        return 2f;
+    }
+
 
     protected static final Vector3f NORTH_TRANSLATION = new Vector3f(0.5f, 0.5f, 0.97f);
     protected static final Vector3f EAST_TRANSLATION = new Vector3f(0.03f, 0.5f, 0.49f);
