@@ -1,13 +1,13 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
 import dev.tauri.jsg.state.State;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import io.netty.buffer.ByteBuf;
 
 public class RingsRendererState extends State {
     public long animationStart;
     public boolean isAnimating;
+    public int verticalOffset;
 
 
     public RingsRendererState() {
@@ -38,11 +38,13 @@ public class RingsRendererState extends State {
     public void toBytes(ByteBuf buf) {
         buf.writeBoolean(isAnimating);
         buf.writeLong(animationStart);
+        buf.writeInt(verticalOffset);
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         isAnimating = buf.readBoolean();
         animationStart = buf.readLong();
+        verticalOffset = buf.readInt();
     }
 }

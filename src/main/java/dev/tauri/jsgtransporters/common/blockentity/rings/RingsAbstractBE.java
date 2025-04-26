@@ -85,6 +85,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     protected Map<SymbolTypeEnum<?>, RingsAddress> addressMap = new HashMap<>();
     protected RingsPos ringsPos;
+    protected int verticalOffset = 0;
     protected RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
 
     public static final int BIOME_OVERRIDE_SLOT = 10;
@@ -134,7 +135,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 case 4:
                 case 5:
                 case 6:
-                    //updatePowerTier();
+                    updatePowerTier();
                     break;
 
                 case BIOME_OVERRIDE_SLOT:
@@ -427,7 +428,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public abstract SymbolTypeEnum<?> getSymbolType();
 
     protected void initRingsPos() {
+        var oldPos = ringsPos;
         ringsPos = new RingsPos(getLevelNotNull().dimension(), getBlockPos(), getSymbolType());
+        if (oldPos != null)
+            ringsPos.setName(oldPos.getName());
     }
 
     public void setRingsAddress(SymbolTypeEnum<?> symbolType, RingsAddress address) {
@@ -435,6 +439,18 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         addressMap.put(symbolType, address);
         RingsNetwork.INSTANCE.putRings(address, ringsPos);
         setChanged();
+    }
+
+    public void renameRings(String newName) {
+        initRingsPos();
+        RingsNetwork.INSTANCE.renameRings(ringsPos, newName);
+        ringsPos.setName(newName);
+        setChanged();
+    }
+
+    public String getRingsName() {
+        initRingsPos();
+        return ringsPos.getName();
     }
 
 
@@ -607,7 +623,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             case GUI_STATE -> new RingsContainerGuiState(addressMap, getConfig());
             case GUI_UPDATE ->
                     new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress);
-            case RENDERER_STATE -> getRendererStateClient();
+            case RENDERER_STATE -> {
+                var state = getRendererStateClient();
+                state.verticalOffset = verticalOffset;
+                yield state;
+            }
             default -> null;
         };
     }
@@ -627,6 +647,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         switch (stateType) {
             case RENDERER_STATE:
                 rendererState = (RingsRendererState) state;
+                verticalOffset = rendererState.verticalOffset;
                 setChanged();
                 break;
             case GUI_STATE:
@@ -667,6 +688,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
         compound.put("config", getConfig().serializeNBT());
         compound.put("itemHandler", inventory.serializeNBT());
+        compound.putInt("verticalOffset", verticalOffset);
 
         super.saveAdditional(compound);
     }
@@ -687,6 +709,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
         getConfig().deserializeNBT(compound.getCompound("config"));
         inventory.deserializeNBT(compound.getCompound("itemHandler"));
+        verticalOffset = compound.getInt("verticalOffset");
     }
 
     private BlockPos linkedPos;
@@ -793,7 +816,13 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public int getVerticalOffset() {
-        return 2;
+        return verticalOffset;
+    }
+
+    public void setVerticalOffset(int verticalOffset) {
+        this.verticalOffset = verticalOffset;
+        setChanged();
+        getAndSendState(StateTypeEnum.RENDERER_STATE);
     }
 
     protected void startTeleportAnimation() {

@@ -13,7 +13,10 @@ import dev.tauri.jsg.screen.util.GuiHelper;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
+import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,6 +47,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
 
     private final BlockPos pos;
     private TabConfig configTab;
+    private TabTRSettings ringsSettings;
 
     private int energyStored;
     private int maxEnergyStored;
@@ -87,6 +91,22 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         }
 
         configTab = createConfigTab(menu.ringsTile.getConfig(), imageWidth, imageHeight, leftPos, topPos);
+        ringsSettings = (TabTRSettings) TabTRSettings.builder()
+                .setParams(menu.ringsTile.getRingsName(), menu.ringsTile.getVerticalOffset())
+                .setGuiSize(imageWidth, imageHeight)
+                .setGuiPosition(leftPos, topPos)
+                .setTabPosition(176 - 107, 2)
+                .setOpenX(176)
+                .setHiddenX(54)
+                .setTabSize(128, 68)
+                .setTabTitle(I18n.format("gui.transportrings.parameters"))
+                .setTabSide(TabSideEnum.RIGHT)
+                .setTexture(BACKGROUND_TEXTURE, 512)
+                .setBackgroundTextureLocation(176, 113)
+                .setIconRenderPos(107, 5)
+                .setIconSize(22, 22)
+                .setIconTextureLocation(304, 0).build();
+
 
         TabBiomeOverlay overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
         configTab.setOnTabClose(this::saveConfig);
@@ -95,6 +115,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         tabs.add(configTab);
 
         tabs.add(overlayTab);
+        tabs.add(ringsSettings);
 
         int ii = 0;
         for (var tab : addressTabs.values()) {
@@ -288,12 +309,25 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
     @Override
     public void onClose() {
         saveConfig();
+        saveSettings();
         super.onClose();
     }
 
     private void saveConfig() {
         JSGPacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
         menu.ringsTile.setConfig(configTab.getConfig(true));
+    }
+
+    private void saveSettings() {
+        var offset = 2;
+        try {
+            offset = Integer.parseInt(ringsSettings.distanceTextField.getValue());
+        } catch (Exception ignored) {
+        }
+        var name = ringsSettings.nameTextField.getValue();
+        JSGTPacketHandler.sendToServer(new SaveRingsSettingsToServer(pos, name, offset));
+        menu.ringsTile.setVerticalOffset(offset);
+        menu.ringsTile.renameRings(name);
     }
 
     @Override

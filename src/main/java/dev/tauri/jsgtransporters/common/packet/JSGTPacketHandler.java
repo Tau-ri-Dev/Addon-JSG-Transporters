@@ -3,6 +3,7 @@ package dev.tauri.jsgtransporters.common.packet;
 import dev.tauri.jsg.packet.JSGPacket;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
+import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,6 +41,7 @@ public class JSGTPacketHandler {
         int index = -1;
         // to server
         registerPacket(CPButtonClickedToServer.class, ++index, NetworkDirection.PLAY_TO_SERVER, CPButtonClickedToServer::new);
+        registerPacket(SaveRingsSettingsToServer.class, ++index, NetworkDirection.PLAY_TO_SERVER, SaveRingsSettingsToServer::new);
 
         // to client
     }
