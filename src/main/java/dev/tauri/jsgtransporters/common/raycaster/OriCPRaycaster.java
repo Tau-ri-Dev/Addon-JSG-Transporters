@@ -21,6 +21,8 @@ public class OriCPRaycaster extends Raycaster {
     public static final OriCPRaycaster INSTANCE = new OriCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
             new RayCastedButton(0, List.of(
+                    //Left Group of buttons
+                    //Pillar
                     new Vector3f(-0.18155f, -0.013004f, -0.082774f),
                     new Vector3f(-0.23455f, -0.013004f, -0.073187f),
                     new Vector3f(-0.21676f, -0.013004f, -0.020849f),
@@ -28,6 +30,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(1, List.of(
+                    //Celestia
                     new Vector3f(-0.17099f, -0.013004f, -0.035233f),
                     new Vector3f(-0.21486f, -0.013004f, -0.015658f),
                     new Vector3f(-0.18983f, -0.013004f, 0.025606f),
@@ -35,6 +38,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(2, List.of(
+                    //Radiance
                     new Vector3f(-0.15054f, -0.0131004f, 0.002812f),
                     new Vector3f(-0.18673f, -0.0131004f, 0.030345f),
                     new Vector3f(-0.15578f, -0.0131004f, 0.064715f),
@@ -42,6 +46,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(3, List.of(
+                    //Judgment
                     new Vector3f(-0.12233f, -0.013004f, 0.033699f),
                     new Vector3f(-0.15036f, -0.013004f, 0.070006f),
                     new Vector3f(-0.10804f, -0.013004f, 0.100067f),
@@ -49,6 +54,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(4, List.of(
+                    //Chalice
                     new Vector3f(-0.084257f, -0.013004f, 0.063524f),
                     new Vector3f(-0.10199f, -0.013004f, 0.10359f),
                     new Vector3f(-0.062934f, -0.013004f, 0.12106f),
@@ -56,6 +62,8 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(5, List.of(
+                    //Top right buttons
+                    //Dominion
                     new Vector3f(0.036466f, -0.013004f, 0.103989f),
                     new Vector3f(0.036623f, -0.013004f, 0.135606f),
                     new Vector3f(0.086747f, -0.013004f, 0.113242f),
@@ -63,6 +71,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(6, List.of(
+                    //Harmony
                     new Vector3f(0.081f, -0.013004f, 0.083001f),
                     new Vector3f(0.092378f, -0.013004f, 0.107348f),
                     new Vector3f(0.120845f, -0.013004f, 0.08729f),
@@ -70,6 +79,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(7, List.of(
+                    //Path
                     new Vector3f(0.112572f, -0.013004f, 0.05973f),
                     new Vector3f(0.128828f, -0.013004f, 0.081945f),
                     new Vector3f(0.155523f, -0.013004f, 0.057843f),
@@ -77,6 +87,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(8, List.of(
+                    //Oblivion
                     new Vector3f(0.139377f, -0.013004f, 0.033244f),
                     new Vector3f(0.161538f, -0.013004f, 0.05503f),
                     new Vector3f(0.187955f, -0.013004f, 0.02032f),
@@ -84,6 +95,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(9, List.of(
+                    //Serenity
                     new Vector3f(0.166224f, -0.013004f, -0.002522f),
                     new Vector3f(0.190218f, -0.013004f, 0.011871f),
                     new Vector3f(0.206586f, -0.013004f, -0.022029f),
@@ -91,6 +103,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(10, List.of(
+                    //Eternum
                     new Vector3f(0.183035f, -0.013004f, -0.041109f),
                     new Vector3f(0.210613f, -0.013004f, -0.030953f),
                     new Vector3f(0.223276f, -0.013004f, -0.07556f),
@@ -98,6 +111,8 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(11, List.of(
+                    //Right bottom buttons
+                    //Origin
                     new Vector3f(0.04133f, -0.013004f, 0.054985f),
                     new Vector3f(0.039854f, -0.013004f, 0.085017f),
                     new Vector3f(0.06611f, -0.013004f, 0.074377f),
@@ -105,6 +120,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(12, List.of(
+                    //Ascension
                     new Vector3f(0.061161f, -0.013004f, 0.044651f),
                     new Vector3f(0.072853f, -0.013004f, 0.071048f),
                     new Vector3f(0.100268f, -0.013004f, 0.051765f),
@@ -112,6 +128,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(13, List.of(
+                    //Salvation
                     new Vector3f(0.087827f, -0.013004f, 0.024658f),
                     new Vector3f(0.104475f, -0.013004f, 0.047861f),
                     new Vector3f(0.124838f, -0.013004f, 0.027748f),
@@ -119,6 +136,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(14, List.of(
+                    //Flame
                     new Vector3f(0.110947f, -0.013004f, 0.0004f),
                     new Vector3f(0.131255f, -0.013004f, 0.019662f),
                     new Vector3f(0.14686f, -0.013004f, -0.002191f),
@@ -126,6 +144,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(15, List.of(
+                    //Convergence
                     new Vector3f(0.12849f, -0.013004f, -0.025304f),
                     new Vector3f(0.1533f, -0.013004f, -0.010561f),
                     new Vector3f(0.166765f, -0.013004f, -0.036136f),
@@ -133,6 +152,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(16, List.of(
+                    //Vigil
                     new Vector3f(0.142736f, -0.013004f, -0.057193f),
                     new Vector3f(0.170152f, -0.013004f, -0.046017f),
                     new Vector3f(0.179473f, -0.013004f, -0.076373f),
@@ -140,6 +160,7 @@ public class OriCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(17, List.of(
+                    //Crystal - Activation button
                     new Vector3f(-0.010562f, -0.021196f, -0.07804f),
                     new Vector3f(0.015691f, -0.021196f, -0.111748f),
                     new Vector3f(-0.010562f, -0.021196f, -0.143649f),

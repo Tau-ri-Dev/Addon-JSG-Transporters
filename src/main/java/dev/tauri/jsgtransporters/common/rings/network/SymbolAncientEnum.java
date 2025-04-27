@@ -21,15 +21,15 @@ import java.util.Map;
 import java.util.Random;
 
 public enum SymbolAncientEnum implements SymbolInterface {
-    UNUS(0, 0, "Unus"),
-    DUO(1, 1, "Duo"),
-    TRIBUS(2, 2, "Tribus"),
-    QUATTUOR(3, 3, "Quattuor"),
-    QUINQUE(4, 4, "Quinque"),
-    SEX(5, 5, "Sex"),
-    SEPTEM(6, 6, "Septem"),
-    OCTINGENTI(7, 7, "Octingenti"),
-    NOVEM(8, 8, "Novem"),
+    SELEN(0, 0, "Selen"),
+    TIRIS(1, 1, "Tiris"),
+    VARUN(2, 2, "Varun"),
+    ELYRA(3, 3, "Elyra"),
+    ANKOR(4, 4, "Ankor"),
+    SYTHIS(5, 5, "Sythis"),
+    AURIN(6, 6, "Aurin"),
+    VELAR(7, 7, "Velar"),
+    OMNIS(8, 8, "Omnis"),
     LIGHT(9, 9, "Light");
 
     public final int id;
@@ -53,7 +53,7 @@ public enum SymbolAncientEnum implements SymbolInterface {
 
     @Override
     public boolean origin() {
-        return this == NOVEM;
+        return this == OMNIS;
     }
 
     @Override
@@ -184,14 +184,14 @@ public enum SymbolAncientEnum implements SymbolInterface {
             int id;
             do {
                 id = random.nextInt(16);
-            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == NOVEM.id);
+            } while (valueOf(id) == null || !valueOf(id).isValidForAddress() || id == OMNIS.id);
 
             return valueOf(id);
         }
 
         @Override
         public SymbolAncientEnum getOrigin() {
-            return NOVEM;
+            return OMNIS;
         }
 
         @Override
@@ -219,12 +219,12 @@ public enum SymbolAncientEnum implements SymbolInterface {
 
         @Override
         public SymbolAncientEnum getSymbolByAngle(float angle) {
-            return NOVEM;
+            return OMNIS;
         }
 
         @Override
         public SymbolAncientEnum getTopSymbol() {
-            return NOVEM;
+            return OMNIS;
         }
 
         private static final Map<Integer, SymbolAncientEnum> ID_MAP = new HashMap<>();
@@ -249,7 +249,7 @@ public enum SymbolAncientEnum implements SymbolInterface {
 
         @Override
         public SymbolAncientEnum getFirstValidForAddress() {
-            return UNUS;
+            return SELEN;
         }
     }
 }

@@ -62,7 +62,7 @@ public class GoauldCPRaycaster extends Raycaster {
             )),
 
             new RayCastedButton(5, List.of(
-                    //Cobra
+                    //Cobra - Activation Button
                     new Vector3f(0.429686f, -0.974233f, 0.202036f),
                     new Vector3f(0.429723f, -0.974233f, 0.263514f),
                     new Vector3f(0.315418f, -0.974233f, 0.263584f),
