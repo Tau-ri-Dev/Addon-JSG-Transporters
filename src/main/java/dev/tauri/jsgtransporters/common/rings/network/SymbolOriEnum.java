@@ -21,24 +21,23 @@ import java.util.Map;
 import java.util.Random;
 
 public enum SymbolOriEnum implements SymbolInterface {
-    ALPHA(0, 0, "Alpha"),
-    BETA(1, 1, "Beta"),
-    GAMMA(2, 2, "Gamma"),
-    DELTA(3, 3, "Delta"),
-    EPSILON(4, 4, "Epsilon"),
-    ZETA(5, 5, "Zeta"),
-    ETA(6, 6, "Eta"),
-    THETA(7, 7, "Theta"),
-    IOTA(8, 8, "Iota"),
-    KAPPA(9, 9, "Kappa"),
-    LAMBDA(10, 10, "Lambda"),
-    MU(11, 11, "Mu"),
-    NU(12, 12, "Nu"),
-    XI(13, 13, "Xi"),
-    OMICRON(14, 14, "Omicron"),
-    PI(14, 14, "Pi"),
-    RHO(15, 15, "Rho"),
-    SIGMA(16, 16, "Sigma"),
+    PILLAR(0, 0, "Pillar"),
+    CELESTIA(1, 1, "Celestia"),
+    RADIANCE(2, 2, "Radiance"),
+    JUDGMENT(3, 3, "Judgment"),
+    CHALICE(4, 4, "Chalice"),
+    DOMINION(5, 5, "Dominion"),
+    HARMONY(6, 6, "Harmony"),
+    PATH(7, 7, "Path"),
+    OBLIVION(8, 8, "Oblivion"),
+    SERENITY(9, 9, "Serenity"),
+    ETERNUM(10, 10, "Eternum"),
+    ORIGIN(11, 11, "Origin"),
+    ASCENSION(12, 12, "Ascension"),
+    SALVATION(13, 13, "Salvation"),
+    FLAME(14, 14, "Flame"),
+    CONVERGENCE(15, 15, "Convergence"),
+    VIGIL(16, 16, "Vigil"),
     LIGHT(17, 17, "Light");
 
     public final int id;
@@ -228,12 +227,12 @@ public enum SymbolOriEnum implements SymbolInterface {
 
         @Override
         public SymbolOriEnum getSymbolByAngle(float angle) {
-            return ALPHA;
+            return PILLAR;
         }
 
         @Override
         public SymbolOriEnum getTopSymbol() {
-            return ALPHA;
+            return PILLAR;
         }
 
         private static final Map<Integer, SymbolOriEnum> ID_MAP = new HashMap<>();
@@ -258,7 +257,7 @@ public enum SymbolOriEnum implements SymbolInterface {
 
         @Override
         public SymbolOriEnum getFirstValidForAddress() {
-            return BETA;
+            return CELESTIA;
         }
     }
 }
