@@ -66,8 +66,10 @@ public class JSGTransporters implements JSGAddon {
         AncientCPRaycaster.register();
         JSGTPacketHandler.init();
 
-        OCDevicesRegistry.load();
-        CCDevicesRegistry.load();
+        if(JSG.ocWrapper.isLoaded())
+            OCDevicesRegistry.load();
+        if(JSG.ccWrapper.isLoaded())
+            CCDevicesRegistry.load();
         JSG.registerAddon(this);
     }
 
