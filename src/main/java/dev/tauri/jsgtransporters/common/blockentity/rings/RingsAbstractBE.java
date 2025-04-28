@@ -46,6 +46,7 @@ import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiUpdate;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -826,11 +827,13 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     protected void startTeleportAnimation() {
         if (level == null || level.isClientSide()) return;
         ignoredEntities.clear();
+        pistonHeads.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
         addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, 40));
     }
 
     public final List<Entity> ignoredEntities = new ArrayList<>();
+    public final List<Pair<BlockPos, Boolean>> pistonHeads = new ArrayList<>();
 
     protected void teleportVolumes(int index) {
         if (targetRings == null) return;
@@ -855,23 +858,44 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
                     return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
                 })
-                .filter(pp -> !(level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)))
+                .filter(pp -> {
+                    if (level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK))
+                        return false;
+                    var canTp = true;
+                    if (level.getBlockState(pp.getKey()).is(Blocks.PISTON_HEAD)) {
+                        canTp = false;
+                        pistonHeads.add(Pair.of(pp.getKey(), false));
+                    }
+                    if (targetRings.level.getBlockState(pp.getValue()).is(Blocks.PISTON_HEAD)) {
+                        canTp = false;
+                        pistonHeads.add(Pair.of(pp.getValue(), true));
+                    }
+                    return canTp;
+                })
                 .map(pp -> {
                     var local = pp.getKey();
                     var remote = pp.getValue();
                     var localBlock = TeleportHelper.applyStateChanges(level.getBlockState(local));
                     var remoteBlock = TeleportHelper.applyStateChanges(targetRings.level.getBlockState(remote));
-                    var retLocal = Optional.ofNullable(level.getBlockEntity(local))
+                    var bttLocal = Optional.ofNullable(level.getBlockEntity(local))
                             .map(BlockEntity::serializeNBT)
                             .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(localBlock, nbt, remote, targetRings.level))
-                            .orElseGet(() -> new BlockToTeleport.block(localBlock, remote, targetRings.level));
+                            .orElseGet(() -> {
+                                if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
+                                    return new BlockToTeleport.piston(localBlock, remote, targetRings.level);
+                                return new BlockToTeleport.block(localBlock, remote, targetRings.level);
+                            });
                     level.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-                    var retRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
+                    var bttRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
                             .map(BlockEntity::serializeNBT)
                             .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(remoteBlock, nbt, local, level))
-                            .orElseGet(() -> new BlockToTeleport.block(remoteBlock, local, level));
+                            .orElseGet(() -> {
+                                if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
+                                    return new BlockToTeleport.piston(remoteBlock, local, level);
+                                return new BlockToTeleport.block(remoteBlock, local, level);
+                            });
                     targetRings.level.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-                    return Map.entry(retLocal, retRemote);
+                    return Map.entry(bttLocal, bttRemote);
                 });
         toPlace.forEach(pp -> {
             pp.getKey().place();

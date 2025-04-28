@@ -8,19 +8,26 @@ import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.piston.PistonBaseBlock;
+import net.minecraft.world.level.block.piston.PistonHeadBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.PistonType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 import static dev.tauri.jsg.stargate.teleportation.TeleportHelper.fireTravelToDimEvent;
@@ -49,6 +56,7 @@ public class TeleportHelper {
         }
     }
 
+    @NotNull
     public static BlockState applyStateChanges(BlockState oldState) {
         final FluidState waterState = Blocks.WATER.defaultBlockState().getFluidState();
         FluidState fluidState = oldState.getFluidState();
@@ -73,7 +81,7 @@ public class TeleportHelper {
                     case ByTag -> waterState.is(TagsRegistry.TRANSPORTER_FLUIDS);
                     case ExcludeTag -> !waterState.is(TagsRegistry.TRANSPORTER_FLUIDS);
                 }) {
-            return oldState.setValue(BlockStateProperties.WATERLOGGED, false);
+            oldState = oldState.setValue(BlockStateProperties.WATERLOGGED, false);
         }
         return oldState;
     }
@@ -88,6 +96,21 @@ public class TeleportHelper {
             @Override
             public void place() {
                 level().setBlock(pos, state, PLACE_FLAGS);
+            }
+        }
+
+        record piston(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
+
+            @Override
+            public void place() {
+                level().setBlock(pos, state, PLACE_FLAGS);
+                if (state.hasProperty(PistonBaseBlock.EXTENDED) && state.getValue(PistonBaseBlock.EXTENDED)) {
+                    var direction = state.getOptionalValue(DirectionalBlock.FACING).orElse(Direction.NORTH);
+                    var headState = Blocks.PISTON_HEAD.defaultBlockState()
+                            .setValue(PistonHeadBlock.FACING, direction)
+                            .setValue(PistonHeadBlock.TYPE, state.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT);
+                    level().setBlock(pos.offset(direction.getNormal()), headState, PLACE_FLAGS);
+                }
             }
         }
 
