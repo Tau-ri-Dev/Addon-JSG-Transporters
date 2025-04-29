@@ -616,54 +616,48 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Override
     public State getState(@NotNull StateTypeEnum stateType) {
-        return switch (stateType) {
-            case GUI_STATE -> new RingsContainerGuiState(addressMap, getConfig());
-            case GUI_UPDATE ->
-                    new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress);
-            case RENDERER_STATE -> {
-                var state = getRendererStateClient();
-                state.verticalOffset = verticalOffset;
-                yield state;
-            }
-            default -> null;
-        };
+        return stateType.stateSupplier()
+                .tryType(StateTypeEnum.GUI_STATE, () -> new RingsContainerGuiState(addressMap, getConfig()))
+                .tryType(StateTypeEnum.GUI_UPDATE, () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress))
+                .tryType(StateTypeEnum.RENDERER_STATE, () -> {
+                    var state = getRendererStateClient();
+                    state.verticalOffset = verticalOffset;
+                    return state;
+                })
+                .orElseThrow(this);
     }
 
     @Override
     public State createState(@NotNull StateTypeEnum stateType) {
-        return switch (stateType) {
-            case GUI_STATE -> new RingsContainerGuiState();
-            case GUI_UPDATE -> new RingsContainerGuiUpdate();
-            case RENDERER_STATE -> new RingsRendererState();
-            default -> null;
-        };
+        return stateType.stateSupplier()
+                .tryType(StateTypeEnum.GUI_STATE, RingsContainerGuiState::new)
+                .tryType(StateTypeEnum.GUI_UPDATE, RingsContainerGuiUpdate::new)
+                .tryType(StateTypeEnum.RENDERER_STATE, RingsRendererState::new)
+                .orElseThrow(this);
     }
 
     @Override
     public void setState(@NotNull StateTypeEnum stateType, @NotNull State state) {
-        switch (stateType) {
-            case RENDERER_STATE:
-                rendererState = (RingsRendererState) state;
-                verticalOffset = rendererState.verticalOffset;
-                setChanged();
-                break;
-            case GUI_STATE:
-                var guiState = (RingsContainerGuiState) state;
-                addressMap = guiState.addressMap;
-                setConfig(guiState.config);
-                setChanged();
-                break;
-
-            case GUI_UPDATE:
-                RingsContainerGuiUpdate guiUpdate = (RingsContainerGuiUpdate) state;
-                energyStorage.setEnergyStoredInternally(guiUpdate.energyStored);
-                energyTransferredLastTick = guiUpdate.transferedLastTick;
-                pageProgress = (short) guiUpdate.pageProgress;
-                setChanged();
-                break;
-            default:
-                break;
-        }
+        stateType.stateExecutor()
+                .tryType(StateTypeEnum.RENDERER_STATE, () -> {
+                    rendererState = (RingsRendererState) state;
+                    verticalOffset = rendererState.verticalOffset;
+                    setChanged();
+                })
+                .tryType(StateTypeEnum.GUI_STATE, () -> {
+                    var guiState = (RingsContainerGuiState) state;
+                    addressMap = guiState.addressMap;
+                    setConfig(guiState.config);
+                    setChanged();
+                })
+                .tryType(StateTypeEnum.GUI_UPDATE, () -> {
+                    RingsContainerGuiUpdate guiUpdate = (RingsContainerGuiUpdate) state;
+                    energyStorage.setEnergyStoredInternally(guiUpdate.energyStored);
+                    energyTransferredLastTick = guiUpdate.transferedLastTick;
+                    pageProgress = (short) guiUpdate.pageProgress;
+                    setChanged();
+                })
+                .run();
     }
 
 
