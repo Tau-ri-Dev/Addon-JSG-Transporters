@@ -158,8 +158,6 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
         if (obj == null)
             return false;
         if (getClass() != obj.getClass())
@@ -169,6 +167,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
             return false;
         if (ringsPos == null) {
             return other.ringsPos == null;
-        } else return ringsPos.equals(other.ringsPos);
+        }
+        return ringsPos.equals(other.ringsPos);
     }
 }

@@ -795,11 +795,13 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (!setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED;
 
         outbound = true;
+        busy = true;
         targetRings = rings;
         setChanged();
         startTeleportAnimation();
 
         ringsBe.outbound = false;
+        ringsBe.busy = true;
         ringsBe.targetRings = ringsPos;
         ringsBe.setChanged();
         ringsBe.startTeleportAnimation();
