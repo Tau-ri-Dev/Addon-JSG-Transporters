@@ -503,7 +503,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                             context.putBoolean("tp", true);
                             context.putInt("index", i);
                             context.putBoolean("isLast", i == (offset > 0 ? 0 : 2));
-                            addTask(new ScheduledTask(task, 40 + ((offset > 0 ? (2 - i) : i) * 10), context));
+                            addTask(new ScheduledTask(task, 45 + ((offset > 0 ? (2 - i) : i) * 8), context));
                         }
                         break;
                     } else if (context.getBoolean("end")) {
