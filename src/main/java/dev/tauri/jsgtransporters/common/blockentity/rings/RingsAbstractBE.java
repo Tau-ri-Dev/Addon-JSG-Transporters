@@ -37,7 +37,6 @@ import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
-import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.BlockToTeleport;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
@@ -46,7 +45,6 @@ import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiUpdate;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
-import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -114,7 +112,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     return item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
 
                 case BIOME_OVERRIDE_SLOT:
-                    BiomeOverlayEnum override = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(Block.byItem(stack.getItem()));
+                    BiomeOverlayEnum override = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(net.minecraft.world.level.block.Block.byItem(stack.getItem()));
                     if (override == null) return false;
 
                     return getSupportedOverlays().contains(override);
@@ -158,7 +156,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             return null;
         }
 
-        BiomeOverlayEnum biomeOverlay = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(Block.byItem(stack.getItem()));
+        BiomeOverlayEnum biomeOverlay = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(net.minecraft.world.level.block.Block.byItem(stack.getItem()));
 
         if (getSupportedOverlays().contains(biomeOverlay)) {
             return biomeOverlay;
@@ -504,6 +502,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                             context = new CompoundTag();
                             context.putBoolean("tp", true);
                             context.putInt("index", i);
+                            context.putBoolean("isLast", i == (offset > 0 ? 0 : 2));
                             addTask(new ScheduledTask(task, 40 + ((offset > 0 ? (2 - i) : i) * 10), context));
                         }
                         break;
@@ -514,7 +513,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                         break;
                     } else if (context.getBoolean("tp") && context.contains("index")) {
                         if (targetRings == null) break;
-                        teleportVolumes(context.getInt("index"));
+                        teleportVolumes(context.getInt("index"), context.getBoolean("isLast"));
                         break;
                     }
                 }
@@ -833,9 +832,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public final List<Entity> ignoredEntities = new ArrayList<>();
-    public final List<Pair<BlockPos, Boolean>> pistonHeads = new ArrayList<>();
+    public final ArrayList<TeleportHelper.BlockToTeleport> pistonHeads = new ArrayList<>();
 
-    protected void teleportVolumes(int index) {
+    protected void teleportVolumes(int index, boolean isLast) {
         if (targetRings == null) return;
         if (level == null) return;
         if (index < 0) return;
@@ -852,55 +851,18 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
 
         if (!outbound || targetRings.level == null) return;
-        var toPlace = poses.map(BlockPos::immutable)
+
+        var filteredPoses = poses.map(BlockPos::immutable)
                 .filter(imPos -> imPos != this.getBlockPos() && imPos != this.getLinkedPos())
                 .map(p -> {
                     var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
                     return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
                 })
-                .filter(pp -> {
-                    if (level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) || targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK))
-                        return false;
-                    var canTp = true;
-                    if (level.getBlockState(pp.getKey()).is(Blocks.PISTON_HEAD)) {
-                        canTp = false;
-                        pistonHeads.add(Pair.of(pp.getKey(), false));
-                    }
-                    if (targetRings.level.getBlockState(pp.getValue()).is(Blocks.PISTON_HEAD)) {
-                        canTp = false;
-                        pistonHeads.add(Pair.of(pp.getValue(), true));
-                    }
-                    return canTp;
-                })
-                .map(pp -> {
-                    var local = pp.getKey();
-                    var remote = pp.getValue();
-                    var localBlock = TeleportHelper.applyStateChanges(level.getBlockState(local));
-                    var remoteBlock = TeleportHelper.applyStateChanges(targetRings.level.getBlockState(remote));
-                    var bttLocal = Optional.ofNullable(level.getBlockEntity(local))
-                            .map(BlockEntity::serializeNBT)
-                            .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(localBlock, nbt, remote, targetRings.level))
-                            .orElseGet(() -> {
-                                if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
-                                    return new BlockToTeleport.piston(localBlock, remote, targetRings.level);
-                                return new BlockToTeleport.block(localBlock, remote, targetRings.level);
-                            });
-                    level.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-                    var bttRemote = Optional.ofNullable(targetRings.level.getBlockEntity(remote))
-                            .map(BlockEntity::serializeNBT)
-                            .<BlockToTeleport>map(nbt -> new BlockToTeleport.blockEntity(remoteBlock, nbt, local, level))
-                            .orElseGet(() -> {
-                                if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
-                                    return new BlockToTeleport.piston(remoteBlock, local, level);
-                                return new BlockToTeleport.block(remoteBlock, local, level);
-                            });
-                    targetRings.level.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
-                    return Map.entry(bttLocal, bttRemote);
-                });
-        toPlace.forEach(pp -> {
-            pp.getKey().place();
-            pp.getValue().place();
-        });
+                .filter(pp -> !level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) && !targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));
+        TeleportHelper.teleportBlocks(filteredPoses, this, targetRings, pistonHeads);
+        if (isLast) {
+            pistonHeads.forEach(pp -> pp.placeOrAdd(null));
+        }
     }
 
     private ResourceLocation getConfigType() {

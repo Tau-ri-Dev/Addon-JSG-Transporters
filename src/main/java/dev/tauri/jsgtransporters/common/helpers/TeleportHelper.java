@@ -4,6 +4,7 @@ import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
 import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
@@ -27,8 +28,11 @@ import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static dev.tauri.jsg.stargate.teleportation.TeleportHelper.fireTravelToDimEvent;
 import static dev.tauri.jsg.stargate.teleportation.TeleportHelper.setRotationAndPositionAndMotion;
@@ -86,37 +90,109 @@ public class TeleportHelper {
         return oldState;
     }
 
+    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, RingsAbstractBE sourceRings, RingsAbstractBE targetRings, ArrayList<BlockToTeleport> pistonHeads) {
+        var toPlace = poses.map(pp -> {
+            var localLevel = sourceRings.getLevelNotNull();
+            var remoteLevel = targetRings.getLevelNotNull();
+            var local = pp.getKey();
+            var remote = pp.getValue();
+            var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
+            var remoteBlock = TeleportHelper.applyStateChanges(targetRings.getLevelNotNull().getBlockState(remote));
+            var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
+                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
+                    .orElseGet(() -> {
+                        if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
+                            return new BlockToTeleport.Piston(localBlock, remote, remoteLevel);
+                        if (localBlock.getBlock() == Blocks.PISTON_HEAD)
+                            return new BlockToTeleport.Void();
+                        return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
+                    });
+            if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
+                localLevel.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+            var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
+                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
+                    .orElseGet(() -> {
+                        if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
+                            return new BlockToTeleport.Piston(remoteBlock, local, localLevel);
+                        if (remoteBlock.getBlock() == Blocks.PISTON_HEAD)
+                            return new BlockToTeleport.Void();
+                        return new BlockToTeleport.Block(remoteBlock, local, localLevel);
+                    });
+            if (remoteBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
+                remoteLevel.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+            return Map.entry(bttLocal, bttRemote);
+        });
+        toPlace.forEach(pp -> {
+            pp.getKey().placeOrAdd(pistonHeads);
+            pp.getValue().placeOrAdd(pistonHeads);
+        });
+    }
+
     public sealed interface BlockToTeleport {
         int PLACE_FLAGS = 2 | 32 | 16 | 64;
 
-        void place();
+        void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads);
 
-        record block(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
+        record Block(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
 
             @Override
-            public void place() {
+            public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
+                if (pistonHeads != null) {
+                    if (level.getBlockState(pos).is(Blocks.PISTON_HEAD)) {
+                        pistonHeads.add(this);
+                        return;
+                    }
+                }
                 level().setBlock(pos, state, PLACE_FLAGS);
             }
         }
 
-        record piston(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
+        record Void() implements BlockToTeleport {
 
             @Override
-            public void place() {
-                level().setBlock(pos, state, PLACE_FLAGS);
+            public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
+            }
+        }
+
+        record Piston(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
+
+            @Override
+            public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
+                Direction direction = null;
+                BlockState headState = null;
                 if (state.hasProperty(PistonBaseBlock.EXTENDED) && state.getValue(PistonBaseBlock.EXTENDED)) {
-                    var direction = state.getOptionalValue(DirectionalBlock.FACING).orElse(Direction.NORTH);
-                    var headState = Blocks.PISTON_HEAD.defaultBlockState()
+                    direction = state.getOptionalValue(DirectionalBlock.FACING).orElse(Direction.NORTH);
+                    headState = Blocks.PISTON_HEAD.defaultBlockState()
                             .setValue(PistonHeadBlock.FACING, direction)
                             .setValue(PistonHeadBlock.TYPE, state.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT);
-                    level().setBlock(pos.offset(direction.getNormal()), headState, PLACE_FLAGS);
                 }
+                if (pistonHeads != null) {
+                    if (level.getBlockState(pos).is(Blocks.PISTON_HEAD)) {
+                        pistonHeads.add(this);
+                        return;
+                    }
+                    if (direction != null && level.getBlockState(pos.offset(direction.getNormal())).is(Blocks.PISTON_HEAD)) {
+                        pistonHeads.add(this);
+                        return;
+                    }
+                }
+                level().setBlock(pos, state, PLACE_FLAGS);
+                if (direction != null)
+                    level().setBlock(pos.offset(direction.getNormal()), headState, PLACE_FLAGS);
             }
         }
 
-        record blockEntity(BlockState state, CompoundTag nbt, BlockPos pos, Level level) implements BlockToTeleport {
+        record BlockEntity(BlockState state, CompoundTag nbt, BlockPos pos, Level level) implements BlockToTeleport {
             @Override
-            public void place() {
+            public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
+                if (pistonHeads != null) {
+                    if (level.getBlockState(pos).is(Blocks.PISTON_HEAD)) {
+                        pistonHeads.add(this);
+                        return;
+                    }
+                }
                 level().setBlock(pos, state, PLACE_FLAGS);
                 var entity = level.getBlockEntity(pos);
                 if (entity == null) {
