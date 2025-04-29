@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.PistonType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3d;
 
@@ -109,7 +111,7 @@ public class TeleportHelper {
                         return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
                     });
             if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
-                localLevel.setBlock(local, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+                bttLocal.removeLocal(local, localLevel);
             var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
                     .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
@@ -121,7 +123,7 @@ public class TeleportHelper {
                         return new BlockToTeleport.Block(remoteBlock, local, localLevel);
                     });
             if (remoteBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
-                remoteLevel.setBlock(remote, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+                bttRemote.removeLocal(remote, remoteLevel);
             return Map.entry(bttLocal, bttRemote);
         });
         toPlace.forEach(pp -> {
@@ -132,6 +134,10 @@ public class TeleportHelper {
 
     public sealed interface BlockToTeleport {
         int PLACE_FLAGS = 2 | 32 | 16 | 64;
+
+        default void removeLocal(BlockPos pos, Level level) {
+            level.setBlock(pos, Blocks.AIR.defaultBlockState(), BlockToTeleport.PLACE_FLAGS);
+        }
 
         void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads);
 
@@ -185,6 +191,21 @@ public class TeleportHelper {
         }
 
         record BlockEntity(BlockState state, CompoundTag nbt, BlockPos pos, Level level) implements BlockToTeleport {
+            @Override
+            public void removeLocal(BlockPos pos, Level level) {
+                var be = level.getBlockEntity(pos);
+                if (be instanceof Container container) {
+                    container.clearContent();
+                } else if (be != null) {
+                    be.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent((itemHandler) -> {
+                        for (var slot = 0; slot < itemHandler.getSlots(); slot++) {
+                            itemHandler.getStackInSlot(slot).setCount(0);
+                        }
+                    });
+                }
+                BlockToTeleport.super.removeLocal(pos, level);
+            }
+
             @Override
             public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
                 if (pistonHeads != null) {
