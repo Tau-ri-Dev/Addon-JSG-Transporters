@@ -40,6 +40,13 @@
   "gui.jsg_transporters.rings_name": "Name",
   "gui.jsg_transporters.rings_distance": "Distance",
 
+  "__comment": "Subtitles - Sounds descriptions",
+
+  "jsg_transporters.subtitle.block.rings.goauld.button": "Button pressed",
+  "jsg_transporters.subtitle.block.rings.goauld.dial": "Button for activating rings pressed",
+  "jsg_transporters.subtitle.block.rings.transport.start": "Transport rings activated",
+  "jsg_transporters.subtitle.block.rings.transport.end": "Transport ended",
+
   "__comment": "Symbols",
 
   "glyph.jsg_transporters.transportrings.goauld.amun": "Amun",
