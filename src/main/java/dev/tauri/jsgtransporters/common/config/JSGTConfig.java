@@ -15,6 +15,7 @@ public class JSGTConfig {
     public static void register() {
         LIST.clear();
         LIST.add(new JSGConfig.JSGConfigChild(General.BUILDER, "General"));
+        LIST.add(new JSGConfig.JSGConfigChild(Energy.BUILDER, "Energy"));
 
         for (JSGConfig.JSGConfigChild child : LIST) {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, child.builder.build(), CONFIG_FILE_NAME + child.name + ".toml");
@@ -57,5 +58,19 @@ public class JSGTConfig {
                         "\"ByTag\" only converts fluids contained within the jsg_transporters:transporter_fluids tag",
                         "\"ExcludeTag\" (Default) converts all fluids except those within the tag"
                 ).defineEnum("Rings fluid treatment mode", FluidTreatmentModes.ExcludeTag);
+    }
+
+    public static class Energy {
+        private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+        public static final ForgeConfigSpec.IntValue ringsStartEnergy = BUILDER
+                .comment(
+                        "SIDE: SERVER"
+                ).defineInRange("Rings start power draw", 2048, 0, 500000);
+
+        public static final ForgeConfigSpec.IntValue ringsTransportEnergy = BUILDER
+                .comment(
+                        "SIDE: SERVER"
+                ).defineInRange("Rings entity/block transport power draw", 256, 0, 500000);
     }
 }

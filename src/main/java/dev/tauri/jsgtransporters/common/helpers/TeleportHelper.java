@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
 import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.helpers.FluidHelper;
 import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
 import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.JSGTransporters;
@@ -100,6 +101,8 @@ public class TeleportHelper {
             var remote = pp.getValue();
             var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
             var remoteBlock = TeleportHelper.applyStateChanges(targetRings.getLevelNotNull().getBlockState(remote));
+
+            // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
                     .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
@@ -110,8 +113,6 @@ public class TeleportHelper {
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
                     });
-            if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
-                bttLocal.removeLocal(local, localLevel);
             var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
                     .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
@@ -122,10 +123,30 @@ public class TeleportHelper {
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(remoteBlock, local, localLevel);
                     });
+
+            // check energy
+            var energyLocal = sourceRings.getEnergyStored();
+            if (sourceRings.energyToOperate == null)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+            var energyNeededLocal = sourceRings.energyToOperate.getEnergyForTransport(bttLocal);
+            if (energyLocal < energyNeededLocal)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+
+            var energyRemote = targetRings.getEnergyStored();
+            if (targetRings.energyToOperate == null)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+            var energyNeededRemote = targetRings.energyToOperate.getEnergyForTransport(bttRemote);
+            if (energyRemote < energyNeededRemote)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+
+            // remove blocks
+            if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
+                bttLocal.removeLocal(local, localLevel);
             if (remoteBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
                 bttRemote.removeLocal(remote, remoteLevel);
             return Map.entry(bttLocal, bttRemote);
         });
+        // teleport blocks
         toPlace.forEach(pp -> {
             pp.getKey().placeOrAdd(pistonHeads);
             pp.getValue().placeOrAdd(pistonHeads);
@@ -141,6 +162,8 @@ public class TeleportHelper {
 
         void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads);
 
+        double getEnergyCoefficient();
+
         record Block(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
 
             @Override
@@ -153,12 +176,28 @@ public class TeleportHelper {
                 }
                 level().setBlock(pos, state, PLACE_FLAGS);
             }
+
+            @Override
+            public double getEnergyCoefficient() {
+                if (state.isAir())
+                    return 0;
+                if (state.canBeReplaced())
+                    return 0.5;
+                if (FluidHelper.isLiquidBlock(state))
+                    return 1.5;
+                return 1.3;
+            }
         }
 
         record Void() implements BlockToTeleport {
 
             @Override
             public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
+            }
+
+            @Override
+            public double getEnergyCoefficient() {
+                return 0;
             }
         }
 
@@ -187,6 +226,11 @@ public class TeleportHelper {
                 level().setBlock(pos, state, PLACE_FLAGS);
                 if (direction != null)
                     level().setBlock(pos.offset(direction.getNormal()), headState, PLACE_FLAGS);
+            }
+
+            @Override
+            public double getEnergyCoefficient() {
+                return 0;
             }
         }
 
@@ -222,6 +266,11 @@ public class TeleportHelper {
                 }
                 entity.deserializeNBT(nbt);
                 entity.setChanged();
+            }
+
+            @Override
+            public double getEnergyCoefficient() {
+                return 2.5f;
             }
         }
     }

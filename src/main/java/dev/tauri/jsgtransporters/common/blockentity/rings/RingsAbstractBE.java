@@ -11,7 +11,9 @@ import dev.tauri.jsg.config.ingame.ITileConfig;
 import dev.tauri.jsg.config.ingame.JSGConfigOption;
 import dev.tauri.jsg.config.ingame.JSGIntRangeConfigOption;
 import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
+import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
 import dev.tauri.jsg.config.util.JSGConfigUtil;
+import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.integration.ComputerDeviceProvider;
@@ -36,6 +38,7 @@ import dev.tauri.jsg.util.*;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
+import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
@@ -48,6 +51,7 @@ import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -370,6 +374,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     }
                 }
             }
+
+            if (getEnergyStorage().getEnergyStored() != energyStoredLastTick)
+                setChanged();
+            energyTransferredLastTick = (getEnergyStorage().getEnergyStored() - energyStoredLastTick);
+            energyStoredLastTick = getEnergyStorage().getEnergyStored();
         } else {
             // Client -> request to update client config & request addresses from the server
             if (getConfig() == null || getConfig().getOptions().isEmpty() || addressMap.isEmpty()) {
@@ -681,6 +690,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         compound.put("itemHandler", inventory.serializeNBT());
         compound.putInt("verticalOffset", verticalOffset);
 
+        if (energyToOperate != null) {
+            compound.putInt("energyToOperate_start", energyToOperate.energyToOpen);
+            compound.putInt("energyToOperate_teleport", energyToOperate.keepAlive);
+        }
+
         super.saveAdditional(compound);
     }
 
@@ -701,6 +715,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         getConfig().deserializeNBT(compound.getCompound("config"));
         inventory.deserializeNBT(compound.getCompound("itemHandler"));
         verticalOffset = compound.getInt("verticalOffset");
+
+        if (compound.contains("energyToOperate_start")) {
+            energyToOperate = new EnergyRequiredToOperateRings(compound.getInt("energyToOperate_start"), compound.getInt("energyToOperate_teleport"));
+        }
     }
 
     private BlockPos linkedPos;
@@ -746,7 +764,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Nullable
     public RingsConnectResult addSymbolToAddress(SymbolInterface symbol) {
-        if (dialedAddress.size() > 4) dialedAddress.clear();
         dialedAddress.addSymbol(symbol);
         if (dialedAddress.getSize() > 4 || symbol.origin()) {
             var result = tryConnect();
@@ -786,6 +803,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
         if (rings == null)
             return RingsConnectResult.ADDRESS_MALFORMED;
+
+        var energyNeeded = getEnergyToOperate(rings);
+        if (energyNeeded.getEnergyToStart() > getEnergyStored())
+            return RingsConnectResult.NO_POWER;
+
         var ringsBe = rings.getBlockEntity();
         if (ringsBe.busy) {
             return RingsConnectResult.BUSY;
@@ -797,12 +819,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         outbound = true;
         busy = true;
         targetRings = rings;
+        getEnergyStorage().extractEnergy(energyNeeded.energyToOpen, false);
+        energyToOperate = energyNeeded;
         setChanged();
         startTeleportAnimation();
 
         ringsBe.outbound = false;
         ringsBe.busy = true;
         ringsBe.targetRings = ringsPos;
+        ringsBe.energyToOperate = energyNeeded;
         ringsBe.setChanged();
         ringsBe.startTeleportAnimation();
         return RingsConnectResult.OK;
@@ -813,6 +838,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public void setVerticalOffset(int verticalOffset) {
+        if (busy) return;
         if (verticalOffset < 1 && verticalOffset > -4) verticalOffset = -4;
         this.verticalOffset = verticalOffset - 2;
         setChanged();
@@ -835,6 +861,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (level == null) return;
         if (index < 0) return;
         var targetRings = this.targetRings.getBlockEntity();
+        if (energyToOperate == null) return;
 
         var minPos = new BlockPos(-1, getVerticalOffset() + index, -1).offset(getBlockPos());
         var maxPos = new BlockPos(1, getVerticalOffset() + index, 1).offset(getBlockPos());
@@ -842,8 +869,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
         for (var e : entities) {
             if (ignoredEntities.contains(e)) continue;
+            var energyToTransport = energyToOperate.getEnergyForTransport(e);
+            if (getEnergyStored() < energyToTransport) continue;
             targetRings.ignoredEntities.add(e);
             TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
+            getEnergyStorage().extractEnergy(energyToTransport, false);
         }
 
         if (!outbound || targetRings.level == null) return;
@@ -911,5 +941,29 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (computerCaps.isPresent())
             return computerCaps;
         return super.getCapability(capability, facing);
+    }
+
+    public EnergyRequiredToOperateRings energyToOperate;
+
+    public EnergyRequiredToOperateRings getEnergyToOperate(@NotNull RingsPos targetRings) {
+        var energyRequired = EnergyRequiredToOperateRings.rings();
+
+        BlockPos sPos = pos;
+        BlockPos tPos = targetRings.ringsPos;
+
+        ResourceKey<Level> sourceDim = getLevelNotNull().dimension();
+        ResourceKey<Level> targetDim = targetRings.getWorld().dimension();
+
+        if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER)
+            tPos = new BlockPos(tPos.getX() * 8, tPos.getY(), tPos.getZ() * 8);
+        else if (sourceDim == Level.NETHER && targetDim == Level.OVERWORLD)
+            sPos = new BlockPos(sPos.getX() * 8, sPos.getY(), sPos.getZ() * 8);
+
+        double distance = (int) BlockPosHelper.dist(sPos, tPos.getX(), tPos.getY(), tPos.getZ());
+
+        if (distance < 50) distance *= 0.8;
+        else distance = 50 * Math.log10(distance) / Math.log10(50);
+
+        return (EnergyRequiredToOperateRings) energyRequired.mul(distance).add(StargateDimensionConfig.INSTANCE.getCost(sourceDim, targetDim).mul(0.01));
     }
 }
