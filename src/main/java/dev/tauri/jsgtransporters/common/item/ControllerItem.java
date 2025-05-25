@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 public class ControllerItem extends JSGBlockItem {
     public ControllerItem(Block pBlock) {
-        super(pBlock, new Item.Properties(), TabRegistry.TAB_RINGS);
+        super(pBlock, new Item.Properties(), List.of(TabRegistry.TAB_RINGS));
     }
 
     @Override

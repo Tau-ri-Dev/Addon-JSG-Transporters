@@ -4,9 +4,9 @@ import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.item.ITabbedItem;
 import dev.tauri.jsg.property.JSGProperties;
+import dev.tauri.jsg.registry.TabRegistry;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
-import dev.tauri.jsgtransporters.common.registry.TabRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 
 public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem {
 
@@ -104,10 +105,9 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
     }
 
-    @Nullable
     @Override
-    public RegistryObject<CreativeModeTab> getTab() {
-        return TabRegistry.TAB_RINGS;
+    public List<RegistryObject<CreativeModeTab>> getTabs() {
+        return List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
     }
 
     @Override

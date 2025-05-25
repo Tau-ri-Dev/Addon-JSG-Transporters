@@ -15,7 +15,7 @@ public class Constants {
 
     // helpers
     public static final ItemHelper ITEM_HELPER = new ItemHelper(() -> ItemRegistry.REGISTER);
-    public static final TabHelper TAB_HELPER = new TabHelper(() -> TabRegistry.REGISTER, () -> ItemRegistry.REGISTER);
+    public static final TabHelper TAB_HELPER = new TabHelper(() -> TabRegistry.REGISTER);
 
 
     public static void load() {

@@ -17,6 +17,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
+
 import static dev.tauri.jsgtransporters.JSGTransporters.MOD_ID;
 
 public class BlockRegistry {
@@ -44,13 +46,13 @@ public class BlockRegistry {
         for (RegistryObject<Block> i : REGISTER.getEntries().stream().toList()) {
             ItemRegistry.REGISTER.register(i.getId().getPath(),
                     () -> {
-                        RegistryObject<CreativeModeTab> tab = null;
+                        List<RegistryObject<CreativeModeTab>> tabs = List.of();
                         if (i.get() instanceof ITabbedItem t) {
-                            tab = t.getTab();
+                            tabs = t.getTabs();
                         }
                         if (i.get() instanceof IItemBlock itemBlock)
                             return itemBlock.getItemBlock();
-                        return new JSGBlockItem(i.get(), new Item.Properties(), tab);
+                        return new JSGBlockItem(i.get(), new Item.Properties(), tabs);
                     });
         }
         REGISTER.register(bus);
