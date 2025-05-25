@@ -22,6 +22,7 @@ import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRenderer
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -202,12 +203,12 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
         return linkedPos;
     }
 
-    public abstract Block getRingsBlock();
+    public abstract TagKey<Block> getRingsBlocks();
 
     public void updateLinkStatus() {
         if (level == null) return;
         var pos = getBlockPos();
-        var block = getRingsBlock();
+        var block = getRingsBlocks();
         if (block == null) return;
         BlockPos closesRings = LinkingHelper.findClosestUnlinked(level, pos, LinkingHelper.getDhdRange(), block);
 

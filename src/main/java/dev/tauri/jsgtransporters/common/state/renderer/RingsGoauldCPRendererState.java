@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.stargate.BiomeOverlayEnum;
+import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
@@ -13,11 +13,11 @@ public class RingsGoauldCPRendererState extends RingsControlPanelRendererState {
     private static final String LIGHT_TEXTURE_BASE = "textures/tesr/rings/controller/goauld/goauld_light_";
     private static final String SYMBOL_TEXTURE_END = "jpg";
     private static final String LIGHT_TEXTURE_END = "jpg";
-    private static final Map<BiomeOverlayEnum, Map<Integer, ResourceLocation>> BIOME_TEXTURE_MAP = new HashMap<>();
-    private static final Map<BiomeOverlayEnum, Map<Integer, ResourceLocation>> BIOME_TEXTURE_MAP_LIGHT = new HashMap<>();
+    private static final Map<BiomeOverlayRegistry.BiomeOverlayInstance, Map<Integer, ResourceLocation>> BIOME_TEXTURE_MAP = new HashMap<>();
+    private static final Map<BiomeOverlayRegistry.BiomeOverlayInstance, Map<Integer, ResourceLocation>> BIOME_TEXTURE_MAP_LIGHT = new HashMap<>();
 
     static {
-        for (BiomeOverlayEnum biomeOverlay : BiomeOverlayEnum.values()) {
+        for (BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay : BiomeOverlayRegistry.values()) {
             var map = new HashMap<Integer, ResourceLocation>();
             var lightMap = new HashMap<Integer, ResourceLocation>();
             for (int i = 0; i <= 5; i++) {
@@ -31,9 +31,9 @@ public class RingsGoauldCPRendererState extends RingsControlPanelRendererState {
     }
 
     @Override
-    public ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayEnum biomeOverlay) {
+    public ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay) {
         var val = getButtonState(symbol);
-        if (biomeOverlay == null) biomeOverlay = BiomeOverlayEnum.NORMAL;
+        if (biomeOverlay == null) biomeOverlay = BiomeOverlayRegistry.NORMAL;
         if (symbol.brb())
             return BIOME_TEXTURE_MAP_LIGHT.get(biomeOverlay).get(val);
 

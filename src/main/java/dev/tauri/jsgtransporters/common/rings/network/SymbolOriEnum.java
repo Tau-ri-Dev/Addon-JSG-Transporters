@@ -2,7 +2,7 @@ package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsg.screen.element.tabs.Tab;
 import dev.tauri.jsg.screen.element.tabs.TabAddress;
-import dev.tauri.jsg.stargate.BiomeOverlayEnum;
+import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
 import dev.tauri.jsg.stargate.network.IAddress;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
@@ -90,7 +90,7 @@ public enum SymbolOriEnum implements SymbolInterface {
     }
 
     @Override
-    public ResourceLocation getIconResource(BiomeOverlayEnum overlay, ResourceKey<Level> dimensionId, int configOrigin) {
+    public ResourceLocation getIconResource(BiomeOverlayRegistry.BiomeOverlayInstance overlay, ResourceKey<Level> dimensionId, int configOrigin) {
         return iconResource;
     }
 

@@ -12,7 +12,6 @@ import dev.tauri.jsg.config.ingame.JSGConfigOption;
 import dev.tauri.jsg.config.ingame.JSGIntRangeConfigOption;
 import dev.tauri.jsg.config.ingame.JSGTileEntityConfig;
 import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
-import dev.tauri.jsg.config.util.JSGConfigUtil;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
@@ -25,7 +24,7 @@ import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
-import dev.tauri.jsg.stargate.BiomeOverlayEnum;
+import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
 import dev.tauri.jsg.stargate.EnumScheduledTask;
 import dev.tauri.jsg.stargate.network.IAddress;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
@@ -54,6 +53,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -116,7 +116,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     return item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
 
                 case BIOME_OVERRIDE_SLOT:
-                    BiomeOverlayEnum override = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(net.minecraft.world.level.block.Block.byItem(stack.getItem()));
+                    var override = BiomeOverlayRegistry.getBiomeOverlayByItem(stack);
                     if (override == null) return false;
 
                     return getSupportedOverlays().contains(override);
@@ -153,14 +153,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     };
 
     // Server
-    private BiomeOverlayEnum determineBiomeOverride() {
+    private BiomeOverlayRegistry.BiomeOverlayInstance determineBiomeOverride() {
         ItemStack stack = inventory.getStackInSlot(BIOME_OVERRIDE_SLOT);
 
         if (stack.isEmpty()) {
             return null;
         }
 
-        BiomeOverlayEnum biomeOverlay = JSGConfigUtil.getBiomeOverrideItemMetaPairs().get(net.minecraft.world.level.block.Block.byItem(stack.getItem()));
+        var biomeOverlay = BiomeOverlayRegistry.getBiomeOverlayByItem(stack);
 
         if (getSupportedOverlays().contains(biomeOverlay)) {
             return biomeOverlay;
@@ -747,11 +747,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return linkedPos;
     }
 
-    public abstract Block getControlPanelBlock();
+    public abstract TagKey<Block> getControlPanelBlocks();
 
     public void updateLinkStatus() {
         pos = getBlockPos();
-        var block = getControlPanelBlock();
+        var block = getControlPanelBlocks();
         if (block == null) return;
         BlockPos closestCP = LinkingHelper.findClosestUnlinked(getLevelNotNull(), pos, LinkingHelper.getDhdRange(), block);
 
@@ -925,8 +925,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return "RINGS";
     }
 
-    public EnumSet<BiomeOverlayEnum> getSupportedOverlays() {
-        return EnumSet.of(BiomeOverlayEnum.NORMAL);
+    public List<BiomeOverlayRegistry.BiomeOverlayInstance> getSupportedOverlays() {
+        return List.of(BiomeOverlayRegistry.NORMAL);
     }
 
     @Override

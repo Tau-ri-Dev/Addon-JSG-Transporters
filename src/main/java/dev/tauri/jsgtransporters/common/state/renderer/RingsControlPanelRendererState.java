@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
 import dev.tauri.jsg.renderer.activation.Activation;
-import dev.tauri.jsg.stargate.BiomeOverlayEnum;
+import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsgtransporters.common.activation.RingsCPActivation;
@@ -22,18 +22,18 @@ public abstract class RingsControlPanelRendererState extends State {
     public final Map<SymbolInterface, Integer> BUTTON_STATE_MAP = new HashMap<>();
     public final Map<SymbolInterface, Float> ACTUAL_BUTTON_STATE_MAP = new HashMap<>();
 
-    protected BiomeOverlayEnum biomeOverlay;
-    public BiomeOverlayEnum biomeOverride;
+    protected BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay;
+    public BiomeOverlayRegistry.BiomeOverlayInstance biomeOverride;
     private boolean clearingSymbols;
 
-    public BiomeOverlayEnum getBiomeOverlay() {
+    public BiomeOverlayRegistry.BiomeOverlayInstance getBiomeOverlay() {
         if (biomeOverride != null)
             return biomeOverride;
 
         return biomeOverlay;
     }
 
-    public abstract ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayEnum biomeOverlay);
+    public abstract ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay);
 
 
     public void activateSymbol(long totalWorldTime, SymbolInterface symbol) {
@@ -53,7 +53,7 @@ public abstract class RingsControlPanelRendererState extends State {
     }
 
 
-    public void setBiomeOverlay(BiomeOverlayEnum biomeOverlay) {
+    public void setBiomeOverlay(BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay) {
         this.biomeOverlay = biomeOverlay;
     }
 
