@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    " L ",
+    "LSL",
+    " L "
+  ],
+  "key": {
+    "L": {
+      "tag": "forge:gems/blue"
+    },
+    "S": {
+      "tag": "forge:gems/blue_small"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:ori_main_controller_button",
+    "count": 1
+  }
+}
