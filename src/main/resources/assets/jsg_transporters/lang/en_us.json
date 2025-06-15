@@ -88,5 +88,8 @@
   "item.jsg_transporters.fragment_rings_goauld": "Goa'uld transport ring fragment",
   "item.jsg_transporters.fragment_rings_ori": "Ori transport ring fragment",
   "item.jsg_transporters.fragment_rings_ancient": "Ancient transport ring fragment",
-  "item.jsg_transporters.goauld_controller_buttons": "Goa'uld Controller buttons"
+  "item.jsg_transporters.goauld_controller_buttons": "Goa'uld Controller buttons",
+  "item.jsg_transporters.ori_controller_buttons": "Ori Controller buttons",
+  "item.jsg_transporters.ori_main_controller_button": "Main Ori Controller button",
+  "item.jsg_transporters.ancient_controller_buttons": "Ancient Controller buttons"
 }
