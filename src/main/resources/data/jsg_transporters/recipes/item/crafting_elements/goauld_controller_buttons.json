@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "EGE",
+    "ECE",
+    "EGE"
+  ],
+  "key": {
+    "E": {
+      "tag": "forge:gems/emerald"
+    },
+    "G": {
+      "tag": "forge:ingots/gold"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:goauld_controller_buttons",
+    "count": 1
+  }
+}

@@ -39,11 +39,12 @@ public class ItemRegistry {
      * Crafting elements
      */
 
+    public static final RegistryObject<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.createGenericItem("goauld_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
+
     /**
 
-    prepared registration of new crafting elements
+     prepared registration of new crafting elements
 
-    public static final RegistryObject<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.createGenericItem("goauld_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ori_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.createGenericItem("ori_main_controller_button", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ancient_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
