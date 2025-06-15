@@ -48,7 +48,6 @@ public class ItemRegistry {
     public static final RegistryObject<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ori_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.createGenericItem("ori_main_controller_button", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ancient_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> ORI_CONTROLLER_BASE = Constants.ITEM_HELPER.createGenericItem("ori_controller_base", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
 
     */
 
