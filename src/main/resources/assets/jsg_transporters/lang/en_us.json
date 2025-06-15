@@ -83,5 +83,9 @@
   "glyph.jsg_transporters.transportrings.ancient.aurin": "Aurin",
   "glyph.jsg_transporters.transportrings.ancient.velar": "Velar",
   "glyph.jsg_transporters.transportrings.ancient.omnis": "Omnis",
-  "glyph.jsg_transporters.transportrings.ancient.light": "Light"
+  "glyph.jsg_transporters.transportrings.ancient.light": "Light",
+
+  "item.jsg_transporters.fragment_rings_goauld": "Goa'uld transport ring fragment",
+  "item.jsg_transporters.fragment_rings_ori": "Ori transport ring fragment",
+  "item.jsg_transporters.fragment_rings_ancient": "Ancient transport ring fragment"
 }
