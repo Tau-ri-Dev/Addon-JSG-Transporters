@@ -3,20 +3,23 @@
   "group": "JSG Transporters",
   "category": "misc",
   "pattern": [
-    " l ",
-    "LSL",
-    " L "
+    "ICI",
+    "GGG",
+    "GGG"
   ],
   "key": {
-    "L": {
-      "tag": "forge:gems/blue"
+    "I": {
+      "tag": "forge:ingots/gold"
     },
-    "S": {
+    "G": {
       "tag": "forge:gems/blue_small"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
     }
   },
   "result": {
-    "item": "jsg_transporters:ori_main_controller_button",
+    "item": "jsg_transporters:ori_controller_buttons",
     "count": 1
   }
 }
