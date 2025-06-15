@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "building",
+  "pattern": [
+    "III",
+    "BWB",
+    "CMN"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/gold"
+    },
+    "B": {
+      "item": "jsg_transporters:ori_controller_buttons"
+    },
+    "W": {
+      "item": "minecraft:stripped_oak_wood"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
+    },
+    "M": {
+      "item": "jsg_transporters:ori_main_controller_button"
+    },
+    "N": {
+      "item": "jsg:circuit_control_naquadah"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:rings_ori_control_panel_block",
+    "count": 1
+  }
+}
