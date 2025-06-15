@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "W W",
+    "GWG",
+    "WBW"
+  ],
+  "key": {
+    "W": {
+      "tag": "forge:glass_panes/white"
+    },
+    "B": {
+      "tag": "forge:glass_panes/light_blue"
+    },
+    "G": {
+      "tag": "forge:gems/blue_small"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:crystal_glyph_rings_ancient",
+    "count": 1
+  }
+}

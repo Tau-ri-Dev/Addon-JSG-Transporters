@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "REB",
+    "RYB",
+    "III"
+  ],
+  "key": {
+    "R": {
+      "tag": "forge:gems/red"
+    },
+    "E": {
+      "tag": "forge:gems/ender"
+    },
+    "Y": {
+      "tag": "forge:gems/yellow"
+    },
+    "B": {
+      "tag": "forge:gems/blue"
+    },
+    "I": {
+      "tag": "forge:ingots/titanium"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:crystal_glyph_rings_goauld",
+    "count": 1
+  }
+}

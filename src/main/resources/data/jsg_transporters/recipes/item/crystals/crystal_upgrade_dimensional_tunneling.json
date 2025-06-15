@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "G G",
+    "NPN",
+    "IGI"
+  ],
+  "key": {
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "N": {
+      "item": "minecraft:chiseled_nether_bricks"
+    },
+    "P": {
+      "item": "minecraft:purpur_block"
+    },
+    "I": {
+      "tag": "forge:ingots/netherite"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:crystal_upgrade_dimensional_tunneling",
+    "count": 1
+  }
+}

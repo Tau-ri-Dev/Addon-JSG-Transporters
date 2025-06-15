@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "PIP",
+    "PIP",
+    "PIP"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/trinium"
+    },
+    "I": {
+      "tag": "forge:ingots/naquadah_alloy"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:fragment_rings_ori",
+    "count": 1
+  }
+}
