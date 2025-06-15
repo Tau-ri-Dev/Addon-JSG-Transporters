@@ -1,7 +1,7 @@
 {
   "values": [
-    "#jsg:stargate_block",
-    "#jsg:dhd_block",
+    "#jsg:stargate/stargate_part",
+    "#jsg:dhd/dhd_any",
     "#jsg_transporters:rings_block",
     "#jsg_transporters:rings_controllers",
     "#jsg_transporters:obelisk_block",
