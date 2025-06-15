@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "jsg_transporters:item/crystal/crystal_glyph_goauld"
+        "layer0": "jsg_transporters:item/crystal/crystal_glyph_rings_goauld"
     }
 }
