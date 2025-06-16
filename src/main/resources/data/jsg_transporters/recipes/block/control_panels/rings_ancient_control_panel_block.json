@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "building",
+  "pattern": [
+    "SSS",
+    "SBS",
+    "NGC"
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:stone"
+    },
+    "B": {
+      "item": "jsg_transporters:ancient_controller_buttons"
+    },
+    "N": {
+      "item": "jsg:circuit_control_naquadah"
+    },
+    "G": {
+      "tag": "forge:gems/white_small"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:rings_ancient_control_panel_block",
+    "count": 1
+  }
+}
