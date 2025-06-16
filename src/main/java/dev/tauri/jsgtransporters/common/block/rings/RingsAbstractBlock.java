@@ -19,11 +19,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -38,7 +40,13 @@ import java.util.List;
 
 public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem {
 
-    public static final Properties RINGS_BASE_PROPS = Properties.of();
+    public static final Properties RINGS_BASE_PROPS = Properties.of()
+            .strength(2.5f,30f)
+            .isRedstoneConductor((BlockState state, BlockGetter getter, BlockPos pos) -> true)
+            .isViewBlocking((BlockState state, BlockGetter getter, BlockPos pos) -> true)
+            .noOcclusion()
+            .requiresCorrectToolForDrops()
+            .sound(SoundType.METAL);
 
     public RingsAbstractBlock(Properties properties) {
         super(properties);
