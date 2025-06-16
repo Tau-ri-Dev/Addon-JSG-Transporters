@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "BCB",
+    "SBS",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "tag": "minecraft:stone_buttons"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
+    },
+    "S": {
+      "tag": "forge:stone"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:ancient_controller_buttons",
+    "count": 1
+  }
+}
