@@ -19,9 +19,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class RingsAncientCPBlock extends AbstractRingsCPBlock {
     public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ancient/button_0.png");
 
-    public RingsAncientCPBlock() {
-        super(Properties.of().noOcclusion());
-    }
+    public RingsAncientCPBlock() { super(); }
 
     @Override
     @ParametersAreNonnullByDefault

@@ -28,7 +28,7 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
     public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
 
     public RingsOriCPBlock() {
-        super(Properties.of().noOcclusion());
+        super();
     }
 
     @Override
