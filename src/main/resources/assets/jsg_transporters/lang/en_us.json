@@ -1,54 +1,87 @@
 {
+  "_comment": "----------------- CREATIVE TABS ------------------",
+
   "itemGroup.jsg_rings": "JSG: Rings and Transporters",
 
-  "block.jsg_transporters.rings.message.address_malformed": "Address malformed",
-  "block.jsg_transporters.rings.message.out_of_range": "Target Rings are out of range",
-  "block.jsg_transporters.rings.message.no_power": "Not enough power",
-  "block.jsg_transporters.rings.message.no_origin": "Address malformed",
-  "block.jsg_transporters.rings.message.busy": "Rings are busy",
-  "block.jsg_transporters.rings.message.busy_target": "Target rings are busy",
-  "block.jsg_transporters.rings.message.obfuscated": "Rings are obfuscated",
-  "block.jsg_transporters.rings.message.obfuscated_target": "Target rings are obfuscated",
+  "_comment100": "--------------------- ITEMS ----------------------",
 
-  "block.jsg_transporters.rings_ancient_block": "Ancient Transport Rings",
-  "block.jsg_transporters.rings_goauld_block": "Goauld Transport Rings",
-  "block.jsg_transporters.rings_ori_block": "Ori Transport Rings",
+  "_comment101": ">>> Crafting Elements <<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
-  "block.jsg_transporters.rings_ancient_control_panel_block": "Ancient Rings Control Panel",
-  "item.jsg.block.jsg_transporters.rings_ancient_control_panel_block.tooltip": "Control panel for Ancient transport rings",
-  "block.jsg_transporters.rings_goauld_control_panel_block": "Goauld Rings Control Panel",
-  "item.jsg.block.jsg_transporters.rings_goauld_control_panel_block.tooltip": "Control panel for Goauld transport rings",
-  "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel",
-  "item.jsg.block.jsg_transporters.rings_ori_control_panel_block.tooltip": "Control panel for Ori transport rings",
+  "item.jsg_transporters.goauld_controller_buttons": "Goa'uld Controller buttons",
+  "item.jsg_transporters.ori_controller_buttons": "Ori Controller buttons",
+  "item.jsg_transporters.ori_main_controller_button": "Main Ori Controller button",
+  "item.jsg_transporters.ancient_controller_buttons": "Ancient Controller buttons",
 
+  "_comment102": ">>> Fragments <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "item.jsg_transporters.fragment_rings_goauld": "Goa'uld transport ring fragment",
+  "item.jsg_transporters.fragment_rings_ori": "Ori transport ring fragment",
+  "item.jsg_transporters.fragment_rings_ancient": "Ancient transport ring fragment",
+
+  "_comment103": ">>> Upgrade Crystals <<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "item.jsg_transporters.crystal_glyph_rings_goauld": "Goa'uld Glyph Crystal",
+  "item.jsg_transporters.crystal_glyph_rings_ori": "Ori Glyph Crystal",
   "item.jsg_transporters.crystal_glyph_rings_ancient": "Ancient Glyph Crystal",
-  "item.jsg.crystal_glyph_rings_ancient.tooltip": "Upgrade for Transport Rings",
-  "item.jsg.crystal_glyph_rings_ancient.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ancient address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 3rd slot!",
-  "item.jsg_transporters.crystal_glyph_rings_goauld": "Goauld Glyph Crystal",
+  "item.jsg_transporters.crystal_upgrade_dimensional_tunneling": "Dimensional Tunneling Upgrade Crystal",
+
+  "_comment200": "--------------------- BLOCKS ---------------------",
+
+  "_comment201": ">>> Transport Rings <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "block.jsg_transporters.rings_goauld_block": "Goa'uld Transport Rings",
+  "block.jsg_transporters.rings_ori_block": "Ori Transport Rings",
+  "block.jsg_transporters.rings_ancient_block": "Ancient Transport Rings",
+
+  "_comment202": ">>> Transport Rings Control Panels <<<<<<<<<<<<<<<",
+
+  "block.jsg_transporters.rings_goauld_control_panel_block": "Goa'uld Rings Control Panel",
+  "block.jsg_transporters.rings_ori_control_panel_block": "Ori Rings Control Panel",
+  "block.jsg_transporters.rings_ancient_control_panel_block": "Ancient Rings Control Panel",
+
+  "_comment300": "------------------- Tool Tips --------------------",
+
+  "_comment301": ">>> Items <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "_comment302": "===>>> Upgrade Crystals <<<<<<<<<<<<<<<<<<<<<<<<<<",
+
   "item.jsg.crystal_glyph_rings_goauld.tooltip": "Upgrade for Transport Rings",
   "item.jsg.crystal_glyph_rings_goauld.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Goauld address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 1st slot!",
-  "item.jsg_transporters.crystal_glyph_rings_ori": "Ori Glyph Crystal",
+
   "item.jsg.crystal_glyph_rings_ori.tooltip": "Upgrade for Transport Rings",
   "item.jsg.crystal_glyph_rings_ori.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ori address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 2nd slot!",
-  "item.jsg_transporters.crystal_upgrade_dimensional_tunneling": "Dimensional Tunneling Upgrade Crystal",
+
+  "item.jsg.crystal_glyph_rings_ancient.tooltip": "Upgrade for Transport Rings",
+  "item.jsg.crystal_glyph_rings_ancient.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ancient address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 3rd slot!",
+
   "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip": "Upgrade for Transport Rings",
   "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip.extended": "This crystal allows you to §lUSE%nl%transport rings for interdimensional%nl%travel. Only outgoing transport rings%nl%require this crystal!%nl%%nl%§oThis upgrade can be combined%nl%§owith other transport rings upgrades!%nl%%nl%This crystal can be placed only in 4th slot!",
 
-  "gui.stargate.ancient_address": "Ancient Address",
-  "gui.stargate.goauld_address": "Goauld Address",
-  "gui.stargate.ori_address": "Ori Address",
+  "_comment303": ">>> Blocks <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "_comment304": "===>>> Transport Rings Control Panels <<<<<<<<<<<<",
+
+  "item.jsg.block.jsg_transporters.rings_goauld_control_panel_block.tooltip": "Control panel for Goa'uld transport rings",
+  "item.jsg.block.jsg_transporters.rings_ori_control_panel_block.tooltip": "Control panel for Ori transport rings",
+  "item.jsg.block.jsg_transporters.rings_ancient_control_panel_block.tooltip": "Control panel for Ancient transport rings",
+
+  "_comment400": "---------------------- GUI -----------------------",
+
+  "_comment401": ">>> Universal GUI text <<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
   "gui.jsg_transporters.rings_name": "Name",
   "gui.jsg_transporters.rings_distance": "Distance",
   "gui.jsg_transporters.parameters": "Parameters",
 
-  "__comment": "Subtitles - Sounds descriptions",
+  "_comment402": ">>> Address Tabs <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
-  "jsg_transporters.subtitle.block.rings.goauld.button": "Button pressed",
-  "jsg_transporters.subtitle.block.rings.goauld.dial": "Button for activating rings pressed",
-  "jsg_transporters.subtitle.block.rings.transport.start": "Transport rings activated",
-  "jsg_transporters.subtitle.block.rings.transport.end": "Transport ended",
+  "gui.stargate.ancient_address": "Ancient Address",
+  "gui.stargate.goauld_address": "Goauld Address",
+  "gui.stargate.ori_address": "Ori Address",
 
-  "__comment": "Symbols",
+  "_comment607": ">>> Transport rings <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "_comment608": "===>>> Goa'uld Symbols <<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
   "glyph.jsg_transporters.transportrings.goauld.amun": "Amun",
   "glyph.jsg_transporters.transportrings.goauld.serket": "Serket",
@@ -57,6 +90,9 @@
   "glyph.jsg_transporters.transportrings.goauld.felluca": "Felluca",
   "glyph.jsg_transporters.transportrings.goauld.cobra": "Cobra",
   "glyph.jsg_transporters.transportrings.goauld.light": "Light",
+
+  "_comment609": "===>>> Ori Symbols <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
   "glyph.jsg_transporters.transportrings.ori.pillar": "Pillar",
   "glyph.jsg_transporters.transportrings.ori.celestia": "Celestia",
   "glyph.jsg_transporters.transportrings.ori.radiance": "Radiance",
@@ -75,6 +111,9 @@
   "glyph.jsg_transporters.transportrings.ori.convergence": "Convergence",
   "glyph.jsg_transporters.transportrings.ori.Vigil": "Vigil",
   "glyph.jsg_transporters.transportrings.ori.light": "Light",
+
+  "_comment610": "===>>> Ancient Symbols <<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
   "glyph.jsg_transporters.transportrings.ancient.selen": "Selen",
   "glyph.jsg_transporters.transportrings.ancient.tiris": "Tiris",
   "glyph.jsg_transporters.transportrings.ancient.varun": "Varun",
@@ -86,11 +125,28 @@
   "glyph.jsg_transporters.transportrings.ancient.omnis": "Omnis",
   "glyph.jsg_transporters.transportrings.ancient.light": "Light",
 
-  "item.jsg_transporters.fragment_rings_goauld": "Goa'uld transport ring fragment",
-  "item.jsg_transporters.fragment_rings_ori": "Ori transport ring fragment",
-  "item.jsg_transporters.fragment_rings_ancient": "Ancient transport ring fragment",
-  "item.jsg_transporters.goauld_controller_buttons": "Goa'uld Controller buttons",
-  "item.jsg_transporters.ori_controller_buttons": "Ori Controller buttons",
-  "item.jsg_transporters.ori_main_controller_button": "Main Ori Controller button",
-  "item.jsg_transporters.ancient_controller_buttons": "Ancient Controller buttons"
+  "_comment700": "-------------- ACTION BAR MESSAGES ---------------",
+
+  "block.jsg_transporters.rings.message.address_malformed": "Address malformed",
+  "block.jsg_transporters.rings.message.out_of_range": "Target Rings are out of range",
+  "block.jsg_transporters.rings.message.no_power": "Not enough power",
+  "block.jsg_transporters.rings.message.no_origin": "Address malformed",
+  "block.jsg_transporters.rings.message.busy": "Rings are busy",
+  "block.jsg_transporters.rings.message.busy_target": "Target rings are busy",
+  "block.jsg_transporters.rings.message.obfuscated": "Rings are obfuscated",
+  "block.jsg_transporters.rings.message.obfuscated_target": "Target rings are obfuscated",
+
+  "_comment800": "---------------- SOUND SUBTITLES -----------------",
+
+  "_comment801": ">>> Goa'uld Sounds Rings and Panel <<<<<<<<<<<<<<<",
+
+  "jsg_transporters.subtitle.block.rings.goauld.button": "Button pressed",
+  "jsg_transporters.subtitle.block.rings.goauld.dial": "Button for activating rings pressed",
+  "jsg_transporters.subtitle.block.rings.transport.start": "Transport rings activated",
+  "jsg_transporters.subtitle.block.rings.transport.end": "Transport ended",
+
+  "_comment802": ">>> Ori Sounds Rings and Panel <<<<<<<<<<<<<<<<<<<",
+
+  "_comment803": ">>> Ancient Sounds Rings and Panel <<<<<<<<<<<<<<<"
+
 }
