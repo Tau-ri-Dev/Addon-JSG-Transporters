@@ -39,6 +39,7 @@
   "gui.stargate.ori_address": "Ori Address",
   "gui.jsg_transporters.rings_name": "Name",
   "gui.jsg_transporters.rings_distance": "Distance",
+  "gui.jsg_transporters.parameters": "Parameters",
 
   "__comment": "Subtitles - Sounds descriptions",
 
