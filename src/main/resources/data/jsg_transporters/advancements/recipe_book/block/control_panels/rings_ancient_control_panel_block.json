@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "has_panel_material": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "jsg:circuit_control_crystal",
+              "jsg:circuit_control_naquadah",
+              "jsg:small_white_crystal",
+              "jsg_transporters:ancient_controller_buttons"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jsg_transporters:block/control_panels/rings_ancient_control_panel_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_panel_material",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jsg_transporters:block/control_panels/rings_ancient_control_panel_block"
+    ]
+  },
+  "sends_telemetry_event": false
+}

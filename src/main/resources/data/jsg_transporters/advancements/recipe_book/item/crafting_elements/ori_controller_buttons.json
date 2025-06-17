@@ -1,0 +1,36 @@
+{
+  "criteria": {
+    "has_element_material": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "jsg:circuit_control_crystal",
+              "jsg:small_blue_crystal",
+              "minecraft:gold_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jsg_transporters:item/crafting_elements/ori_controller_buttons"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_element_material",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jsg_transporters:item/crafting_elements/ori_controller_buttons"
+    ]
+  },
+  "sends_telemetry_event": false
+}
