@@ -1,0 +1,25 @@
+{
+  "display": {
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/block/smooth_basalt.png",
+    "icon": {
+      "item": "jsg:icon_jsg"
+    },
+    "title": {
+      "translate": "advancement.jsg_transporters.root.title",
+      "color": "red"
+    },
+    "description": {
+      "translate": "advancement.jsg_transporters.root.description",
+      "italic": true
+    }
+  },
+  "criteria": {
+    "tick_event": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}
