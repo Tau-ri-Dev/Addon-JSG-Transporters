@@ -71,7 +71,7 @@
 
   "gui.jsg_transporters.rings_name": "Name",
   "gui.jsg_transporters.rings_distance": "Distance",
-  "gui.jsg_transporters.parameters": "Parameters",
+  "gui.transportrings.parameters": "Parameters",
 
   "_comment402": ">>> Address Tabs <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
