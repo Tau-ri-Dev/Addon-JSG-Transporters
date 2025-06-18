@@ -140,17 +140,23 @@
   "block.jsg_transporters.rings.message.obfuscated": "Rings are obfuscated",
   "block.jsg_transporters.rings.message.obfuscated_target": "Target rings are obfuscated",
 
-  "_comment800": "---------------- SOUND SUBTITLES -----------------",
+  "_comment800": "----------------- DEATH MESSAGES -----------------",
 
-  "_comment801": ">>> Goa'uld Sounds Rings and Panel <<<<<<<<<<<<<<<",
+  "_comment900": "------------------ ADVANCEMENTS ------------------",
+
+  "_comment1000": "-------------------- COMMANDS --------------------",
+
+  "_comment1100": "---------------- SOUND SUBTITLES -----------------",
+
+  "_comment1101": ">>> Goa'uld Sounds Rings and Panel <<<<<<<<<<<<<<<",
 
   "jsg_transporters.subtitle.block.rings.goauld.button": "Button pressed",
   "jsg_transporters.subtitle.block.rings.goauld.dial": "Button for activating rings pressed",
   "jsg_transporters.subtitle.block.rings.transport.start": "Transport rings activated",
   "jsg_transporters.subtitle.block.rings.transport.end": "Transport ended",
 
-  "_comment802": ">>> Ori Sounds Rings and Panel <<<<<<<<<<<<<<<<<<<",
+  "_comment1102": ">>> Ori Sounds Rings and Panel <<<<<<<<<<<<<<<<<<<",
 
-  "_comment803": ">>> Ancient Sounds Rings and Panel <<<<<<<<<<<<<<<"
+  "_comment1103": ">>> Ancient Sounds Rings and Panel <<<<<<<<<<<<<<<"
 
 }
