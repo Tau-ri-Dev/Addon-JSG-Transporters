@@ -25,6 +25,10 @@
   "item.jsg_transporters.crystal_glyph_rings_ancient": "Ancient Glyph Crystal",
   "item.jsg_transporters.crystal_upgrade_dimensional_tunneling": "Dimensional Tunneling Upgrade Crystal",
 
+  "_comment122": ">>> Advancements Icons <<<<<<<<<<<<<<<<<<<<<<<<<<<",
+
+  "item.jsg_transporters.icon_jsg_transporters": "Main JSG Transporters Icon",
+
   "_comment200": "--------------------- BLOCKS ---------------------",
 
   "_comment201": ">>> Transport Rings <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",

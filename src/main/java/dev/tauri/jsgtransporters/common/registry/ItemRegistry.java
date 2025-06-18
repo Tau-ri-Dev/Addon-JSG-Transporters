@@ -17,6 +17,13 @@ import static dev.tauri.jsgtransporters.JSGTransporters.MOD_ID;
 @SuppressWarnings("unused")
 public class ItemRegistry {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+
+    /**
+     * Icons used in advancements
+     */
+
+    public static final RegistryObject<JSGItem> ICON_JSG_TRANSPORTERS_LOGO = Constants.ITEM_HELPER.createGenericItem("icon_jsg_transporters",null);
+
     /**
      * Glyph crystals
      */

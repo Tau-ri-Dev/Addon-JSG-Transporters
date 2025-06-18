@@ -6,7 +6,7 @@
     "hidden": false,
     "background": "minecraft:textures/block/smooth_basalt.png",
     "icon": {
-      "item": "jsg:icon_jsg"
+      "item": "jsg_transporters:icon_jsg_transporters"
     },
     "title": {
       "translate": "advancement.jsg_transporters.root.title",
