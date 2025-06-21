@@ -144,6 +144,11 @@
 
   "_comment900": "------------------ ADVANCEMENTS ------------------",
 
+  "advancement.jsg_transporters.root.title": "Welcome to JSG: Transport Ring Addon",
+  "advancement.jsg_transporters.root.description": "Matter swapping technology",
+
+  "_comment901": "===>>>  <<<<<<<<<<<<<<<<<<<<<<<<<<",
+
   "_comment1000": "-------------------- COMMANDS --------------------",
 
   "_comment1100": "---------------- SOUND SUBTITLES -----------------",
