@@ -4,6 +4,7 @@ import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.api.JSGAddon;
 import dev.tauri.jsg.integration.Integrations;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
+import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
@@ -45,6 +46,8 @@ public class JSGTransporters implements JSGAddon {
         JSGTransporters.logger.info("Loading JSG:Transporters Addon version {}", JSGTransporters.MOD_VERSION);
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        modEventBus.addListener(this::onCommonSetup);
+
         MinecraftForge.EVENT_BUS.register(this);
         Constants.load();
 
@@ -77,6 +80,11 @@ public class JSGTransporters implements JSGAddon {
     public void onServerStarting(ServerStartingEvent event) {
         var currentServer = event.getServer();
         new RingsNetwork().register(currentServer.overworld().getDataStorage());
+    }
+
+
+    public void onCommonSetup(FMLClientSetupEvent event) {
+        JSGTAdvancements.register();
     }
 
     @Override
