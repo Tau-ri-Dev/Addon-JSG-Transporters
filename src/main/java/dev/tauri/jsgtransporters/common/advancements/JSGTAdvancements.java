@@ -38,6 +38,6 @@ public class JSGTAdvancements {
             JSGAdvancement a = JSGTAdvancements.TRIGGER_ARRAY[i];
             CriteriaTriggers.register(a);
         }
-        JSGTransporters.logger.info("Successfully registered Advancement Triggers for rings addon!");
+        JSGTransporters.logger.info("Successfully registered Advancement Triggers!");
     }
 }
