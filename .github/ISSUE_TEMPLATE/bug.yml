@@ -10,6 +10,7 @@ body:
         Explain what happened.
       validations:
         required: true
+
   - type: textarea
     attributes:
       label: What should have happened
@@ -18,6 +19,7 @@ body:
         if possible should not be a simple "Not what did" style response
       validations:
         required: true
+
   - type: input
     attributes:
       label: Latest log
@@ -28,6 +30,7 @@ body:
         Do **NOT** paste the *contents* of the file here, doing so will make it very difficult to read and diagnose this issue.
       validations:
         required: true
+
   - type: dropdown
     attributes:
       label: Occurs in clean environment
@@ -39,6 +42,7 @@ body:
         - label: Unknown
       validations:
         required: true
+
   - type: input
     attributes:
       label: Mod Version
@@ -46,6 +50,7 @@ body:
         Please provide the version of JSG Transporters you are using as the full name of the mod jar file located in your \"`mods`\" folder
       validations:
         required: true
+
   - type: input
     attributes:
       label: Mod Version
@@ -53,6 +58,7 @@ body:
         Please provide the version of JSG you are using as the full name of the mod jar file located in your \"`mods`\" folder
       validations:
         required: true
+
   - type: markdown
     attributes:
       value: "Thank you for taking the time to report this bug to help improve the JSG Transporters addon"
