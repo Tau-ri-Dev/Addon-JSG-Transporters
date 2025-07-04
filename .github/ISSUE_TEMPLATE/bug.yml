@@ -8,8 +8,8 @@ body:
       description: >
         Please describe the issue in as much detail as posible.
         Explain what happened.
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     attributes:
@@ -17,8 +17,8 @@ body:
       description: >
         Please describe what you belive should have happened.
         if possible should not be a simple "Not what did" style response
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: input
     attributes:
@@ -28,8 +28,8 @@ body:
         you can find this file in the \"`logs`\" folder within your minecraft profile named \"`latest.log`\"
         Please upload the file to https://mclo.gs/ and put the link here.
         Do **NOT** paste the *contents* of the file here, doing so will make it very difficult to read and diagnose this issue.
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: dropdown
     attributes:
@@ -40,24 +40,24 @@ body:
         - label: Yes
         - label: No
         - label: Unknown
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: input
     attributes:
       label: Mod Version
       description: >
         Please provide the version of JSG Transporters you are using as the full name of the mod jar file located in your \"`mods`\" folder
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: input
     attributes:
       label: Mod Version
       description: >
         Please provide the version of JSG you are using as the full name of the mod jar file located in your \"`mods`\" folder
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: markdown
     attributes:
