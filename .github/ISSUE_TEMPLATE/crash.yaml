@@ -36,9 +36,9 @@ body:
       description: >
         Does the crash still occur when only JSG and the JSG transporter addon are present
       options:
-        - Yes
-        - No
-        - Unknown
+        - label: Yes
+        - label: No
+        - label: Unknown
       validations:
         required: true
   - type: input
