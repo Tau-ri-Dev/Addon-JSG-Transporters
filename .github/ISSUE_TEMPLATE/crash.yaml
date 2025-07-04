@@ -1,6 +1,6 @@
 name: Crash report
 description: "Some kind of issue that does not result in a crash such as incorrect behaviour or forced disconnectes from a server"
-labels: ["bug"]
+labels: ["crash"]
 body:
   - type: textarea
     attributes:
