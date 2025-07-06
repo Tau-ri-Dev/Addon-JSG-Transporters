@@ -35,7 +35,7 @@ body:
     attributes:
       label: Occurs in clean environment
       description: >
-        Does the crash still occur when only JSG and the JSG transporter addon are present
+        Does the bug still occur when only JSG and the JSG transporter addon are present
       options:
         - label: Yes
         - label: No
