@@ -163,12 +163,11 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
 
     public void pushSymbolButton(SymbolInterface symbol, @Nullable ServerPlayer player) {
         if (busy) return;
-        JSGTransporters.logger.info(symbol.getEnglishName());
         if (!isLinked() || getLinkedDevice() == null || level == null || level.isClientSide()) return;
+        busy = true;
         var result = getLinkedDevice().addSymbolToAddress(symbol);
         if (result != null && !result.ok() && player != null)
             player.displayClientMessage(result.component(), true);
-        busy = true;
         addTask(new ScheduledTask(EnumScheduledTask.RINGS_SYMBOL_DEACTIVATE, 10));
         if (symbol.origin())
             JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_GOAULD_BUTTON_DIAL);

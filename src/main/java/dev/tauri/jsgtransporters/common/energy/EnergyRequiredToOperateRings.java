@@ -32,4 +32,19 @@ public class EnergyRequiredToOperateRings extends EnergyRequiredToOperate {
     public double getEnergyToStart() {
         return energyToOpen;
     }
+
+    @Override
+    public EnergyRequiredToOperateRings mul(double mul) {
+        return new EnergyRequiredToOperateRings((double)this.energyToOpen * mul, (double)this.keepAlive * mul);
+    }
+
+    @Override
+    public EnergyRequiredToOperateRings add(EnergyRequiredToOperate add) {
+        return new EnergyRequiredToOperateRings(this.energyToOpen + add.energyToOpen, this.keepAlive + add.keepAlive);
+    }
+
+    @Override
+    public EnergyRequiredToOperateRings cap(int max) {
+        return new EnergyRequiredToOperateRings(Math.min(this.energyToOpen, max), this.keepAlive);
+    }
 }

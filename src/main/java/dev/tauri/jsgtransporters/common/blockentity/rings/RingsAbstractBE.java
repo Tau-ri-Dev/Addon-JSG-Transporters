@@ -785,7 +785,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             // only one symbol - origin -> connect to nearest rings
             rings = RingsNetwork.INSTANCE.getNearestRings(this.ringsPos);
         } else {
-
             if (dialedAddress.size() < 5) {
                 return RingsConnectResult.ADDRESS_MALFORMED;
             }
@@ -805,8 +804,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             return RingsConnectResult.ADDRESS_MALFORMED;
 
         var energyNeeded = getEnergyToOperate(rings);
-        if (energyNeeded.getEnergyToStart() > getEnergyStored())
+        if (energyNeeded.getEnergyToStart() > getEnergyStored()) {
             return RingsConnectResult.NO_POWER;
+        }
 
         var ringsBe = rings.getBlockEntity();
         if (ringsBe.busy) {
@@ -954,16 +954,17 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         ResourceKey<Level> sourceDim = getLevelNotNull().dimension();
         ResourceKey<Level> targetDim = targetRings.getWorld().dimension();
 
-        if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER)
+        if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER) {
             tPos = new BlockPos(tPos.getX() * 8, tPos.getY(), tPos.getZ() * 8);
-        else if (sourceDim == Level.NETHER && targetDim == Level.OVERWORLD)
+        } else if (sourceDim == Level.NETHER && targetDim == Level.OVERWORLD) {
             sPos = new BlockPos(sPos.getX() * 8, sPos.getY(), sPos.getZ() * 8);
+        }
 
         double distance = (int) BlockPosHelper.dist(sPos, tPos.getX(), tPos.getY(), tPos.getZ());
 
         if (distance < 50) distance *= 0.8;
         else distance = 50 * Math.log10(distance) / Math.log10(50);
 
-        return (EnergyRequiredToOperateRings) energyRequired.mul(distance).add(StargateDimensionConfig.INSTANCE.getCost(sourceDim, targetDim).mul(0.01));
+        return energyRequired.mul(distance).add(StargateDimensionConfig.INSTANCE.getCost(sourceDim, targetDim).mul(0.01));
     }
 }
