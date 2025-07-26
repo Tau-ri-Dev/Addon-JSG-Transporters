@@ -1,0 +1,37 @@
+{
+  "criteria": {
+    "has_upgrade_material": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:glass_pane",
+              "minecraft:netherite_ingot",
+              "minecraft:chiseled_nether_bricks",
+              "minecraft:purpur_block"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jsg_transporters:item/crystals/crystal_upgrade_dimensional_tunneling"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_upgrade_material",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jsg_transporters:item/crystals/crystal_upgrade_dimensional_tunneling"
+    ]
+  },
+  "sends_telemetry_event": false
+}

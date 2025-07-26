@@ -1,0 +1,38 @@
+{
+  "criteria": {
+    "has_upgrade_material": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "jsg:red_crystal",
+              "jsg:ender_crystal",
+              "jsg:yellow_crystal",
+              "jsg:blue_crystal",
+              "jsg:titanium_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jsg_transporters:item/crystals/crystal_glyph_rings_goauld"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_upgrade_material",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jsg_transporters:item/crystals/crystal_glyph_rings_goauld"
+    ]
+  },
+  "sends_telemetry_event": false
+}

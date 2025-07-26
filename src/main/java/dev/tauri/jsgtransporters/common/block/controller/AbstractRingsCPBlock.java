@@ -20,10 +20,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -39,8 +36,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock {
-    public AbstractRingsCPBlock(Properties properties) {
-        super(properties);
+    public static final Properties PANEL_PROPS = Properties.of()
+            .explosionResistance(30f)
+            .destroyTime(3f)
+            .requiresCorrectToolForDrops()
+            .noOcclusion()
+            .sound(SoundType.METAL);
+
+    public AbstractRingsCPBlock() {
+        super(PANEL_PROPS);
         this.registerDefaultState(
                 defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.NORTH)
         );

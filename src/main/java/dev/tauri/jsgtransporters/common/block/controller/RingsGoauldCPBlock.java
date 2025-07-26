@@ -20,7 +20,7 @@ public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
     public static final ResourceLocation LIGHT_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_light_0.jpg");
 
     public RingsGoauldCPBlock() {
-        super(Properties.of().noOcclusion());
+        super();
     }
 
     @Override

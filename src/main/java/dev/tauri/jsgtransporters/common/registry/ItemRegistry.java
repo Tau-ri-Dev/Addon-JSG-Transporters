@@ -14,8 +14,16 @@ import java.util.List;
 
 import static dev.tauri.jsgtransporters.JSGTransporters.MOD_ID;
 
+@SuppressWarnings("unused")
 public class ItemRegistry {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
+
+    /**
+     * Icons used in advancements
+     */
+
+    public static final RegistryObject<JSGItem> ICON_JSG_TRANSPORTERS_LOGO = Constants.ITEM_HELPER.createGenericItem("icon_jsg_transporters",null);
+
     /**
      * Glyph crystals
      */
@@ -31,6 +39,7 @@ public class ItemRegistry {
     /**
      * Ring fragments
      */
+
     public static final RegistryObject<JSGItem> FRAGMENT_GOAULD = Constants.ITEM_HELPER.createGenericItem("fragment_rings_goauld", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> FRAGMENT_ORI = Constants.ITEM_HELPER.createGenericItem("fragment_rings_ori", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> FRAGMENT_ANCIENT = Constants.ITEM_HELPER.createGenericItem("fragment_rings_ancient", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
@@ -40,16 +49,10 @@ public class ItemRegistry {
      */
 
     public static final RegistryObject<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.createGenericItem("goauld_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-
-    /**
-
-     prepared registration of new crafting elements
-
     public static final RegistryObject<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ori_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.createGenericItem("ori_main_controller_button", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
     public static final RegistryObject<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ancient_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
 
-    */
 
     public static void register(IEventBus bus) {
         TabHelper.indexItemRegistry(() -> REGISTER);

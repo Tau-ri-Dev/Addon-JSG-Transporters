@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "jsg_transporters:item/icons/icon_jsg_transporters"
+    }
+}

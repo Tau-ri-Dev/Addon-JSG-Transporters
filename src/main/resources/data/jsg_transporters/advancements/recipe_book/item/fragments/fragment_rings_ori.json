@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "has_fragment_material": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "jsg:naquadah_alloy",
+              "jsg:plate_trinium"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "jsg_transporters:item/fragments/fragment_rings_ori"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_fragment_material",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "jsg_transporters:item/fragments/fragment_rings_ori"
+    ]
+  },
+  "sends_telemetry_event": false
+}

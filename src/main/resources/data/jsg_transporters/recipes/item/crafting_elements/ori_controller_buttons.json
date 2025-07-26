@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "JSG Transporters",
+  "category": "misc",
+  "pattern": [
+    "ICI",
+    "GGG",
+    "GGG"
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/gold"
+    },
+    "G": {
+      "tag": "forge:gems/blue_small"
+    },
+    "C": {
+      "item": "jsg:circuit_control_crystal"
+    }
+  },
+  "result": {
+    "item": "jsg_transporters:ori_controller_buttons",
+    "count": 1
+  }
+}
