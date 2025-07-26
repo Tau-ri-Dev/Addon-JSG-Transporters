@@ -1,6 +1,5 @@
 package dev.tauri.jsgtransporters.common.inventory;
 
-import dev.tauri.jsg.blockentity.stargate.StargateClassicBaseBE;
 import dev.tauri.jsg.forgeutil.SlotHandler;
 import dev.tauri.jsg.item.energy.CapacitorItemBlock;
 import dev.tauri.jsg.packet.JSGPacketHandler;
@@ -9,10 +8,12 @@ import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.screen.inventory.JSGContainer;
 import dev.tauri.jsg.screen.inventory.OpenTabHolderInterface;
 import dev.tauri.jsg.screen.util.ContainerHelper;
+import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsg.util.CreativeItemsChecker;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.registry.MenuTypeRegistry;
+import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class RingsContainer extends JSGContainer implements OpenTabHolderInterface {
@@ -41,7 +44,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
     private int energyTransferedLastTick;
     private float lastEnergySecondsToClose;
     private int lastProgress;
-    private int openTabId = -1;
+    protected final List<Integer> openedTabsSlotsIds = new ArrayList<>();
 
     // Server
     public RingsContainer(int containerID, Inventory playerInventory, BlockEntity baseTile) {
@@ -70,7 +73,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         }
 
         // Page slots (index 7-9)
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length; i++) {
             addSlot(new SlotHandler(itemHandler, i + 7, -22, 89 + 22 * i));
         }
 
@@ -109,6 +112,13 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
 
         // Transfering from player's inventory to Stargate
         else {
+            var openedSlots = getOpenTabsSlotsIds();
+            var biomeSlotId = 7 + SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length;
+            var addressSlots = openedSlots.stream().filter(slot -> (
+                    slot >= 7 && slot <= (6 + SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length)
+                            && ringsTile.getItemHandler().isItemValid(slot, stack) && !getSlot(slot).hasItem()
+            )).toList();
+
             // Capacitors
             if (stack.getItem() instanceof CapacitorItemBlock) {
                 for (int i = 4; i < 7; i++) {
@@ -137,27 +147,26 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
                         return ItemStack.EMPTY;
                     }
                 }
-            } else if (openTabId >= 0 && openTabId <= 2 && ringsTile.getItemHandler().isItemValid(7 + openTabId, stack)) {
-                if (!getSlot(7 + openTabId).hasItem()) {
-                    ItemStack stack1 = stack.copy();
-                    stack1.setCount(1);
+            } else if (!addressSlots.isEmpty()) {
+                var s = addressSlots.get(0);
+                ItemStack stack1 = stack.copy();
+                stack1.setCount(1);
 
-                    setRemoteSlot(7 + openTabId, stack1);
-                    getSlot(7 + openTabId).set(stack1);
-                    stack.shrink(1);
+                setRemoteSlot(s, stack1);
+                getSlot(s).set(stack1);
+                stack.shrink(1);
 
-                    return ItemStack.EMPTY;
-                }
+                return ItemStack.EMPTY;
             }
 
             // Biome override blocks
-            else if (openTabId == 3 && ringsTile.getItemHandler().isItemValid(10, stack)) {
-                if (!getSlot(10).hasItem()) {
+            else if (openedSlots.contains(biomeSlotId) && ringsTile.getItemHandler().isItemValid(biomeSlotId, stack)) {
+                if (!getSlot(biomeSlotId).hasItem()) {
                     ItemStack stack1 = stack.copy();
                     stack1.setCount(1);
 
-                    setRemoteSlot(10, stack1);
-                    getSlot(10).set(stack1);
+                    setRemoteSlot(biomeSlotId, stack1);
+                    getSlot(biomeSlotId).set(stack1);
                     stack.shrink(1);
 
                     return ItemStack.EMPTY;
@@ -168,16 +177,6 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         }
 
         return stack;
-    }
-
-    @Override
-    public int getOpenTabId() {
-        return openTabId;
-    }
-
-    @Override
-    public void setOpenTabId(int i) {
-        openTabId = i;
     }
 
     @Override
@@ -217,5 +216,16 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
 
         if (listener instanceof ServerPlayer)
             JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateTypeEnum.GUI_STATE, ringsTile.getState(StateTypeEnum.GUI_STATE)), (ServerPlayer) listener);
+    }
+
+    @Override
+    public List<Integer> getOpenTabsSlotsIds() {
+        return openedTabsSlotsIds;
+    }
+
+    @Override
+    public void modifyOpenTabSlotId(int slotId, boolean add) {
+        if (add) openedTabsSlotsIds.add(slotId);
+        else openedTabsSlotsIds.removeIf(v -> v == slotId);
     }
 }

@@ -5,7 +5,6 @@ import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.forgeutil.SlotHandler;
 import dev.tauri.jsg.loader.texture.Texture;
 import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.SetOpenTabToServer;
 import dev.tauri.jsg.packet.packets.stargate.SaveConfigToServer;
 import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.screen.element.tabs.*;
@@ -86,7 +85,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
                     .setTabTitle(I18n.format("gui.stargate." + type.getId() + "_address"))
                     .setTabSide(TabSideEnum.LEFT);
             tab = type.finalizeAddressTab(tab);
-            addressTabs.put(type, (TabAddress) tab.build());
+            addressTabs.put(type, (TabAddress) ((TabAddress) tab.build()).setMenu(menu));
             i++;
         }
 
@@ -109,6 +108,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
 
 
         TabBiomeOverlay overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
+        overlayTab.setMenu(menu);
         configTab.setOnTabClose(this::saveConfig);
 
         tabs.addAll(addressTabs.values());
@@ -120,7 +120,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         int ii = 0;
         for (var tab : addressTabs.values()) {
             if (ii + 7 == 10) ii++;
-            menu.slots.set(ii + 7, tab.createSlot((SlotHandler) menu.getSlot(ii + 7)));
+            menu.slots.set(ii + 7, tab.createAndSaveSlot((SlotHandler) menu.getSlot(ii + 7)));
             ii++;
         }
         menu.slots.set(10, overlayTab.createAndSaveSlot((SlotHandler) menu.getSlot(10)));
@@ -338,14 +338,8 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
             Tab tab = tabs.get(i);
 
             if (tab.isCursorOnTab((int) mouseX, (int) mouseY)) {
-                if (Tab.tabsInteract(tabs, i)) {
-                    menu.setOpenTabId(i);
-                } else {
-                    menu.setOpenTabId(-1);
-                }
-
-                JSGPacketHandler.sendToServer(new SetOpenTabToServer(menu.getOpenTabId()));
-
+                Tab.tabsInteract(tabs, i);
+                menu.updateTabSlots();
                 break;
             }
 
