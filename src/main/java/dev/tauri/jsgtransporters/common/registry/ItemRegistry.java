@@ -22,36 +22,32 @@ public class ItemRegistry {
      * Icons used in advancements
      */
 
-    public static final RegistryObject<JSGItem> ICON_JSG_TRANSPORTERS_LOGO = Constants.ITEM_HELPER.createGenericItem("icon_jsg_transporters",null);
+    public static final RegistryObject<JSGItem> ICON_JSG_TRANSPORTERS_LOGO = Constants.ITEM_HELPER.builder("icon_jsg_transporters").clearTooltip().setInTabs(List.of()).buildGeneric();
 
     /**
      * Glyph crystals
      */
-    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ANCIENT = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_ancient", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES));
-    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_GOAULD = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_goauld", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES));
-    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_glyph_rings_ori", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES));
-    public static final RegistryObject<JSGItem> CRYSTAL_UPGRADE_DIM_TUNNELING = Constants.ITEM_HELPER.createGenericItemWithGenericTooltip(
-            "crystal_upgrade_dimensional_tunneling", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES));
+    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ANCIENT = Constants.ITEM_HELPER.builder("crystal_glyph_rings_ancient").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES)).buildGeneric();
+    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_GOAULD = Constants.ITEM_HELPER.builder("crystal_glyph_rings_goauld").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES)).buildGeneric();
+    public static final RegistryObject<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.builder("crystal_glyph_rings_ori").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES)).buildGeneric();
+    public static final RegistryObject<JSGItem> CRYSTAL_UPGRADE_DIM_TUNNELING = Constants.ITEM_HELPER.builder("crystal_upgrade_dimensional_tunneling").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_UPGRADES)).buildGeneric();
 
     /**
      * Ring fragments
      */
 
-    public static final RegistryObject<JSGItem> FRAGMENT_GOAULD = Constants.ITEM_HELPER.createGenericItem("fragment_rings_goauld", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> FRAGMENT_ORI = Constants.ITEM_HELPER.createGenericItem("fragment_rings_ori", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> FRAGMENT_ANCIENT = Constants.ITEM_HELPER.createGenericItem("fragment_rings_ancient", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
+    public static final RegistryObject<JSGItem> FRAGMENT_GOAULD = Constants.ITEM_HELPER.builder("fragment_rings_goauld").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
+    public static final RegistryObject<JSGItem> FRAGMENT_ORI = Constants.ITEM_HELPER.builder("fragment_rings_ori").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
+    public static final RegistryObject<JSGItem> FRAGMENT_ANCIENT = Constants.ITEM_HELPER.builder("fragment_rings_ancient").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
 
     /**
      * Crafting elements
      */
 
-    public static final RegistryObject<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.createGenericItem("goauld_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ori_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.createGenericItem("ori_main_controller_button", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
-    public static final RegistryObject<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.createGenericItem("ancient_controller_buttons", List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS));
+    public static final RegistryObject<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.builder("goauld_controller_buttons").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
+    public static final RegistryObject<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.builder("ori_controller_buttons").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
+    public static final RegistryObject<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.builder("ori_main_controller_button").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
+    public static final RegistryObject<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.builder("ancient_controller_buttons").setInTabs(List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS)).buildGeneric();
 
 
     public static void register(IEventBus bus) {
