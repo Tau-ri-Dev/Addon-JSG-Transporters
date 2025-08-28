@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters;
 
 import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.LoggerWrapper;
 import dev.tauri.jsg.api.JSGAddon;
 import dev.tauri.jsg.integration.Integrations;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
@@ -39,7 +40,7 @@ public class JSGTransporters implements JSGAddon {
     public static final String MC_VERSION = "1.20.1";
 
     public JSGTransporters() {
-        logger = LoggerFactory.getLogger(MOD_NAME);
+        logger = new LoggerWrapper("[jsg transporters] ", LoggerFactory.getLogger(MOD_NAME));
 
         ModList.get().getModContainerById(MOD_ID).ifPresentOrElse(container -> MOD_VERSION = MC_VERSION + "-" + container.getModInfo().getVersion().getQualifier(), () -> {
         });
