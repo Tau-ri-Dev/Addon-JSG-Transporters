@@ -13,7 +13,7 @@ else
     version = mod_version
 
 tasks.register('printVersionName') {
-    println version
+    println project.version
 }
 
 base {

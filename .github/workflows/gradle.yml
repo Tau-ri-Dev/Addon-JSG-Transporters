@@ -45,7 +45,7 @@ jobs:
 
     - name: Retrieve Version
       run: |
-        echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradle -q printVersionName)"
+        echo "VERSION_NAME=$(gradle -q printVersionName) >> $GITHUB_OUTPUT"
       id: mod_version
 
     - name: Build with Gradle 8.9
