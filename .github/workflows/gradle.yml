@@ -42,15 +42,22 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
       with:
         gradle-version: '8.9'
+
+    - name: Retrieve Version
+      run: |
+        echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradle -q printVersionName)"
+      id: mod_version
+
     - name: Build with Gradle 8.9
-      run: gradle jar
+      run: gradle build -Pbuild_extrapath=jsg-transporters
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest-autobuild"
+        draft: true
+        automatic_release_tag: "${{ steps.mod_version.outputs.VERSION_NAME }}"
         prerelease: true
-        title: "Dev${{ steps.date.outputs.date }}"
+        title: "${{ steps.mod_version.outputs.VERSION_NAME }}"
         files: |
           *.jar
 

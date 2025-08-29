@@ -12,6 +12,10 @@ if(mod_version.contains("Dev"))
 else
     version = mod_version
 
+tasks.register('printVersionName') {
+    println version
+}
+
 base {
     archivesName = build_extrapath + "-" + minecraft_version
 }
