@@ -15,6 +15,7 @@ on:
 
 jobs:
   build:
+    if: "contains(github.event.head_commit.message, 'release')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,7 +50,7 @@ jobs:
         echo "version_name=$(gradle -q printVersionName)" >> $GITHUB_OUTPUT
 
     - name: Build with Gradle 8.9
-      run: gradle build -Pbuild_extrapath=jsg-transporters
+      run: gradle build -Pbuild_extrapath=../../builds/jsg-transporters
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -60,6 +61,7 @@ jobs:
         title: "${{ steps.mod_version.outputs.version_name }}"
         files: |
           *.jar
+          ${{ github.workspace }}/builds/*.jar
 
 #  dependency-submission:
 #
