@@ -44,9 +44,9 @@ jobs:
         gradle-version: '8.9'
 
     - name: Retrieve Version
-      run: |
-        echo "VERSION_NAME=$(gradle -q printVersionName) >> $GITHUB_OUTPUT"
       id: mod_version
+      run: |
+        echo "version_name=$(gradle -q printVersionName)" >> $GITHUB_OUTPUT
 
     - name: Build with Gradle 8.9
       run: gradle build -Pbuild_extrapath=jsg-transporters
@@ -55,9 +55,9 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         draft: true
-        automatic_release_tag: "${{ steps.mod_version.outputs.VERSION_NAME }}"
+        automatic_release_tag: "${{ steps.mod_version.outputs.version_name }}"
         prerelease: true
-        title: "${{ steps.mod_version.outputs.VERSION_NAME }}"
+        title: "${{ steps.mod_version.outputs.version_name }}"
         files: |
           *.jar
 
