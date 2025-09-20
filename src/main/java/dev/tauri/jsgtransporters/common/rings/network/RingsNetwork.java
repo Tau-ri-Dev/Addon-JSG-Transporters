@@ -54,7 +54,9 @@ public class RingsNetwork extends SavedData {
     @Nullable
     public Map<SymbolTypeEnum<?>, RingsAddress> getAddresses(RingsPos pos) {
         if (pos == null) return null;
-        return new HashMap<>(RINGS_MAP_BY_POS.get(pos));
+        var m = RINGS_MAP_BY_POS.get(pos);
+        if (m == null) return null;
+        return new HashMap<>(m);
     }
 
     public void removeRings(RingsPos pos) {
@@ -210,7 +212,7 @@ public class RingsNetwork extends SavedData {
             ringsTagList.add(ringsTag);
         }
         compound.put("rings", ringsTagList);
-        JSG.logger.info("Saving RINGS NETWORK: Done");
+        JSGTransporters.logger.info("Saving RINGS NETWORK: Done");
         return compound;
     }
 

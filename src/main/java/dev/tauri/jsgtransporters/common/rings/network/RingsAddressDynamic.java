@@ -3,6 +3,7 @@ package dev.tauri.jsgtransporters.common.rings.network;
 import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
+import dev.tauri.jsgtransporters.JSGTransporters;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
 
@@ -45,7 +46,7 @@ public class RingsAddressDynamic extends RingsAddress {
 
     public void addSymbol(SymbolInterface symbol) {
         if (address.size() == 5) {
-            JSG.logger.error("Tried to add symbol to already full address");
+            JSGTransporters.logger.error("Tried to add symbol to already full address");
             return;
         }
 
@@ -55,7 +56,7 @@ public class RingsAddressDynamic extends RingsAddress {
 
     public void addAll(RingsAddress ringsAddress) {
         if (address.size() + ringsAddress.address.size() > 5) {
-            JSG.logger.error("Tried to add symbols to already populated address");
+            JSGTransporters.logger.error("Tried to add symbols to already populated address");
             return;
         }
 
@@ -65,7 +66,7 @@ public class RingsAddressDynamic extends RingsAddress {
 
     public void addAll(List<SymbolInterface> ringsAddress) {
         if (address.size() + ringsAddress.size() > 5) {
-            JSG.logger.error("Tried to add symbols to already populated address");
+            JSGTransporters.logger.error("Tried to add symbols to already populated address");
             return;
         }
 

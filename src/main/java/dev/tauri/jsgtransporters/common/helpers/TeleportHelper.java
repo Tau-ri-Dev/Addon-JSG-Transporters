@@ -69,7 +69,7 @@ public class TeleportHelper {
         FluidState fluidState = oldState.getFluidState();
         if (oldState.getBlock() instanceof LiquidBlock && fluidState.isSource()) {
             // temp
-            JSG.logger.info("{} {}", fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS), fluidState.getFluidType()); // temp
+            JSGTransporters.logger.info("{} {}", fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS), fluidState.getFluidType()); // temp
             Fluid fluid = fluidState.getType();
             if (fluid instanceof FlowingFluid flowFluid && switch (JSGTConfig.General.ringsFluidTreatmentMode.get()) {
                 case Always -> true;

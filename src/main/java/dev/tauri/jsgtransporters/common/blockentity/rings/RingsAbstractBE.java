@@ -261,7 +261,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
             }
 
-            JSG.logger.debug("Updated to power tier: {}", powerTier);
+            JSGTransporters.logger.debug("Updated to power tier: {}", powerTier);
         }
     }
 
@@ -310,6 +310,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
 
                 generateAddresses(false);
+                updatePowerTier();
             } else {
                 JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.RENDERER_STATE));
                 JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateTypeEnum.GUI_STATE));
@@ -440,6 +441,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         ringsPos = new RingsPos(getLevelNotNull().dimension(), getBlockPos(), getSymbolType());
         if (oldPos != null)
             ringsPos.setName(oldPos.getName());
+        var ringsFromNetwork = RingsNetwork.INSTANCE.getRings(getRingsAddress(SymbolTypeRegistry.GOAULD));
+        if (ringsFromNetwork != null)
+            ringsPos.setName(ringsFromNetwork.getName());
     }
 
     public void setRingsAddress(SymbolTypeEnum<?> symbolType, RingsAddress address) {
@@ -558,7 +562,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public ItemStack getAddressPage(SymbolTypeEnum<?> symbolType, int[] symbolsToDisplay) {
-        JSG.logger.info("Giving Notebook page of address {}", symbolType);
+        JSGTransporters.logger.info("Giving Notebook page of address {}", symbolType);
 
         CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getRegistryPathFromWorld(getLevelNotNull(), pos), getOriginId(), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
 

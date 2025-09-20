@@ -117,9 +117,9 @@ public class RingsAddress implements IAddress {
     @Override
     public void deserializeNBT(CompoundTag compound) {
         if (!address.isEmpty()) {
-            JSG.logger.error("Tried to deserialize address already containing symbols", new ConcurrentModificationException());
+            JSGTransporters.logger.error("Tried to deserialize address already containing symbols", new ConcurrentModificationException());
             for (var s : address)
-                JSG.logger.error(s.getEnglishName());
+                JSGTransporters.logger.error(s.getEnglishName());
             return;
         }
 
@@ -138,7 +138,7 @@ public class RingsAddress implements IAddress {
 
     public void fromBytes(ByteBuf buf) {
         if (!address.isEmpty()) {
-            JSG.logger.error("Tried to deserialize address already containing symbols");
+            JSGTransporters.logger.error("Tried to deserialize address already containing symbols");
             return;
         }
 
