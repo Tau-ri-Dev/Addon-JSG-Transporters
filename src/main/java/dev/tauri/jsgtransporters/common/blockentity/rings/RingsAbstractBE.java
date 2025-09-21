@@ -1,6 +1,5 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
-import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.blockentity.IAddressProvider;
 import dev.tauri.jsg.blockentity.IPreparable;
 import dev.tauri.jsg.blockentity.util.IUpgradable;
@@ -89,7 +88,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     protected Map<SymbolTypeEnum<?>, RingsAddress> addressMap = new HashMap<>();
     protected RingsPos ringsPos;
     protected int verticalOffset = 0;
-    protected RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
+    protected final RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
 
     public static final int BIOME_OVERRIDE_SLOT = 10;
 
@@ -98,31 +97,19 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         public boolean isItemValid(int slot, ItemStack stack) {
             Item item = stack.getItem();
             boolean isItemCapacitor = (item instanceof CapacitorItemBlock);
-            switch (slot) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    return RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
-
-                case 4:
-                case 5:
-                case 6:
-                    return isItemCapacitor && getSupportedCapacitors() >= (slot - 3);
-
-                case 7:
-                case 8:
-                case 9:
-                    return item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
-
-                case BIOME_OVERRIDE_SLOT:
+            return switch (slot) {
+                case 0, 1, 2, 3 ->
+                        RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
+                case 4, 5, 6 -> isItemCapacitor && getSupportedCapacitors() >= (slot - 3);
+                case 7, 8, 9 ->
+                        item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
+                case BIOME_OVERRIDE_SLOT -> {
                     var override = BiomeOverlayRegistry.getBiomeOverlayByItem(stack);
-                    if (override == null) return false;
 
-                    return getSupportedOverlays().contains(override);
-                default:
-                    return true;
-            }
+                    yield getSupportedOverlays().contains(override);
+                }
+                default -> true;
+            };
         }
 
         @Override
@@ -262,6 +249,21 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             }
 
             JSGTransporters.logger.debug("Updated to power tier: {}", powerTier);
+        }
+    }
+
+    protected boolean isRSPowered;
+
+    public void updateRedstonePower(boolean power) {
+        if (getLevel() == null || getLevel().isClientSide) return;
+        if (isRSPowered == power) return;
+        isRSPowered = power;
+        if (power) {
+            dialedAddress.clear();
+            if (lastDialedAddress != null)
+                dialedAddress.addAll(lastDialedAddress);
+            setChanged();
+            tryConnect();
         }
     }
 
@@ -699,6 +701,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             compound.putInt("energyToOperate_teleport", energyToOperate.keepAlive);
         }
 
+        compound.putBoolean("isRSPowered", isRSPowered);
+        if (lastDialedAddress != null)
+            compound.put("lastDialedAddress", lastDialedAddress.serializeNBT());
+
         super.saveAdditional(compound);
     }
 
@@ -723,6 +729,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (compound.contains("energyToOperate_start")) {
             energyToOperate = new EnergyRequiredToOperateRings(compound.getInt("energyToOperate_start"), compound.getInt("energyToOperate_teleport"));
         }
+
+        isRSPowered = compound.getBoolean("isRSPowered");
+        if (compound.contains("lastDialedAddress"))
+            lastDialedAddress = new RingsAddressDynamic(compound.getCompound("lastDialedAddress"));
     }
 
     private BlockPos linkedPos;
@@ -778,6 +788,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public boolean busy = false;
+    public RingsAddressDynamic lastDialedAddress;
     public RingsPos targetRings;
     public boolean outbound = false;
 
@@ -785,6 +796,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public RingsConnectResult tryConnect() {
         if (level == null || level.isClientSide()) return RingsConnectResult.CLIENT;
         RingsPos rings;
+        lastDialedAddress = new RingsAddressDynamic(dialedAddress);
+        setChanged();
         if (dialedAddress.size() == 1 && dialedAddress.get(0).origin()) {
             // only one symbol - origin -> connect to nearest rings
             rings = RingsNetwork.INSTANCE.getNearestRings(this.ringsPos);

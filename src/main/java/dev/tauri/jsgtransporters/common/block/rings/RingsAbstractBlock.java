@@ -41,7 +41,7 @@ import java.util.List;
 public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem {
 
     public static final Properties RINGS_BASE_PROPS = Properties.of()
-            .strength(2.5f,30f)
+            .strength(2.5f, 30f)
             .isRedstoneConductor((BlockState state, BlockGetter getter, BlockPos pos) -> true)
             .isViewBlocking((BlockState state, BlockGetter getter, BlockPos pos) -> true)
             .noOcclusion()
@@ -140,6 +140,17 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         BlockEntity e = level.getBlockEntity(blockPos);
         if (e instanceof RingsAbstractBE be) {
             be.updateLinkStatus();
+        }
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+        if (!pLevel.isClientSide) {
+            if (pLevel.getBlockEntity(pPos) instanceof RingsAbstractBE rings) {
+                rings.updateRedstonePower(pLevel.hasNeighborSignal(pPos));
+            }
         }
     }
 }
