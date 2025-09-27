@@ -45,6 +45,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
             .isRedstoneConductor((BlockState state, BlockGetter getter, BlockPos pos) -> true)
             .isViewBlocking((BlockState state, BlockGetter getter, BlockPos pos) -> true)
             .noOcclusion()
+            .isRedstoneConductor((BlockState state, BlockGetter getter, BlockPos pos) -> true)
             .requiresCorrectToolForDrops()
             .sound(SoundType.METAL);
 

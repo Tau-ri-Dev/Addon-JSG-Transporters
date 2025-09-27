@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class AncientCPRaycaster extends Raycaster {
+public class AncientCPRaycaster extends AbstractCPRaycaster {
 
     public static final AncientCPRaycaster INSTANCE = new AncientCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
@@ -109,7 +109,7 @@ public class AncientCPRaycaster extends Raycaster {
     }
 
     @Override
-    protected Vector3f getTranslation(Level level, BlockPos blockPos) {
+    public Vector3f getTranslation(Level level, BlockPos blockPos) {
         var facing = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return getTranslation(facing);
     }
@@ -134,27 +134,10 @@ public class AncientCPRaycaster extends Raycaster {
         };
     }
 
-    public static int getIntRotation(Direction direction) {
-        return switch (direction) {
-            case EAST -> 90;
-            case NORTH -> 180;
-            case WEST -> 270;
-            default -> 0;
-        };
-    }
-
     @Override
     protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(InteractionHand.MAIN_HAND, true);
         JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.ANCIENT.valueOf(button), false));
         return true;
-    }
-
-    @Override
-    public boolean onActivated(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand) {
-        if (interactionHand != InteractionHand.MAIN_HAND) return false;
-        var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
-        var rotation = getIntRotation(direction);
-        return super.onActivated(level, blockPos, player, rotation, interactionHand);
     }
 }

@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 
-public class GoauldCPRaycaster extends Raycaster {
+public class GoauldCPRaycaster extends AbstractCPRaycaster {
 
     public static final GoauldCPRaycaster INSTANCE = new GoauldCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
@@ -81,7 +81,7 @@ public class GoauldCPRaycaster extends Raycaster {
     }
 
     @Override
-    protected Vector3f getTranslation(Level level, BlockPos blockPos) {
+    public Vector3f getTranslation(Level level, BlockPos blockPos) {
         var facing = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return getTranslation(facing);
     }
@@ -110,17 +110,15 @@ public class GoauldCPRaycaster extends Raycaster {
     }
 
     @Override
-    public boolean onActivated(Level level, BlockPos blockPos, Player player, InteractionHand interactionHand) {
-        if (interactionHand != InteractionHand.MAIN_HAND) return false;
-        var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
-        var rotation = getIntRotation(direction);
-        return super.onActivated(level, blockPos, player, rotation, interactionHand);
-    }
-
-    @Override
     protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(interactionHand, true);
         JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.GOAULD.valueOf(button), false));
         return true;
+    }
+
+    @Override
+    public float getRotation(Level level, BlockPos blockPos, Player player) {
+        var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
+        return getIntRotation(direction);
     }
 }
