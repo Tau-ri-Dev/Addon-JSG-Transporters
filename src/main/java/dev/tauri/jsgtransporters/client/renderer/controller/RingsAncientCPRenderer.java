@@ -1,18 +1,19 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.command.commands.CommandTest;
-import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.property.JSGProperties;
+import dev.tauri.jsg.raycaster.Raycaster;
+import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
 import dev.tauri.jsgtransporters.common.raycaster.AncientCPRaycaster;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolAncientEnum;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsAncientCPRendererState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+
+import java.util.List;
 
 public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncientCPRendererState, RingsAncientCPBE> {
     public RingsAncientCPRenderer(BlockEntityRendererProvider.Context ignored) {
@@ -47,14 +48,6 @@ public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncient
         translateToPos();
         stack.scale(2, 2, 2);
 
-        if (JSGConfig.Debug.renderBoundingBoxes.get() || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
-            this.stack.pushPose();
-            for (var btn : AncientCPRaycaster.BUTTONS) {
-                btn.render(stack);
-            }
-            this.stack.popPose();
-        }
-
         ModelsHolder.RINGS_CONTROLLER_ANCIENT_BASE.bindTextureAndRender(stack);
 
 
@@ -67,5 +60,15 @@ public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncient
             Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
             stack.popPose();
         }
+    }
+
+    @Override
+    public List<RayCastedButton> getRaycasterButtons() {
+        return AncientCPRaycaster.BUTTONS;
+    }
+
+    @Override
+    public Raycaster getRaycaster() {
+        return AncientCPRaycaster.INSTANCE;
     }
 }

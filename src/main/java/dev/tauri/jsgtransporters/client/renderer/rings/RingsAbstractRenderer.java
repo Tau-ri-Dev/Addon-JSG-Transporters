@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import dev.tauri.jsg.loader.model.OBJModel;
+import dev.tauri.jsg.renderer.LinkableRenderer;
 import dev.tauri.jsg.util.math.MathFunctionImpl;
 import dev.tauri.jsg.util.vectors.Vector2f;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 import static dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE.RING_ANIMATION_LENGTH;
 
-public abstract class RingsAbstractRenderer<S extends RingsRendererState, T extends RingsAbstractBE> implements BlockEntityRenderer<T> {
+public abstract class RingsAbstractRenderer<S extends RingsRendererState, T extends RingsAbstractBE> implements BlockEntityRenderer<T>, LinkableRenderer {
     public RingsAbstractRenderer(BlockEntityRendererProvider.Context ignored) {
     }
 
@@ -105,6 +106,8 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         OBJModel.packedLight = this.combinedLight;
         OBJModel.resetRGB();
         OBJModel.resetDynamicLightning();
+
+        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack);
 
         stack.pushPose();
         stack.translate(0.5, 0.5, 0.5);

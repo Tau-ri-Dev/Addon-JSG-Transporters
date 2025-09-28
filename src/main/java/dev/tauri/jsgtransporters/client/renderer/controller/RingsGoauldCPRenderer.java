@@ -3,6 +3,8 @@ package dev.tauri.jsgtransporters.client.renderer.controller;
 import com.mojang.math.Axis;
 import dev.tauri.jsg.config.JSGConfig;
 import dev.tauri.jsg.property.JSGProperties;
+import dev.tauri.jsg.raycaster.Raycaster;
+import dev.tauri.jsg.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
@@ -12,6 +14,8 @@ import dev.tauri.jsgtransporters.common.state.renderer.RingsGoauldCPRendererStat
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+
+import java.util.List;
 
 public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCPRendererState, RingsGoauldCPBE> {
     public RingsGoauldCPRenderer(BlockEntityRendererProvider.Context ignored) {
@@ -42,14 +46,6 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
     protected void renderController() {
         translateToPos();
 
-        if (JSGConfig.Debug.renderBoundingBoxes.get() || Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) {
-            this.stack.pushPose();
-            for (var btn : GoauldCPRaycaster.BUTTONS) {
-                btn.render(stack);
-            }
-            this.stack.popPose();
-        }
-
         ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
 
         //.Constants.LOADERS_HOLDER.texture().getTexture(rendererState.getButtonTexture(SymbolGoauldEnum.LIGHT, rendererState.getBiomeOverlay())).bindTexture();
@@ -66,5 +62,15 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
             Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
             stack.popPose();
         }
+    }
+
+    @Override
+    public List<RayCastedButton> getRaycasterButtons() {
+        return GoauldCPRaycaster.BUTTONS;
+    }
+
+    @Override
+    public Raycaster getRaycaster() {
+        return GoauldCPRaycaster.INSTANCE;
     }
 }

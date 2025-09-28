@@ -20,7 +20,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
 
     public static final AncientCPRaycaster INSTANCE = new AncientCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
-            new RayCastedButton(0, List.of(
+            new RayCastedButton(0, SymbolTypeRegistry.ANCIENT, List.of(
                     //1st line
                     //Selen
                     new Vector3f(-0.049301f, -0.010011f, 0.170078f),
@@ -29,7 +29,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(-0.049301f, -0.010011f, 0.11672f)
             )),
 
-            new RayCastedButton(1, List.of(
+            new RayCastedButton(1, SymbolTypeRegistry.ANCIENT, List.of(
                     //Tiris
                     new Vector3f(0.009138f, -0.010011f, 0.170078f),
                     new Vector3f(0.049482f, -0.010011f, 0.170078f),
@@ -37,7 +37,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.009138f, -0.010011f, 0.11672f)
             )),
 
-            new RayCastedButton(2, List.of(
+            new RayCastedButton(2, SymbolTypeRegistry.ANCIENT, List.of(
                     //2nd line
                     //Varun
                     new Vector3f(-0.022506f, -0.010011f, 0.098201f),
@@ -47,7 +47,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
 
             )),
 
-            new RayCastedButton(3, List.of(
+            new RayCastedButton(3, SymbolTypeRegistry.ANCIENT, List.of(
                     //3rd line
                     //Elyra
                     new Vector3f(-0.050507f, -0.010011f, 0.027116f),
@@ -56,7 +56,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(-0.050507f, -0.010011f, -0.026522f)
             )),
 
-            new RayCastedButton(4, List.of(
+            new RayCastedButton(4, SymbolTypeRegistry.ANCIENT, List.of(
                     //Ankor
                     new Vector3f(0.010648f, -0.010011f, 0.027116f),
                     new Vector3f(0.050785f, -0.010011f, 0.027116f),
@@ -64,7 +64,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.010648f, -0.010011f, -0.026522f)
             )),
 
-            new RayCastedButton(5, List.of(
+            new RayCastedButton(5, SymbolTypeRegistry.ANCIENT, List.of(
                     //4th line
                     //Synthis
                     new Vector3f(-0.020189f, -0.010011f, -0.044267f),
@@ -73,7 +73,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(-0.020189f, -0.010011f, -0.097266f)
             )),
 
-            new RayCastedButton(6, List.of(
+            new RayCastedButton(6, SymbolTypeRegistry.ANCIENT, List.of(
                     //5th line
                     //Aurin
                     new Vector3f(-0.068026f, -0.010011f, -0.115882f),
@@ -82,7 +82,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(-0.068026f, -0.010011f, -0.169972f)
             )),
 
-            new RayCastedButton(7, List.of(
+            new RayCastedButton(7, SymbolTypeRegistry.ANCIENT, List.of(
                     //Velar
                     new Vector3f(-0.020189f, -0.010011f, -0.115882f),
                     new Vector3f(0.019943f, -0.010011f, -0.115882f),
@@ -90,7 +90,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(-0.020189f, -0.010011f, -0.169972f)
             )),
 
-            new RayCastedButton(8, List.of(
+            new RayCastedButton(8, SymbolTypeRegistry.ANCIENT, List.of(
                     //Omnis - Activation Button
                     new Vector3f(0.027856f, -0.010011f, -0.115882f),
                     new Vector3f(0.067878f, -0.010011f, -0.115882f),

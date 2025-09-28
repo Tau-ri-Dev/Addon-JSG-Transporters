@@ -2,6 +2,9 @@ package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.tauri.jsg.loader.model.OBJModel;
+import dev.tauri.jsg.renderer.IRaycasterButtonsRenderer;
+import dev.tauri.jsg.renderer.LinkableRenderer;
+import dev.tauri.jsgtransporters.common.block.controller.AbstractRingsCPBlock;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -11,7 +14,7 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendererState, T extends AbstractRingsCPBE> implements BlockEntityRenderer<T> {
+public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendererState, T extends AbstractRingsCPBE> implements BlockEntityRenderer<T>, LinkableRenderer, IRaycasterButtonsRenderer {
     public AbstractRingsCPRenderer(BlockEntityRendererProvider.Context ignored) {
     }
 
@@ -53,6 +56,10 @@ public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendere
         OBJModel.packedLight = this.combinedLight;
         OBJModel.resetRGB();
         OBJModel.resetDynamicLightning();
+
+        if (!(level.getBlockState(tileEntity.getBlockPos()).getBlock() instanceof AbstractRingsCPBlock)) return;
+        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack);
+        renderRaycasterButtons(tileEntity, pPoseStack, pBuffer);
 
         stack.pushPose();
         renderController();
