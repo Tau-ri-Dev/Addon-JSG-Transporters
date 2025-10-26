@@ -24,7 +24,7 @@ import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.registry.BlockRegistry;
 import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
-import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.ScheduledTaskType;
 import dev.tauri.jsg.stargate.network.IAddress;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
@@ -39,6 +39,7 @@ import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
+import dev.tauri.jsgtransporters.common.registry.RingsScheduledTaskType;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
@@ -368,7 +369,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                             doPageProgress = true;
                             lockPage = true;
                             pageSlotId = i;
-                            givePageTask = new ScheduledTask(EnumScheduledTask.STARGATE_GIVE_PAGE, 36);
+                            givePageTask = new ScheduledTask(ScheduledTaskType.STARGATE_GIVE_PAGE, 36);
                             givePageTask.setTaskCreated(getTime());
                             givePageTask.setExecutor(this);
 
@@ -485,80 +486,74 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public void executeTask(EnumScheduledTask task, CompoundTag context) {
-        switch (task) {
-            case RINGS_START_ANIMATION:
-                if (level == null) break;
-                if (level.isClientSide()) break;
-                if (context == null) {
-                    context = new CompoundTag();
-                    context.putBoolean("start", true);
-                    addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
-                    JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_START);
+    public void executeTask(ScheduledTaskType task, CompoundTag context) {
+        if (task == RingsScheduledTaskType.RINGS_START_ANIMATION) {
+            if (level == null) return;
+            if (level.isClientSide()) return;
+            if (context == null) {
+                context = new CompoundTag();
+                context.putBoolean("start", true);
+                addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
+                JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_START);
 
+                context = new CompoundTag();
+                context.putBoolean("playEnd", true);
+                addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
+            } else {
+                if (context.getBoolean("playEnd")) {
+                    JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_END);
+                } else if (context.getBoolean("start")) {
+                    rendererState.startAnimation(level.getGameTime());
+                    setChanged();
+                    getAndSendState(StateTypeEnum.RENDERER_STATE);
                     context = new CompoundTag();
-                    context.putBoolean("playEnd", true);
-                    addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
-                } else {
-                    if (context.getBoolean("playEnd")) {
-                        JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_END);
-                    } else if (context.getBoolean("start")) {
-                        rendererState.startAnimation(level.getGameTime());
-                        setChanged();
-                        getAndSendState(StateTypeEnum.RENDERER_STATE);
+                    context.putBoolean("end", true);
+                    addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
+                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, 10));
+                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
+
+                    var offset = getVerticalOffset();
+                    for (int i = 0; i < 3; i++) {
                         context = new CompoundTag();
-                        context.putBoolean("end", true);
-                        addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
-                        addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, 10));
-                        addTask(new ScheduledTask(EnumScheduledTask.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
-
-                        var offset = getVerticalOffset();
-                        for (int i = 0; i < 3; i++) {
-                            context = new CompoundTag();
-                            context.putBoolean("tp", true);
-                            context.putInt("index", i);
-                            context.putBoolean("isLast", i == (offset > 0 ? 0 : 2));
-                            addTask(new ScheduledTask(task, 45 + ((offset > 0 ? (2 - i) : i) * 8), context));
-                        }
-                        break;
-                    } else if (context.getBoolean("end")) {
-                        ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
-                        busy = false;
-                        targetRings = null;
-                        break;
-                    } else if (context.getBoolean("tp") && context.contains("index")) {
-                        if (targetRings == null) break;
-                        teleportVolumes(context.getInt("index"), context.getBoolean("isLast"));
-                        break;
+                        context.putBoolean("tp", true);
+                        context.putInt("index", i);
+                        context.putBoolean("isLast", i == (offset > 0 ? 0 : 2));
+                        addTask(new ScheduledTask(task, 45 + ((offset > 0 ? (2 - i) : i) * 8), context));
                     }
+                    return;
+                } else if (context.getBoolean("end")) {
+                    ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
+                    busy = false;
+                    targetRings = null;
+                    return;
+                } else if (context.getBoolean("tp") && context.contains("index")) {
+                    if (targetRings == null) return;
+                    teleportVolumes(context.getInt("index"), context.getBoolean("isLast"));
+                    return;
                 }
-                break;
-            case RINGS_SOLID_BLOCKS:
-                setBorderBlocks(context != null, false);
-                break;
-            case STARGATE_GIVE_PAGE:
-                if (pageSlotId < 7) break;
-                SymbolTypeEnum<?> symbolType = null;
-                switch (pageSlotId) {
-                    case 7:
-                        symbolType = SymbolTypeRegistry.GOAULD;
-                        break;
-                    case 8:
-                        symbolType = SymbolTypeRegistry.ANCIENT;
-                        break;
-                    case 9:
-                        symbolType = SymbolTypeRegistry.ORI;
-                        break;
-                    default:
-                        break;
-                }
-                if (symbolType == null) break;
-                var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
-                inventory.setStackInSlot(pageSlotId, stack);
+            }
+        } else if (task == RingsScheduledTaskType.RINGS_SOLID_BLOCKS) {
+            setBorderBlocks(context != null, false);
+        } else if (task == ScheduledTaskType.STARGATE_GIVE_PAGE) {
+            if (pageSlotId < 7) return;
+            SymbolTypeEnum<?> symbolType = null;
+            switch (pageSlotId) {
+                case 7:
+                    symbolType = SymbolTypeRegistry.GOAULD;
+                    break;
+                case 8:
+                    symbolType = SymbolTypeRegistry.ANCIENT;
+                    break;
+                case 9:
+                    symbolType = SymbolTypeRegistry.ORI;
+                    break;
+                default:
+                    break;
+            }
+            if (symbolType == null) return;
+            var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
+            inventory.setStackInSlot(pageSlotId, stack);
 
-                break;
-            default:
-                break;
         }
         setChanged();
     }
@@ -867,7 +862,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         ignoredEntities.clear();
         pistonHeads.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
-        addTask(new ScheduledTask(EnumScheduledTask.RINGS_START_ANIMATION, 40));
+        addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_START_ANIMATION, 40));
     }
 
     public final List<Entity> ignoredEntities = new ArrayList<>();

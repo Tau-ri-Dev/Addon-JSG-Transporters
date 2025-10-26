@@ -70,6 +70,7 @@ public class JSGTransporters implements JSGAddon {
         OriCPRaycaster.register();
         AncientCPRaycaster.register();
         JSGTPacketHandler.init();
+        RingsScheduledTaskType.load();
 
         Integrations.OC2.addOnLoad(OCDevicesRegistry::load);
         Integrations.CCT.addOnLoad(CCDevicesRegistry::load);

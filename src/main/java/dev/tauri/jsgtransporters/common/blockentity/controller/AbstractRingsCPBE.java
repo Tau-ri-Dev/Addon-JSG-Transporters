@@ -7,7 +7,7 @@ import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.sound.JSGSoundHelper;
-import dev.tauri.jsg.stargate.EnumScheduledTask;
+import dev.tauri.jsg.stargate.ScheduledTaskType;
 import dev.tauri.jsg.stargate.network.SymbolInterface;
 import dev.tauri.jsg.state.State;
 import dev.tauri.jsg.state.StateProviderInterface;
@@ -16,6 +16,7 @@ import dev.tauri.jsg.util.ILinkable;
 import dev.tauri.jsg.util.ITickable;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
+import dev.tauri.jsgtransporters.common.registry.RingsScheduledTaskType;
 import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsCPButtonPushedState;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
@@ -72,8 +73,8 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
-    public void executeTask(EnumScheduledTask enumScheduledTask, @Nullable CompoundTag compoundTag) {
-        if (Objects.requireNonNull(enumScheduledTask) == EnumScheduledTask.RINGS_SYMBOL_DEACTIVATE) {
+    public void executeTask(ScheduledTaskType enumScheduledTask, @Nullable CompoundTag compoundTag) {
+        if (Objects.requireNonNull(enumScheduledTask) == RingsScheduledTaskType.RINGS_SYMBOL_DEACTIVATE) {
             busy = false;
             setChanged();
             sendState(StateTypeEnum.RENDERER_UPDATE, new RingsCPButtonPushedState(true));
@@ -168,7 +169,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
         var result = getLinkedDevice().addSymbolToAddress(symbol);
         if (result != null && !result.ok() && player != null)
             player.displayClientMessage(result.component(), true);
-        addTask(new ScheduledTask(EnumScheduledTask.RINGS_SYMBOL_DEACTIVATE, 10));
+        addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SYMBOL_DEACTIVATE, 10));
         if (symbol.origin())
             JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_GOAULD_BUTTON_DIAL);
         else
