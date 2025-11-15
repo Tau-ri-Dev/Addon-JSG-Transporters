@@ -8,7 +8,7 @@ plugins {
 
 group = mod_group_id
 if(mod_version.contains("Dev"))
-    version = mod_version + (new Date().format('ddMMyyyy-HHmmss'))
+    version = mod_version + (new Date().format(build_with_millis == "true" ? 'ddMMyyyy-HHmmss' : 'ddMMyyyy'))
 else
     version = mod_version
 
