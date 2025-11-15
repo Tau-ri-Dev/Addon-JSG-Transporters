@@ -17,6 +17,7 @@ import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
+import dev.tauri.jsgtransporters.common.worldgen.StructuresInjector;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -71,6 +72,8 @@ public class JSGTransporters implements JSGAddon {
         AncientCPRaycaster.register();
         JSGTPacketHandler.init();
         RingsScheduledTaskType.load();
+
+        StructuresInjector.register();
 
         Integrations.OC2.addOnLoad(OCDevicesRegistry::load);
         Integrations.CCT.addOnLoad(CCDevicesRegistry::load);
