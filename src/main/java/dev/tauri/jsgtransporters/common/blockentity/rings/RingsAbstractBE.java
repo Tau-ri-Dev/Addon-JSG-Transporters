@@ -288,7 +288,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     @Override
     public boolean prepareBE() {
-        this.needRegenerate = true;
+        needRegenerate = true;
+        busy = false;
+        scheduledTasks.clear();
+        if (isLinked()) {
+            var linked = getLinkedDevice();
+            if (linked != null)
+                linked.setLinkedDevice(null);
+            setLinkedDevice(null);
+        }
         setChanged();
         return true;
     }
@@ -312,6 +320,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             if (!level.isClientSide) {
                 this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
 
+                tryRegenerateRingsIfNeeded();
+
                 generateAddresses(false);
                 updatePowerTier();
             } else {
@@ -320,6 +330,24 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             }
         }
         super.onLoad();
+    }
+
+    public void regenerateRings() {
+        var world = getLevel();
+        if (world == null) return;
+        if (world.isClientSide) return;
+        JSGTransporters.logger.info("Regenerating rings at {} in {}", getBlockPos(), world.dimension().location());
+        generateAddresses(true);
+        updateLinkStatus();
+        setChanged();
+    }
+
+    public void tryRegenerateRingsIfNeeded() {
+        if (needRegenerate) {
+            regenerateRings();
+            needRegenerate = false;
+            setChanged();
+        }
     }
 
     private boolean needRegenerate = false;

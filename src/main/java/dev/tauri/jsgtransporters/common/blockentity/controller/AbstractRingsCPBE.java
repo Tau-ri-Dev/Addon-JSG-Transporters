@@ -45,6 +45,15 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
 
     @Override
     public boolean prepareBE() {
+        busy = false;
+        scheduledTasks.clear();
+        if (isLinked()) {
+            var linked = getLinkedDevice();
+            if (linked != null)
+                linked.setLinkedDevice(null);
+            setLinkedDevice(null);
+        }
+        setChanged();
         return true;
     }
 
