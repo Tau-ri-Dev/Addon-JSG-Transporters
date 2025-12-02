@@ -112,7 +112,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         OBJModel.resetRGB();
         OBJModel.resetDynamicLightning();
 
-        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack);
+        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack, pBuffer);
 
         stack.pushPose();
         stack.translate(0.5, 0.5, 0.5);

@@ -24,6 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -69,7 +70,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     // Scheduled tasks
 
     /**
-     * List of scheduled tasks to be performed on {@link ITickable#tick()()}.
+     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)()}.
      */
     protected List<ScheduledTask> scheduledTasks = new ArrayList<>();
 
@@ -142,8 +143,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
-    public void tick() {
-        if (level == null) return;
+    public void tick(@NotNull Level level) {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, level.getGameTime());
     }

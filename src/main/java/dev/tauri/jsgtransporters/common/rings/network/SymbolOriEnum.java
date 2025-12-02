@@ -226,6 +226,11 @@ public enum SymbolOriEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolOriEnum getSymbolByAngle(float v, float v1) {
+            return null;
+        }
+
+        @Override
         public SymbolOriEnum getSymbolByAngle(float angle) {
             return PILLAR;
         }

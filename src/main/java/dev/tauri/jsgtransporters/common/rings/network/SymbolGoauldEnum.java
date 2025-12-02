@@ -218,6 +218,11 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolGoauldEnum getSymbolByAngle(float v, float v1) {
+            return null;
+        }
+
+        @Override
         public SymbolGoauldEnum getSymbolByAngle(float angle) {
             return COBRA;
         }

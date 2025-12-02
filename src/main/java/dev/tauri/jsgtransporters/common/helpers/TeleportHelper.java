@@ -1,9 +1,6 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
-import dev.tauri.jsg.JSG;
 import dev.tauri.jsg.helpers.FluidHelper;
-import dev.tauri.jsg.stargate.teleportation.JSGGateTeleporter;
-import dev.tauri.jsg.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
@@ -37,8 +34,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static dev.tauri.jsg.stargate.teleportation.TeleportHelper.fireTravelToDimEvent;
-import static dev.tauri.jsg.stargate.teleportation.TeleportHelper.setRotationAndPositionAndMotion;
+import static dev.tauri.jsg.stargate.teleportation.old.TeleportHelper.fireTravelToDimEvent;
 
 public class TeleportHelper {
     public static void teleportEntity(Entity entity, RingsPos sourceRings, RingsPos targetRings) {
@@ -50,17 +46,20 @@ public class TeleportHelper {
         var tPos = targetRings.ringsPos.getCenter().add(0, targetRings.getBlockEntity().getVerticalOffset(), 0).add(offset);
 
         if (sourceDim == targetRings.dimension) {
-            setRotationAndPositionAndMotion(entity, entity.getYHeadRot(), new Vector3d(tPos.x, tPos.y, tPos.z),
-                    new Vector3f(), false);
+            setRotationAndPosition(entity, entity.getYHeadRot(), new Vector3d(tPos.x, tPos.y, tPos.z));
         } else {
             if (!fireTravelToDimEvent(entity, targetRings.dimension))
                 return;
 
             entity.changeDimension(
                     Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)),
-                    new JSGGateTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), new Vector3f(), entity.getYRot(), null, false,
-                            null));
+                    new RingsTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), entity.getYRot(), null));
         }
+    }
+
+    public static void setRotationAndPosition(Entity entity, float yawRotated, Vector3d pos) {
+        entity.teleportTo(pos.x, pos.y, pos.z);
+        entity.setYHeadRot(yawRotated);
     }
 
     @NotNull

@@ -218,6 +218,11 @@ public enum SymbolAncientEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolAncientEnum getSymbolByAngle(float v, float v1) {
+            return null;
+        }
+
+        @Override
         public SymbolAncientEnum getSymbolByAngle(float angle) {
             return OMNIS;
         }

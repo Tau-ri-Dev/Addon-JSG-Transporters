@@ -355,7 +355,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     private boolean addedToNetwork;
 
     @Override
-    public void tick() {
+    public void tick(@NotNull Level level) {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, getTime());
         if (!getLevelNotNull().isClientSide) {
@@ -501,7 +501,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     // Scheduled tasks
 
     /**
-     * List of scheduled tasks to be performed on {@link ITickable#tick()()}.
+     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)()}.
      */
     protected List<ScheduledTask> scheduledTasks = new ArrayList<>();
 
@@ -514,11 +514,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public void executeTask(ScheduledTaskType task, CompoundTag context) {
+    public void executeTask(ScheduledTaskType task, @NotNull CompoundTag context) {
         if (task == RingsScheduledTaskType.RINGS_START_ANIMATION) {
             if (level == null) return;
             if (level.isClientSide()) return;
-            if (context == null) {
+            if (!context.contains("start") && !context.contains("end") && !context.contains("index") && !context.contains("tp") && !context.contains("playEnd")) {
                 context = new CompoundTag();
                 context.putBoolean("start", true);
                 addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
@@ -538,7 +538,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     context.putBoolean("end", true);
                     addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
                     addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, 10));
-                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, new CompoundTag()));
+                    var c = new CompoundTag();
+                    c.putBoolean("clear", true);
+                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, c));
 
                     var offset = getVerticalOffset();
                     for (int i = 0; i < 3; i++) {
@@ -561,7 +563,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 }
             }
         } else if (task == RingsScheduledTaskType.RINGS_SOLID_BLOCKS) {
-            setBorderBlocks(context != null, false);
+            setBorderBlocks(context.getBoolean("clear"), false);
         } else if (task == ScheduledTaskType.STARGATE_GIVE_PAGE) {
             if (pageSlotId < 7) return;
             SymbolTypeEnum<?> symbolType = null;

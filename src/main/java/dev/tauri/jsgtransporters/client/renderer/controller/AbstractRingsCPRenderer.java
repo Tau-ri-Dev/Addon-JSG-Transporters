@@ -58,7 +58,7 @@ public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendere
         OBJModel.resetDynamicLightning();
 
         if (!(level.getBlockState(tileEntity.getBlockPos()).getBlock() instanceof AbstractRingsCPBlock)) return;
-        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack);
+        renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack, pBuffer);
         renderRaycasterButtons(tileEntity, pPoseStack, pBuffer);
 
         stack.pushPose();
