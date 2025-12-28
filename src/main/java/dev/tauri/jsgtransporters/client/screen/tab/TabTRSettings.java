@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.client.screen.tab;
 
-import dev.tauri.jsg.screen.base.JSGTextField;
+import dev.tauri.jsg.api.client.screen.widget.base.JSGTextField;
 import dev.tauri.jsg.screen.element.tabs.Tab;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

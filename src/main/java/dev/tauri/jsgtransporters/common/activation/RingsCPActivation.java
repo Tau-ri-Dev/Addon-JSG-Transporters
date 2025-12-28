@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.activation;
 
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
 import dev.tauri.jsg.renderer.activation.DHDActivation;
-import dev.tauri.jsg.stargate.network.SymbolInterface;
 
 public class RingsCPActivation extends DHDActivation {
     public RingsCPActivation(SymbolInterface textureKey, long stateChange, boolean dim) {

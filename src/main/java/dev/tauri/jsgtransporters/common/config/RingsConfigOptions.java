@@ -1,7 +1,8 @@
 package dev.tauri.jsgtransporters.common.config;
 
-import dev.tauri.jsg.config.ingame.BlockConfigOptions;
-import dev.tauri.jsg.config.ingame.JSGIntRangeConfigOption;
+
+import dev.tauri.jsg.api.config.ingame.option.JSGIntRangeConfigOption;
+import dev.tauri.jsg.api.config.ingame.options.BlockConfigOptions;
 
 import java.util.List;
 

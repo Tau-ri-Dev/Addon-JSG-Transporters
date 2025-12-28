@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.state.gui;
 
-import dev.tauri.jsg.state.State;
+import dev.tauri.jsg.api.state.State;
 import io.netty.buffer.ByteBuf;
 
 public class RingsContainerGuiUpdate extends State {

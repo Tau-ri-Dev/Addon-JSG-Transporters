@@ -1,15 +1,15 @@
 package dev.tauri.jsgtransporters.common.inventory;
 
+import dev.tauri.jsg.api.client.screen.util.ContainerHelper;
+import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.api.state.StateType;
 import dev.tauri.jsg.forgeutil.SlotHandler;
 import dev.tauri.jsg.item.energy.CapacitorItemBlock;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.screen.inventory.JSGContainer;
 import dev.tauri.jsg.screen.inventory.OpenTabHolderInterface;
-import dev.tauri.jsg.screen.util.ContainerHelper;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
-import dev.tauri.jsg.state.StateTypeEnum;
 import dev.tauri.jsg.util.CreativeItemsChecker;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.registry.MenuTypeRegistry;
@@ -73,7 +73,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         }
 
         // Page slots (index 7-9)
-        for (int i = 0; i < SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length; i++) {
+        for (int i = 0; i < AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length; i++) {
             addSlot(new SlotHandler(itemHandler, i + 7, -22, 89 + 22 * i));
         }
 
@@ -113,9 +113,9 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         // Transfering from player's inventory to Stargate
         else {
             var openedSlots = getOpenTabsSlotsIds();
-            var biomeSlotId = 7 + SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length;
+            var biomeSlotId = 7 + AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length;
             var addressSlots = openedSlots.stream().filter(slot -> (
-                    slot >= 7 && slot <= (6 + SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS).length)
+                    slot >= 7 && slot <= (6 + AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length)
                             && ringsTile.getItemHandler().isItemValid(slot, stack) && !getSlot(slot).hasItem()
             )).toList();
 
@@ -202,7 +202,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
 
         ) {
             if (playerInventory.player instanceof ServerPlayer sp)
-                JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateTypeEnum.GUI_UPDATE, ringsTile.getState(StateTypeEnum.GUI_UPDATE)), sp);
+                JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateType.GUI_UPDATE, ringsTile.getState(StateType.GUI_UPDATE)), sp);
 
             lastEnergyStored = energyStorage.getEnergyStoredInternally();
             energyTransferedLastTick = ringsTile.getEnergyTransferredLastTick();
@@ -215,7 +215,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         super.addSlotListener(listener);
 
         if (listener instanceof ServerPlayer)
-            JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateTypeEnum.GUI_STATE, ringsTile.getState(StateTypeEnum.GUI_STATE)), (ServerPlayer) listener);
+            JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateType.GUI_STATE, ringsTile.getState(StateType.GUI_STATE)), (ServerPlayer) listener);
     }
 
     @Override

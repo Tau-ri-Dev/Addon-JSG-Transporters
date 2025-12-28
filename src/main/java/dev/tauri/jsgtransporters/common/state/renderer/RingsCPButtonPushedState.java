@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.stargate.network.SymbolInterface;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
-import dev.tauri.jsg.state.State;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.api.state.State;
 import io.netty.buffer.ByteBuf;
 
 public class RingsCPButtonPushedState extends State {
@@ -19,11 +19,11 @@ public class RingsCPButtonPushedState extends State {
 
     public RingsCPButtonPushedState(SymbolInterface symbol) {
         symbolId = symbol.getId();
-        symbolType = SymbolTypeEnum.getId(symbol.getSymbolType());
+        symbolType = AbstractSymbolType.getId(symbol.getSymbolType());
     }
 
     public SymbolInterface getSymbol() {
-        return SymbolTypeEnum.byId(symbolType).valueOf(symbolId);
+        return AbstractSymbolType.byId(symbolType).valueOf(symbolId);
     }
 
     @Override

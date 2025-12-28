@@ -1,17 +1,18 @@
 package dev.tauri.jsgtransporters.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
+import dev.tauri.jsg.api.client.IModelsHolder;
+import dev.tauri.jsg.api.client.LoadersHolder;
+import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
 import dev.tauri.jsgtransporters.Constants;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum ModelsHolder {
+public enum ModelsHolder implements IModelsHolder {
     RING_GOAULD("rings/rings_goauld.obj", "rings/rings_goauld.jpg", false),
     RING_ANCIENT("rings/rings_ancient.obj", "rings/rings_ancient.jpg", false),
     RING_ORI("rings/rings_ori.obj", "rings/rings_ori.jpg", false),
@@ -27,48 +28,26 @@ public enum ModelsHolder {
 
     ModelsHolder(String modelPath, String texturePath, boolean byOverlay) {
         this.model = Constants.LOADERS_HOLDER.model().getModelResource(modelPath);
-
-        for (BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay : BiomeOverlayRegistry.values()) {
-            if (!byOverlay) {
-                biomeTextureResourceMap.put(biomeOverlay, Constants.LOADERS_HOLDER.texture().getTextureResource(texturePath));
-            } else {
-                String[] split = texturePath.split("\\.");
-                biomeTextureResourceMap.put(biomeOverlay, Constants.LOADERS_HOLDER.texture().getTextureResource(split[0] + biomeOverlay.getSuffix() + "." + split[1]));
-            }
-        }
+        loadEntry(texturePath, byOverlay);
     }
 
-    public void render(PoseStack ps) {
-        Constants.LOADERS_HOLDER.model().getModel(model).render(ps);
+    @Override
+    public @NotNull LoadersHolder getLoadersHolder() {
+        return Constants.LOADERS_HOLDER;
     }
 
-    public void render(PoseStack ps, boolean renderEmissive) {
-        Constants.LOADERS_HOLDER.model().getModel(model).render(ps, renderEmissive);
+    @Override
+    public @NotNull ResourceLocation getModelLocation() {
+        return model;
     }
 
-    public void bindTexture(BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay) {
-        ResourceLocation resourceLocation = biomeTextureResourceMap.get(biomeOverlay);
-        bindTexture(biomeOverlay, resourceLocation);
+    @Override
+    public @NotNull Map<BiomeOverlayRegistry.BiomeOverlayInstance, ResourceLocation> getBiomeTextureResourceMap() {
+        return biomeTextureResourceMap;
     }
 
-    private void bindTexture(BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay, ResourceLocation resourceLocation) {
-        if (!Constants.LOADERS_HOLDER.texture().isTextureLoaded(resourceLocation)) {
-            if (!nonExistingReported.contains(biomeOverlay)) {
-                JSGTransporters.logger.error("{} tried to use BiomeOverlay {} but it doesn't exist. ({})", this, biomeOverlay, resourceLocation);
-                nonExistingReported.add(biomeOverlay);
-            }
-            resourceLocation = biomeTextureResourceMap.get(BiomeOverlayRegistry.NORMAL);
-        }
-
-        Constants.LOADERS_HOLDER.texture().getTexture(resourceLocation).bindTexture();
-    }
-
-    public void bindTextureAndRender(PoseStack ps) {
-        bindTextureAndRender(BiomeOverlayRegistry.NORMAL, ps);
-    }
-
-    public void bindTextureAndRender(BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay, PoseStack ps) {
-        bindTexture(biomeOverlay);
-        render(ps);
+    @Override
+    public @NotNull List<BiomeOverlayRegistry.BiomeOverlayInstance> getNonExistingTexturesReported() {
+        return nonExistingReported;
     }
 }

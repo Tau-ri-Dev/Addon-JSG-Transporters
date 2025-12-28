@@ -1,16 +1,18 @@
 package dev.tauri.jsgtransporters.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.tauri.jsg.config.JSGConfig;
+import dev.tauri.jsg.api.client.screen.ITab;
+import dev.tauri.jsg.api.client.screen.TabSideEnum;
+import dev.tauri.jsg.api.client.screen.util.GuiHelper;
+import dev.tauri.jsg.api.config.JSGConfig;
+import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.api.util.I18n;
 import dev.tauri.jsg.forgeutil.SlotHandler;
 import dev.tauri.jsg.loader.texture.Texture;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.stargate.SaveConfigToServer;
-import dev.tauri.jsg.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.screen.element.tabs.*;
-import dev.tauri.jsg.screen.util.GuiHelper;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
-import dev.tauri.jsg.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
@@ -33,16 +35,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static dev.tauri.jsg.api.client.screen.util.GuiHelper.*;
 import static dev.tauri.jsg.screen.inventory.stargate.StargateContainerGui.createConfigTab;
 import static dev.tauri.jsg.screen.inventory.stargate.StargateContainerGui.createOverlayTab;
-import static dev.tauri.jsg.screen.util.GuiHelper.*;
 
 public class RingsGui extends AbstractContainerScreen<RingsContainer> implements TabbedContainerInterface {
 
     public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
 
     private final List<Tab> tabs = new ArrayList<>();
-    private final Map<SymbolTypeEnum<?>, TabAddress> addressTabs = new LinkedHashMap<>();
+    private final Map<AbstractSymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;
     private TabConfig configTab;
@@ -70,9 +72,8 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         tabs.clear();
 
         int i = 0;
-        for (SymbolTypeEnum<?> type : SymbolTypeEnum.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
-            var tab = TabAddress.builder()
-                    .setTextureLoader(type.getTextureLoader())
+        for (AbstractSymbolType<?> type : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+            ITab.ITabBuilder tab = TabAddress.builder()
                     .setAddressProvider(menu.ringsTile)
                     .setSymbolType(type)
                     .setProgressColor(0x98BCF9)

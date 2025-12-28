@@ -1,8 +1,7 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.JSG;
-import dev.tauri.jsg.stargate.network.SymbolInterface;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class RingsAddressDynamic extends RingsAddress {
 
-    public RingsAddressDynamic(SymbolTypeEnum<?> symbolType) {
+    public RingsAddressDynamic(AbstractSymbolType<?> symbolType) {
         super(symbolType);
     }
 
@@ -30,7 +29,7 @@ public class RingsAddressDynamic extends RingsAddress {
         addAll(address);
     }
 
-    public RingsAddressDynamic(SymbolTypeEnum<?> symbolType, List<SymbolInterface> symbols) {
+    public RingsAddressDynamic(AbstractSymbolType<?> symbolType, List<SymbolInterface> symbols) {
         super(symbolType);
         clear();
         addAll(symbols);

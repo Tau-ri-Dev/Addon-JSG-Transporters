@@ -34,8 +34,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static dev.tauri.jsg.stargate.teleportation.old.TeleportHelper.fireTravelToDimEvent;
-
 public class TeleportHelper {
     public static void teleportEntity(Entity entity, RingsPos sourceRings, RingsPos targetRings) {
         Level world = entity.level();
@@ -48,8 +46,8 @@ public class TeleportHelper {
         if (sourceDim == targetRings.dimension) {
             setRotationAndPosition(entity, entity.getYHeadRot(), new Vector3d(tPos.x, tPos.y, tPos.z));
         } else {
-            if (!fireTravelToDimEvent(entity, targetRings.dimension))
-                return;
+            //if (!fireTravelToDimEvent(entity, targetRings.dimension))
+            //    return;
 
             entity.changeDimension(
                     Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)),

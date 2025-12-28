@@ -11,9 +11,9 @@ public class RingsGoauldRenderer extends RingsAbstractRenderer<RingsRendererStat
     }
 
     @Override
-    public void renderRing(int index) {
+    public void renderRing(int index, int light) {
         var size = 0.48f;
         stack.scale(size, size, size);
-        ModelsHolder.RING_GOAULD.bindTextureAndRender(stack);
+        ModelsHolder.RING_GOAULD.bindTexture().render(stack, source, light);
     }
 }

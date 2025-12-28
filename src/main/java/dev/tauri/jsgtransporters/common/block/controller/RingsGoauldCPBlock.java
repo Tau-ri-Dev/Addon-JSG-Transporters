@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.item.JSGBlockItem;
+import dev.tauri.jsg.api.item.JSGBlockItem;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.JSGTransporters;
@@ -37,12 +37,12 @@ public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
                 return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
                     stack.translate(-0.9, -0.4, 0);
                     stack.scale(1.8f, 1.8f, 1.8f);
-                    ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
+                    ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTexture().render(stack, bufferSource, light);
 
                     for (var symbol : SymbolGoauldEnum.values()) {
                         stack.pushPose();
                         Constants.LOADERS_HOLDER.texture().getTexture(symbol.brb() ? LIGHT_TEX : SYMBOLS_TEX).bindTexture();
-                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack);
+                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
                         stack.popPose();
                     }
                 };

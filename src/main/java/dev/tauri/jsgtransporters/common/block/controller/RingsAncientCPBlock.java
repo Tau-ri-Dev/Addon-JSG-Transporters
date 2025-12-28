@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.item.JSGBlockItem;
+import dev.tauri.jsg.api.item.JSGBlockItem;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.JSGTransporters;
@@ -19,7 +19,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class RingsAncientCPBlock extends AbstractRingsCPBlock {
     public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ancient/button_0.png");
 
-    public RingsAncientCPBlock() { super(); }
+    public RingsAncientCPBlock() {
+        super();
+    }
 
     @Override
     @ParametersAreNonnullByDefault
@@ -36,12 +38,12 @@ public class RingsAncientCPBlock extends AbstractRingsCPBlock {
                     stack.translate(0, 0.5, 0);
                     stack.scale(4.3f, 4.3f, 4.3f);
                     stack.mulPose(Axis.YP.rotationDegrees(180));
-                    ModelsHolder.RINGS_CONTROLLER_ANCIENT_BASE.bindTextureAndRender(stack);
+                    ModelsHolder.RINGS_CONTROLLER_ANCIENT_BASE.bindTexture().render(stack, bufferSource, light);
 
                     for (var symbol : SymbolAncientEnum.values()) {
                         stack.pushPose();
                         Constants.LOADERS_HOLDER.texture().getTexture(SYMBOLS_TEX).bindTexture();
-                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack);
+                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
                         stack.popPose();
                     }
                 };

@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
-import dev.tauri.jsg.stargate.network.SymbolInterface;
+import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
 

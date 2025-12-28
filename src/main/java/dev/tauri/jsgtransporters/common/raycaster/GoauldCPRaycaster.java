@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.raycaster;
 
-import dev.tauri.jsg.property.JSGProperties;
-import dev.tauri.jsg.raycaster.Raycaster;
-import dev.tauri.jsg.raycaster.util.RayCastedButton;
-import dev.tauri.jsg.util.vectors.Vector3f;
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.raycaster.Raycaster;
+import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.api.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.common.block.controller.RingsGoauldCPBlock;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;

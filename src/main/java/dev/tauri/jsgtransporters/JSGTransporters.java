@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters;
 
-import dev.tauri.jsg.JSG;
-import dev.tauri.jsg.LoggerWrapper;
 import dev.tauri.jsg.api.JSGAddon;
-import dev.tauri.jsg.integration.Integrations;
+import dev.tauri.jsg.api.JSGApi;
+import dev.tauri.jsg.api.LoggerWrapper;
+import dev.tauri.jsg.api.integration.Integrations;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
@@ -78,7 +78,7 @@ public class JSGTransporters implements JSGAddon {
         Integrations.OC2.addOnLoad(OCDevicesRegistry::load);
         Integrations.CCT.addOnLoad(CCDevicesRegistry::load);
 
-        JSG.registerAddon(this);
+        JSGApi.registerAddon(this);
     }
 
     @SubscribeEvent

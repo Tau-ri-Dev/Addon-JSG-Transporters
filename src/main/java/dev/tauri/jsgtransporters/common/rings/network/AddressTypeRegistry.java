@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsg.api.item.NotebookPageSerialization;
-import dev.tauri.jsg.stargate.network.SymbolUsage;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolUsage;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
 

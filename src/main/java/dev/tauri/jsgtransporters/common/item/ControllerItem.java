@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.item;
 
+import dev.tauri.jsg.api.item.JSGBlockItem;
 import dev.tauri.jsg.helpers.ItemHelper;
-import dev.tauri.jsg.item.JSGBlockItem;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
 import dev.tauri.jsgtransporters.common.registry.TabRegistry;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;

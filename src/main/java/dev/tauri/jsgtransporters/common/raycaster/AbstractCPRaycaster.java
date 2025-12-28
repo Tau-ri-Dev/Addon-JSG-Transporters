@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.raycaster;
 
-import dev.tauri.jsg.property.JSGProperties;
-import dev.tauri.jsg.raycaster.Raycaster;
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.raycaster.Raycaster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;

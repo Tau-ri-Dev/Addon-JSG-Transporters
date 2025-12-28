@@ -11,9 +11,9 @@ public class RingsAncientRenderer extends RingsAbstractRenderer<RingsRendererSta
     }
 
     @Override
-    public void renderRing(int index) {
+    public void renderRing(int index, int light) {
         var size = 0.48f;
         stack.scale(size, size, size);
-        ModelsHolder.RING_ANCIENT.bindTextureAndRender(stack);
+        ModelsHolder.RING_ANCIENT.bindTexture().render(stack, source, light);
     }
 }

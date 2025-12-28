@@ -1,20 +1,23 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.screen.element.tabs.Tab;
+import dev.tauri.jsg.api.client.model.IModelLoader;
+import dev.tauri.jsg.api.client.screen.ITab;
+import dev.tauri.jsg.api.client.texture.ITextureLoader;
+import dev.tauri.jsg.api.pointoforigins.IPointOfOriginType;
+import dev.tauri.jsg.api.pointoforigins.PointOfOrigin;
+import dev.tauri.jsg.api.stargate.network.address.IAddress;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.api.util.I18n;
 import dev.tauri.jsg.screen.element.tabs.TabAddress;
-import dev.tauri.jsg.stargate.BiomeOverlayRegistry;
-import dev.tauri.jsg.stargate.network.IAddress;
-import dev.tauri.jsg.stargate.network.SymbolInterface;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
-import dev.tauri.jsg.util.I18n;
+import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,8 +85,13 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     }
 
     @Override
-    public ResourceLocation getIconResource(BiomeOverlayRegistry.BiomeOverlayInstance overlay, ResourceKey<Level> dimensionId, int configOrigin) {
+    public ResourceLocation getIconResource(@Nullable PointOfOrigin pointOfOrigin) {
         return iconResource;
+    }
+
+    @Override
+    public ResourceLocation getModelResource(IPointOfOriginType iPointOfOriginType, @Nullable PointOfOrigin pointOfOrigin, String s) {
+        return modelResource;
     }
 
     @Override
@@ -92,7 +100,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     }
 
     @Override
-    public SymbolTypeEnum<?> getSymbolType() {
+    public AbstractSymbolType<?> getSymbolType() {
         return SymbolTypeRegistry.GOAULD;
     }
 
@@ -113,10 +121,24 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
     }
 
+    @Override
+    public boolean renderIconByMinecraft() {
+        return true;
+    }
+
     // ------------------------------------------------------------
     // Static
 
-    public static class Provider extends SymbolTypeEnum<SymbolGoauldEnum> {
+    public static class Provider extends AbstractSymbolType<SymbolGoauldEnum> {
+        @Override
+        public ITextureLoader getTextureLoader() {
+            return Constants.LOADERS_HOLDER.texture();
+        }
+
+        @Override
+        public IModelLoader getModelLoader() {
+            return Constants.LOADERS_HOLDER.model();
+        }
 
         // used for rings gui - the title (u, v of the texture)
         @Override
@@ -125,7 +147,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public Tab.TabBuilder finalizeAddressTab(Tab.TabBuilder builder) {
+        public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
             return builder.setTexture(new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
                     .setBackgroundTextureLocation(176, 0)
                     .setIconRenderPos(0, 6)
@@ -200,7 +222,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public int getMinimalSymbolCountTo(SymbolTypeEnum<?> symbolType, boolean localDial) {
+        public int getMinimalSymbolCountTo(AbstractSymbolType<?> symbolType, boolean localDial) {
             return 4;
         }
 
@@ -255,6 +277,11 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         @Override
         public SymbolGoauldEnum getFirstValidForAddress() {
             return AMUN;
+        }
+
+        @Override
+        public IPointOfOriginType getPointOfOriginType() {
+            return null;
         }
     }
 }

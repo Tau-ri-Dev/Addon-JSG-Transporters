@@ -3,10 +3,10 @@ package dev.tauri.jsgtransporters.client.renderer.rings;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import dev.tauri.jsg.api.client.renderer.LinkableRenderer;
+import dev.tauri.jsg.api.util.math.MathFunctionImpl;
+import dev.tauri.jsg.api.util.vectors.Vector2f;
 import dev.tauri.jsg.loader.model.OBJModel;
-import dev.tauri.jsg.renderer.LinkableRenderer;
-import dev.tauri.jsg.util.math.MathFunctionImpl;
-import dev.tauri.jsg.util.vectors.Vector2f;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import it.unimi.dsi.fastutil.Pair;
@@ -107,10 +107,6 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
         level = tileEntity.getLevel();
         if (level == null) return;
         this.combinedLight = getCombinedLight(0);
-        OBJModel.source = this.source;
-        OBJModel.packedLight = this.combinedLight;
-        OBJModel.resetRGB();
-        OBJModel.resetDynamicLightning();
 
         renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack, pBuffer);
 
@@ -148,9 +144,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
             if (y == 0 && i != (getStartingOffset() >= 0 ? (getRingsCount() - 1) : 0)) continue;
             stack.pushPose();
             stack.translate(0, y, 0);
-            OBJModel.packedLight = getCombinedLight((int) Math.ceil(y));
-            renderRing(i);
-            OBJModel.packedLight = combinedLight;
+            renderRing(i, getCombinedLight((int) Math.ceil(y)));
             stack.popPose();
         }
 
@@ -165,7 +159,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
      *
      * @param index index of the ring to render
      */
-    public abstract void renderRing(int index);
+    public abstract void renderRing(int index, int combinedLight);
 
     /**
      * @return number of rings that should spawn when teleporting player

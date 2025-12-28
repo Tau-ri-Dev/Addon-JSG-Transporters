@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsg.JSG;
+import dev.tauri.jsg.api.helper.DimensionsHelper;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
-import dev.tauri.jsg.helpers.DimensionsHelper;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import io.netty.buffer.ByteBuf;
@@ -32,10 +32,10 @@ public class RingsNetwork extends SavedData {
     public RingsNetwork() {
     }
 
-    private final Map<RingsPos, Map<SymbolTypeEnum<?>, RingsAddress>> RINGS_MAP_BY_POS = new LinkedHashMap<>();
+    private final Map<RingsPos, Map<AbstractSymbolType<?>, RingsAddress>> RINGS_MAP_BY_POS = new LinkedHashMap<>();
     private final Map<RingsAddress, RingsPos> RINGS_MAP_BY_ADDRESS = new LinkedHashMap<>();
 
-    public Map<RingsPos, Map<SymbolTypeEnum<?>, RingsAddress>> getAll() {
+    public Map<RingsPos, Map<AbstractSymbolType<?>, RingsAddress>> getAll() {
         return RINGS_MAP_BY_POS;
     }
 
@@ -52,7 +52,7 @@ public class RingsNetwork extends SavedData {
     }
 
     @Nullable
-    public Map<SymbolTypeEnum<?>, RingsAddress> getAddresses(RingsPos pos) {
+    public Map<AbstractSymbolType<?>, RingsAddress> getAddresses(RingsPos pos) {
         if (pos == null) return null;
         var m = RINGS_MAP_BY_POS.get(pos);
         if (m == null) return null;
@@ -79,12 +79,12 @@ public class RingsNetwork extends SavedData {
     }
 
     public void putRings(RingsAddress address, RingsPos pos) {
-        var map = new HashMap<SymbolTypeEnum<?>, RingsAddress>();
+        var map = new HashMap<AbstractSymbolType<?>, RingsAddress>();
         map.put(address.getSymbolType(), address);
         putRings(map, pos);
     }
 
-    public void putRings(Map<SymbolTypeEnum<?>, RingsAddress> addressMap, RingsPos ringsPos) {
+    public void putRings(Map<AbstractSymbolType<?>, RingsAddress> addressMap, RingsPos ringsPos) {
         if (addressMap == null) {
             JSGTransporters.logger.warn("Tried to add NULL-address gate! Aborting...", new NullPointerException());
             return;

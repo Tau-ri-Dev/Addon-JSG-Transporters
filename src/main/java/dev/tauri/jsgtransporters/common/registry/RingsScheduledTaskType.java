@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.registry;
 
-import dev.tauri.jsg.stargate.ScheduledTaskType;
+import dev.tauri.jsg.api.registry.ScheduledTaskType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
 

@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.registry;
 
-import dev.tauri.jsg.block.IItemBlock;
-import dev.tauri.jsg.item.ITabbedItem;
-import dev.tauri.jsg.item.JSGBlockItem;
+import dev.tauri.jsg.api.block.util.IItemBlock;
+import dev.tauri.jsg.api.item.ITabbedItem;
+import dev.tauri.jsg.api.item.JSGBlockItem;
 import dev.tauri.jsgtransporters.common.block.controller.RingsAncientCPBlock;
 import dev.tauri.jsgtransporters.common.block.controller.RingsGoauldCPBlock;
 import dev.tauri.jsgtransporters.common.block.controller.RingsOriCPBlock;

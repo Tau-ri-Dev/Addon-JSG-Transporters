@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsgtransporters.common.registry.BlockEntityRegistry;
 import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
@@ -15,7 +15,7 @@ public class RingsOriBE extends RingsAbstractBE {
     }
 
     @Override
-    public SymbolTypeEnum<?> getSymbolType() {
+    public AbstractSymbolType<?> getSymbolType() {
         return SymbolTypeRegistry.ORI;
     }
 

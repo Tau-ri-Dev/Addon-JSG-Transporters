@@ -1,17 +1,15 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.config.JSGConfig;
-import dev.tauri.jsg.property.JSGProperties;
-import dev.tauri.jsg.raycaster.Raycaster;
-import dev.tauri.jsg.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.raycaster.Raycaster;
+import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.raycaster.OriCPRaycaster;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolOriEnum;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsOriCPRendererState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 
@@ -22,6 +20,7 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
         super(ignored);
     }
 
+    //todo: refactor this to new rotation system
     protected void translateToPos() {
         var rotation = level.getBlockState(tileEntity.getBlockPos()).getOptionalValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).orElse(Direction.NORTH);
         switch (rotation) {
@@ -50,7 +49,7 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
         translateToPos();
         stack.scale(1.5f, 1.5f, 1.5f);
 
-        ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTextureAndRender(stack);
+        ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTexture().render(stack, source, combinedLight);
 
 
         for (var symbol : SymbolOriEnum.values()) {
@@ -59,7 +58,7 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
             stack.translate(0, 0, -0.008f * state);
             var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
             Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
-            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
+            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, source, combinedLight, rendererState.isButtonActive(symbol));
             stack.popPose();
         }
     }

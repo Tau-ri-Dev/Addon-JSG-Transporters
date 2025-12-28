@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.energy;
 
-import dev.tauri.jsg.power.general.EnergyRequiredToOperate;
+import dev.tauri.jsg.api.power.general.EnergyRequiredToOperate;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import net.minecraft.world.entity.Entity;

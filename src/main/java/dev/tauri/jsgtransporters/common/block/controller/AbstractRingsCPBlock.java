@@ -1,13 +1,13 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.block.IHighlightBlock;
-import dev.tauri.jsg.block.IItemBlock;
+import dev.tauri.jsg.api.block.util.IHighlightBlock;
+import dev.tauri.jsg.api.block.util.IItemBlock;
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.item.ITabbedItem;
+import dev.tauri.jsg.api.util.JSGAxisAlignedBB;
 import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.item.ITabbedItem;
-import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.registry.TabRegistry;
-import dev.tauri.jsg.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

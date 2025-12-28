@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.state.State;
+import dev.tauri.jsg.api.state.State;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import io.netty.buffer.ByteBuf;
 

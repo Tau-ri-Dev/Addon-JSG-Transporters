@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.block.rings;
 
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.item.ITabbedItem;
 import dev.tauri.jsg.block.TickableBEBlock;
 import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.item.ITabbedItem;
-import dev.tauri.jsg.property.JSGProperties;
 import dev.tauri.jsg.registry.TabRegistry;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;

@@ -1,9 +1,8 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.JSG;
-import dev.tauri.jsg.stargate.network.IAddress;
-import dev.tauri.jsg.stargate.network.SymbolInterface;
-import dev.tauri.jsg.stargate.network.SymbolTypeEnum;
+import dev.tauri.jsg.api.stargate.network.address.IAddress;
+import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
+import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +14,7 @@ import java.util.Random;
 
 public class RingsAddress implements IAddress {
 
-    public RingsAddress(SymbolTypeEnum<?> symbolType) {
+    public RingsAddress(AbstractSymbolType<?> symbolType) {
         this.symbolType = symbolType;
     }
 
@@ -34,11 +33,11 @@ public class RingsAddress implements IAddress {
 
     // ---------------------------------------------------------------------------------
     // Address
-    protected SymbolTypeEnum<?> symbolType;
+    protected AbstractSymbolType<?> symbolType;
     protected List<SymbolInterface> address = new ArrayList<>(4);
 
     @Override
-    public SymbolTypeEnum<?> getSymbolType() {
+    public AbstractSymbolType<?> getSymbolType() {
         return symbolType;
     }
 
@@ -123,14 +122,14 @@ public class RingsAddress implements IAddress {
             return;
         }
 
-        symbolType = SymbolTypeEnum.byId(compound.getString("symbolType"));
+        symbolType = AbstractSymbolType.byId(compound.getString("symbolType"));
 
         for (int i = 0; i < getSavedSymbols(); i++)
             address.add(symbolType.valueOf(compound.getInt("symbol" + i)));
     }
 
     public void toBytes(ByteBuf buf) {
-        buf.writeByte(SymbolTypeEnum.getId(symbolType));
+        buf.writeByte(AbstractSymbolType.getId(symbolType));
 
         for (int i = 0; i < getSavedSymbols(); i++)
             buf.writeByte(address.get(i).getId());
@@ -142,7 +141,7 @@ public class RingsAddress implements IAddress {
             return;
         }
 
-        symbolType = SymbolTypeEnum.byId(buf.readByte());
+        symbolType = AbstractSymbolType.byId(buf.readByte());
 
         for (int i = 0; i < getSavedSymbols(); i++)
             address.add(symbolType.valueOf(buf.readByte()));

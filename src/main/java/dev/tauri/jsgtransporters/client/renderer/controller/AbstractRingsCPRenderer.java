@@ -1,9 +1,8 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.tauri.jsg.loader.model.OBJModel;
-import dev.tauri.jsg.renderer.IRaycasterButtonsRenderer;
-import dev.tauri.jsg.renderer.LinkableRenderer;
+import dev.tauri.jsg.api.client.renderer.IRaycasterButtonsRenderer;
+import dev.tauri.jsg.api.client.renderer.LinkableRenderer;
 import dev.tauri.jsgtransporters.common.block.controller.AbstractRingsCPBlock;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
@@ -52,10 +51,6 @@ public abstract class AbstractRingsCPRenderer<S extends RingsControlPanelRendere
         level = tileEntity.getLevel();
         if (level == null) return;
         this.combinedLight = pPackedLight;
-        OBJModel.source = this.source;
-        OBJModel.packedLight = this.combinedLight;
-        OBJModel.resetRGB();
-        OBJModel.resetDynamicLightning();
 
         if (!(level.getBlockState(tileEntity.getBlockPos()).getBlock() instanceof AbstractRingsCPBlock)) return;
         renderLink(tileEntity.getBlockPos(), tileEntity, pPoseStack, pBuffer);

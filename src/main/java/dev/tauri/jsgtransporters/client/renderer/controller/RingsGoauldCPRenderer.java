@@ -1,17 +1,15 @@
 package dev.tauri.jsgtransporters.client.renderer.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.config.JSGConfig;
-import dev.tauri.jsg.property.JSGProperties;
-import dev.tauri.jsg.raycaster.Raycaster;
-import dev.tauri.jsg.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.api.blockstates.JSGProperties;
+import dev.tauri.jsg.api.raycaster.Raycaster;
+import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
 import dev.tauri.jsgtransporters.common.raycaster.GoauldCPRaycaster;
 import dev.tauri.jsgtransporters.common.rings.network.SymbolGoauldEnum;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsGoauldCPRendererState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 
@@ -22,6 +20,7 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
         super(ignored);
     }
 
+    //todo: refactor this to new rotation system
     protected void translateToPos() {
         var rotation = level.getBlockState(tileEntity.getBlockPos()).getOptionalValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).orElse(Direction.NORTH);
         switch (rotation) {
@@ -46,7 +45,7 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
     protected void renderController() {
         translateToPos();
 
-        ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTextureAndRender(stack);
+        ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTexture().render(stack, source, combinedLight);
 
         //.Constants.LOADERS_HOLDER.texture().getTexture(rendererState.getButtonTexture(SymbolGoauldEnum.LIGHT, rendererState.getBiomeOverlay())).bindTexture();
         //ModelsHolder.RINGS_CONTROLLER_GOAULD_LIGHT.render(stack, rendererState.isButtonActive(SymbolGoauldEnum.LIGHT));
@@ -59,7 +58,7 @@ public class RingsGoauldCPRenderer extends AbstractRingsCPRenderer<RingsGoauldCP
                 stack.translate(0, 0, 0.01f * (state + 1.8f));
             var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
             Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
-            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, rendererState.isButtonActive(symbol));
+            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, source, combinedLight, rendererState.isButtonActive(symbol));
             stack.popPose();
         }
     }

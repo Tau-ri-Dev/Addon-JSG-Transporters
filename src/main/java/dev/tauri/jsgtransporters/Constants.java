@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters;
 
+import dev.tauri.jsg.api.client.LoadersHolder;
 import dev.tauri.jsg.helpers.TabHelper;
 import dev.tauri.jsg.helpers.registry.item.ItemRegistryHelperGeneric;
-import dev.tauri.jsg.loader.LoadersHolder;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import dev.tauri.jsgtransporters.common.registry.TabRegistry;
 

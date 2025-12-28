@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.config;
 
-import dev.tauri.jsg.config.JSGConfig;
-import dev.tauri.jsg.config.values.JSGConfigValue;
+import dev.tauri.jsg.api.config.JSGConfig;
+import dev.tauri.jsg.api.config.values.JSGConfigValue;
 import dev.tauri.jsg.screen.provider.ConfigScreenClientRegister;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraftforge.api.distmarker.Dist;
