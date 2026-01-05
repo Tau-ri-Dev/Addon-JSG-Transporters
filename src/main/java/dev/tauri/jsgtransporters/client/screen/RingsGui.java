@@ -140,7 +140,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         RenderSystem.disableDepthTest();
         GuiHelper.currentStack = graphics.pose();
 
-        if (menu.ringsTile.getConfig().getOptions().size() != configTab.getConfig(false).getOptions().size())
+        if (menu.ringsTile.getConfig().getOptions().size() != configTab.getConfig().getOptions().size())
             configTab.updateConfig(menu.ringsTile.getConfig(), true);
         graphics.pose().pushPose();
         for (Tab tab : tabs) {
@@ -316,7 +316,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
 
     private void saveConfig() {
         JSGPacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
-        menu.ringsTile.setConfig(configTab.getConfig(true));
+        menu.ringsTile.setConfig(configTab.getConfig());
     }
 
     private void saveSettings() {

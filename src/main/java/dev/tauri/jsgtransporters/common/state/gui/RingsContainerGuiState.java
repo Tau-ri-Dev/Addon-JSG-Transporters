@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.state.gui;
 
-import dev.tauri.jsg.api.config.ingame.JSGTileEntityConfig;
+import dev.tauri.jsg.api.config.ingame.BEConfig;
 import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsg.api.state.State;
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
@@ -11,13 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RingsContainerGuiState extends State {
-    public RingsContainerGuiState() {
+    public RingsContainerGuiState(BEConfig config) {
+        this.config = config;
     }
 
     public Map<AbstractSymbolType<?>, RingsAddress> addressMap = new HashMap<>();
-    public JSGTileEntityConfig config = new JSGTileEntityConfig();
+    public final BEConfig config;
 
-    public RingsContainerGuiState(Map<AbstractSymbolType<?>, RingsAddress> addressMap, JSGTileEntityConfig config) {
+    public RingsContainerGuiState(Map<AbstractSymbolType<?>, RingsAddress> addressMap, BEConfig config) {
         this.addressMap = addressMap;
         this.config = config;
     }
@@ -41,6 +42,6 @@ public class RingsContainerGuiState extends State {
             addressMap.put(symbolType, address);
         }
 
-        config = new JSGTileEntityConfig(buf);
+        config.fromBytes(buf);
     }
 }

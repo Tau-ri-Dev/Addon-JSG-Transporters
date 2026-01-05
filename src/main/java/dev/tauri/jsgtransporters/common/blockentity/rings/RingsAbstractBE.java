@@ -1,10 +1,10 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
 import dev.tauri.jsg.api.chunkloader.ChunkManager;
-import dev.tauri.jsg.api.config.ingame.ITileConfig;
-import dev.tauri.jsg.api.config.ingame.JSGConfigOption;
-import dev.tauri.jsg.api.config.ingame.JSGTileEntityConfig;
-import dev.tauri.jsg.api.config.ingame.option.JSGIntRangeConfigOption;
+import dev.tauri.jsg.api.config.ingame.BEConfig;
+import dev.tauri.jsg.api.config.ingame.IConfigurable;
+import dev.tauri.jsg.api.config.ingame.option.ConfigOptionsHolder;
+import dev.tauri.jsg.api.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.api.pointoforigins.PointOfOrigin;
 import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
 import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
@@ -25,7 +25,6 @@ import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
-import dev.tauri.jsg.integration.ComputerDeviceProvider;
 import dev.tauri.jsg.item.energy.CapacitorItemBlock;
 import dev.tauri.jsg.item.notebook.PageNotebookItemFilled;
 import dev.tauri.jsg.packet.JSGPacketHandler;
@@ -37,7 +36,7 @@ import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsg.state.stargate.StargateBiomeOverrideState;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
-import dev.tauri.jsgtransporters.common.config.BlockConfigOptionRegistry;
+import dev.tauri.jsgtransporters.common.config.ingame.RingsConfigOptions;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
@@ -53,7 +52,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -82,7 +80,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
-public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, ITileConfig, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, IConfigurable, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
 
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
@@ -160,7 +158,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public int getSupportedCapacitors() {
-        return ((JSGIntRangeConfigOption) getConfig().getOption("maxCapacitors")).getValue();
+        return getConfig().getValueOrDefault(RingsConfigOptions.Common.MAX_CAPACITORS);
     }
 
     public enum RingsUpgradeEnum implements EnumKeyInterface<Item>, IUpgrade {
@@ -588,7 +586,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public ItemStack getAddressPage(AbstractSymbolType<?> symbolType, int[] symbolsToDisplay) {
         JSGTransporters.logger.info("Giving Notebook page of address {}", symbolType);
 
-        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getRegistryPathFromWorld(getLevelNotNull(), pos), getPointOfOrigin(), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getRegistryPathFromWorld(getLevelNotNull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
 
         var stack = new ItemStack(dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get(), 1);
         stack.setTag(compound);
@@ -667,7 +665,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public State createState(@NotNull StateType stateType) {
         return stateType.stateSupplier()
-                .tryType(StateType.GUI_STATE, RingsContainerGuiState::new)
+                .tryType(StateType.GUI_STATE, () -> new RingsContainerGuiState(getConfig()))
                 .tryType(StateType.GUI_UPDATE, RingsContainerGuiUpdate::new)
                 .tryType(StateType.RENDERER_STATE, RingsRendererState::new)
                 .orElseThrow(this);
@@ -930,32 +928,20 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
     }
 
-    private ResourceLocation getConfigType() {
-        return BlockConfigOptionRegistry.RINGS_COMMON;
+    private ConfigOptionsHolder getConfigType() {
+        return RingsConfigOptions.Common.HOLDER;
     }
 
-    protected final JSGTileEntityConfig config = new JSGTileEntityConfig(getConfigType());
+    protected final BEConfig config = new BEConfig(this::setChanged, getConfigType());
 
     @Override
-    public JSGTileEntityConfig getConfig() {
+    public BEConfig getConfig() {
         return config;
     }
 
-
     @Override
-    public void setConfig(JSGTileEntityConfig newConfig) {
-        boolean changed = false;
-        for (JSGConfigOption<?> opt : newConfig.getOptions()) {
-            changed = changed || this.config.getOption(opt.getLabel()).setValue(opt.getValue().toString());
-        }
-        if (changed) {
-            setChanged();
-        }
-    }
-
-    @Override
-    public void setConfigAndUpdate(JSGTileEntityConfig newConfig) {
-        setConfig(newConfig);
+    public void onConfigUpdated() {
+        setChanged();
         sendState(StateType.GUI_STATE, getState(StateType.GUI_STATE));
     }
 
@@ -1008,7 +994,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public @Nullable PointOfOrigin getPointOfOrigin() {
+    public @Nullable PointOfOrigin getPointOfOrigin(AbstractSymbolType<?> abstractSymbolType) {
         return null;
     }
 }

@@ -73,7 +73,7 @@ public class JSGTConfig {
             ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, child.builder.get().build(), CONFIG_FILE_NAME + child.name + ".toml");
         }
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> ConfigScreenClientRegister.register(JSGTransporters.MOD_ID, LIST));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ConfigScreenClientRegister.register(JSGTransporters.MOD_ID, LIST));
     }
 
     public static void load() {

@@ -33,3 +33,7 @@ builds
 **.idea/
 
 !**libs/*.jar
+
+# Common working directory
+run/
+run-data/
