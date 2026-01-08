@@ -4,7 +4,7 @@ import com.mojang.math.Axis;
 import dev.tauri.jsg.api.blockstates.JSGProperties;
 import dev.tauri.jsg.api.raycaster.Raycaster;
 import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
-import dev.tauri.jsgtransporters.Constants;
+import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
 import dev.tauri.jsgtransporters.common.raycaster.AncientCPRaycaster;
@@ -57,8 +57,8 @@ public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncient
             var state = rendererState.getActualButtonState(symbol) / 15f;
             stack.translate(0, 0, -0.008f * state);
             var tex = rendererState.getButtonTexture(symbol, rendererState.getBiomeOverlay());
-            Constants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
-            Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, source, combinedLight, rendererState.isButtonActive(symbol));
+            ClientConstants.LOADERS_HOLDER.texture().getTexture(tex).bindTexture();
+            ClientConstants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, source, combinedLight, rendererState.isButtonActive(symbol));
             stack.popPose();
         }
     }

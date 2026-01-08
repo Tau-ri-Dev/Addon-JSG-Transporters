@@ -4,6 +4,7 @@ import dev.tauri.jsg.api.JSGAddon;
 import dev.tauri.jsg.api.JSGApi;
 import dev.tauri.jsg.api.LoggerWrapper;
 import dev.tauri.jsg.api.integration.Integrations;
+import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
@@ -51,7 +52,6 @@ public class JSGTransporters implements JSGAddon {
         modEventBus.addListener(this::onCommonSetup);
 
         MinecraftForge.EVENT_BUS.register(this);
-        Constants.load();
 
         JSGTConfig.load();
         JSGTConfig.register();
@@ -113,5 +113,10 @@ public class JSGTransporters implements JSGAddon {
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> MenuScreens.register(MenuTypeRegistry.RINGS_MENU_TYPE.get(), RingsGui::new));
         }
+    }
+
+    @Override
+    public void onJSGLoad() {
+        ClientConstants.load();
     }
 }

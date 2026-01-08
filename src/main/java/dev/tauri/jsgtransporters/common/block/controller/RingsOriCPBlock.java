@@ -5,8 +5,8 @@ import dev.tauri.jsg.api.blockstates.JSGProperties;
 import dev.tauri.jsg.api.item.JSGBlockItem;
 import dev.tauri.jsg.api.util.JSGAxisAlignedBB;
 import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
-import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.item.ControllerItem;
@@ -82,8 +82,8 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
 
                     for (var symbol : SymbolOriEnum.values()) {
                         stack.pushPose();
-                        Constants.LOADERS_HOLDER.texture().getTexture(SYMBOLS_TEX).bindTexture();
-                        Constants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
+                        ClientConstants.LOADERS_HOLDER.texture().getTexture(SYMBOLS_TEX).bindTexture();
+                        ClientConstants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
                         stack.popPose();
                     }
                 };

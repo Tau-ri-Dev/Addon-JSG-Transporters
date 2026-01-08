@@ -10,8 +10,8 @@ import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
 import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsg.api.util.I18n;
 import dev.tauri.jsg.screen.element.tabs.TabAddress;
-import dev.tauri.jsgtransporters.Constants;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
 import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -132,12 +132,12 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     public static class Provider extends AbstractSymbolType<SymbolGoauldEnum> {
         @Override
         public ITextureLoader getTextureLoader() {
-            return Constants.LOADERS_HOLDER.texture();
+            return ClientConstants.LOADERS_HOLDER.texture();
         }
 
         @Override
         public IModelLoader getModelLoader() {
-            return Constants.LOADERS_HOLDER.model();
+            return ClientConstants.LOADERS_HOLDER.model();
         }
 
         // used for rings gui - the title (u, v of the texture)

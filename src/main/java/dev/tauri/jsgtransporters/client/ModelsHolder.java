@@ -3,7 +3,6 @@ package dev.tauri.jsgtransporters.client;
 import dev.tauri.jsg.api.client.IModelsHolder;
 import dev.tauri.jsg.api.client.LoadersHolder;
 import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
-import dev.tauri.jsgtransporters.Constants;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,13 +26,13 @@ public enum ModelsHolder implements IModelsHolder {
     private final List<BiomeOverlayRegistry.BiomeOverlayInstance> nonExistingReported = new ArrayList<>();
 
     ModelsHolder(String modelPath, String texturePath, boolean byOverlay) {
-        this.model = Constants.LOADERS_HOLDER.model().getModelResource(modelPath);
+        this.model = ClientConstants.LOADERS_HOLDER.model().getModelResource(modelPath);
         loadEntry(texturePath, byOverlay);
     }
 
     @Override
     public @NotNull LoadersHolder getLoadersHolder() {
-        return Constants.LOADERS_HOLDER;
+        return ClientConstants.LOADERS_HOLDER;
     }
 
     @Override
