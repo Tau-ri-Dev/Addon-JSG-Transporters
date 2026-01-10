@@ -708,6 +708,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (isLinked(true))
             compound.putLong("linkedPos", linkedPos.asLong());
         compound.putBoolean("busy", busy);
+        compound.putBoolean("needRegenerate", needRegenerate);
         if (targetRings != null)
             compound.put("targetRings", targetRings.serializeNBT());
         compound.put("scheduledTasks", ScheduledTask.serializeList(scheduledTasks));
@@ -738,6 +739,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (compound.contains("linkedPos"))
             linkedPos = BlockPos.of(compound.getLong("linkedPos"));
         busy = compound.getBoolean("busy");
+        needRegenerate = compound.getBoolean("needRegenerate");
         if (compound.contains("targetRings"))
             targetRings = new RingsPos(compound.getCompound("targetRings"));
         ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);
