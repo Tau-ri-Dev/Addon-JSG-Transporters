@@ -508,6 +508,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         setChanged();
     }
 
+    public BlockPos getCenterTransportPos(){
+        return getBlockPos().offset(0, getVerticalOffset() + 1, 0);
+    }
+
     @Override
     public void executeTask(ScheduledTaskType task, @NotNull CompoundTag context) {
         if (task == RingsScheduledTaskType.RINGS_START_ANIMATION) {
@@ -517,14 +521,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 context = new CompoundTag();
                 context.putBoolean("start", true);
                 addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
-                JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_START);
+                JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), SoundRegistry.RINGS_TRANSPORT_START);
 
                 context = new CompoundTag();
                 context.putBoolean("playEnd", true);
                 addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
             } else {
                 if (context.getBoolean("playEnd")) {
-                    JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_TRANSPORT_END);
+                    JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), SoundRegistry.RINGS_TRANSPORT_END);
                 } else if (context.getBoolean("start")) {
                     rendererState.startAnimation(level.getGameTime());
                     setChanged();
