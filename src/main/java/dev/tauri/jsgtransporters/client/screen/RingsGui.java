@@ -12,7 +12,11 @@ import dev.tauri.jsg.forgeutil.SlotHandler;
 import dev.tauri.jsg.loader.texture.Texture;
 import dev.tauri.jsg.packet.JSGPacketHandler;
 import dev.tauri.jsg.packet.packets.stargate.SaveConfigToServer;
-import dev.tauri.jsg.screen.element.tabs.*;
+import dev.tauri.jsg.screen.element.tabs.Tab;
+import dev.tauri.jsg.screen.element.tabs.TabAddress;
+import dev.tauri.jsg.screen.element.tabs.TabBiomeOverlay;
+import dev.tauri.jsg.screen.element.tabs.TabConfig;
+import dev.tauri.jsg.screen.inventory.TabbedContainerScreen;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
@@ -21,8 +25,6 @@ import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer
 import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,34 +35,23 @@ import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static dev.tauri.jsg.api.client.screen.util.GuiHelper.*;
-import static dev.tauri.jsg.screen.inventory.stargate.StargateContainerGui.createConfigTab;
-import static dev.tauri.jsg.screen.inventory.stargate.StargateContainerGui.createOverlayTab;
 
-public class RingsGui extends AbstractContainerScreen<RingsContainer> implements TabbedContainerInterface {
-
+public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
-
-    private final List<Tab> tabs = new ArrayList<>();
     private final Map<AbstractSymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;
     private TabConfig configTab;
+    private TabBiomeOverlay overlayTab;
     private TabTRSettings ringsSettings;
 
     private int energyStored;
     private int maxEnergyStored;
 
     public RingsGui(RingsContainer container, Inventory pPlayerInventory, Component pTitle) {
-        super(container, pPlayerInventory, pTitle);
-
-        this.imageWidth = 176;
-        this.imageHeight = 173;
-
-        this.width = 176;
-        this.height = 173;
+        super(container, pPlayerInventory, pTitle, 176, 173);
 
         this.pos = container.ringsTile.getBlockPos();
     }
@@ -68,9 +59,17 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
     @Override
     public void init() {
         super.init();
+        int ii = 0;
+        for (var tab : addressTabs.values()) {
+            if (ii + 7 == 10) ii++;
+            menu.slots.set(ii + 7, tab.createAndSaveSlot((SlotHandler) menu.getSlot(ii + 7)));
+            ii++;
+        }
+        menu.slots.set(10, overlayTab.createAndSaveSlot((SlotHandler) menu.getSlot(10)));
+    }
 
-        tabs.clear();
-
+    @Override
+    protected void initTabs(List<Tab> tabs) {
         int i = 0;
         for (AbstractSymbolType<?> type : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
             ITab.ITabBuilder tab = TabAddress.builder()
@@ -108,7 +107,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
                 .setIconTextureLocation(304, 0).build();
 
 
-        TabBiomeOverlay overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
+        overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
         overlayTab.setMenu(menu);
         configTab.setOnTabClose(this::saveConfig);
 
@@ -117,21 +116,6 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
 
         tabs.add(overlayTab);
         tabs.add(ringsSettings);
-
-        int ii = 0;
-        for (var tab : addressTabs.values()) {
-            if (ii + 7 == 10) ii++;
-            menu.slots.set(ii + 7, tab.createAndSaveSlot((SlotHandler) menu.getSlot(ii + 7)));
-            ii++;
-        }
-        menu.slots.set(10, overlayTab.createAndSaveSlot((SlotHandler) menu.getSlot(10)));
-    }
-
-    @Override
-    public List<Rect2i> getGuiExtraAreas() {
-        return tabs.stream()
-                .map(Tab::getArea)
-                .collect(Collectors.toList());
     }
 
 
@@ -142,11 +126,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
 
         if (menu.ringsTile.getConfig().getOptions().size() != configTab.getConfig().getOptions().size())
             configTab.updateConfig(menu.ringsTile.getConfig(), true);
-        graphics.pose().pushPose();
-        for (Tab tab : tabs) {
-            tab.render(graphics, mouseX, mouseY);
-        }
-        graphics.pose().popPose();
+        renderTabsBg(graphics, mouseX, mouseY);
         graphics.pose().translate(0, 0, 0.2f);
 
         Texture.bindTextureWithMc(BACKGROUND_TEXTURE);
@@ -242,8 +222,6 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         }
         configTab.setVisible(menu.hasCreative);
 
-        Tab.updatePositions(tabs);
-
         LargeEnergyStorage energyStorageInternal = (LargeEnergyStorage) menu.ringsTile.getCapability(ForgeCapabilities.ENERGY, null).resolve().orElseThrow();
         energyStored = energyStorageInternal.getEnergyStoredInternally();
         maxEnergyStored = energyStorageInternal.getMaxEnergyStoredInternally();
@@ -283,9 +261,7 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         graphics.drawString(font, I18n.format("gui.upgrades"), 8, 16, 4210752, false);
         graphics.drawString(font, I18n.format("container.inventory"), 8, imageHeight - 96 + 2, 4210752, false);
 
-        for (Tab tab : tabs) {
-            tab.renderFg(graphics, mouseX, mouseY);
-        }
+        renderTabsFg(graphics, mouseX, mouseY);
 
         int transferred = menu.ringsTile.getEnergyTransferredLastTick();
         ChatFormatting transferredFormatting = ChatFormatting.GRAY;
@@ -329,66 +305,5 @@ public class RingsGui extends AbstractContainerScreen<RingsContainer> implements
         JSGTPacketHandler.sendToServer(new SaveRingsSettingsToServer(pos, name, offset));
         menu.ringsTile.setVerticalOffset(offset);
         menu.ringsTile.renameRings(name);
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-
-        for (int i = 0; i < tabs.size(); i++) {
-            Tab tab = tabs.get(i);
-
-            if (tab.isCursorOnTab((int) mouseX, (int) mouseY)) {
-                Tab.tabsInteract(tabs, i);
-                menu.updateTabSlots();
-                break;
-            }
-
-        }
-        for (Tab tab : tabs) {
-            if (tab.isOpen() && tab.isVisible()) {
-                tab.mouseClicked((int) mouseX, (int) mouseY, mouseButton);
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean mouseScrolled(double v, double v1, double v2) {
-        super.mouseScrolled(v, v1, v2);
-        int wheel = (int) v2;
-        if (wheel != 0) {
-            for (Tab tab : tabs) {
-                if (tab instanceof TabScrollAble && tab.isVisible() && tab.isOpen()) {
-                    if (tab.isCursorOnTabBody((int) v, (int) v1)) {
-                        ((TabScrollAble) tab).scroll(wheel);
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean keyPressed(int typedChar, int keyCode, int t) {
-        for (Tab tab : tabs) {
-            if (tab.isOpen() && tab.isVisible()) {
-                if (tab.keyTyped((char) typedChar, keyCode))
-                    return true;
-            }
-        }
-        return super.keyPressed(typedChar, keyCode, t);
-    }
-
-    @Override
-    public boolean charTyped(char typedChar, int keyCode) {
-        for (Tab tab : tabs) {
-            if (tab.isOpen() && tab.isVisible()) {
-                if (tab.charTyped(typedChar, keyCode))
-                    return true;
-            }
-        }
-        return super.charTyped(typedChar, keyCode);
     }
 }

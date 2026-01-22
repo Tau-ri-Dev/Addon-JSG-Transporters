@@ -590,7 +590,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public ItemStack getAddressPage(AbstractSymbolType<?> symbolType, int[] symbolsToDisplay) {
         JSGTransporters.logger.info("Giving Notebook page of address {}", symbolType);
 
-        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getRegistryPathFromWorld(getLevelNotNull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getBiomeKeyFromWorld(getLevelNotNull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
 
         var stack = new ItemStack(dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get(), 1);
         stack.setTag(compound);
