@@ -24,7 +24,7 @@ public class JSGTConfig {
     public static class General {
         private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-        public static final JSGConfigValue.IntValue ringsRange = C_GENERAL.add(new JSGConfigValue.IntValue(BUILDER, "Rings Horizontal Radius", 64, 5, 2048,
+        public static final JSGConfigValue.IntValue ringsRange = C_GENERAL.add(new JSGConfigValue.IntValue(BUILDER, "Rings Horizontal Radius", 64, 5, Integer.MAX_VALUE,
                 "Rings range radius in same dimension",
                 "SIDE: SERVER"
         ));
