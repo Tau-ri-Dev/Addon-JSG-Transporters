@@ -30,8 +30,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
-    public void tick(@NotNull Level level) {
+    public void tick(@Nonnull Level level) {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, level.getGameTime());
     }
@@ -153,7 +153,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     // NBT
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag compound) {
+    public void saveAdditional(@Nonnull CompoundTag compound) {
         if (isLinked(true))
             compound.putLong("linkedPos", linkedPos.asLong());
 
@@ -162,7 +162,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
-    public void load(@NotNull CompoundTag compound) {
+    public void load(@Nonnull CompoundTag compound) {
         if (compound.contains("linkedPos"))
             linkedPos = BlockPos.of(compound.getLong("linkedPos"));
         ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);

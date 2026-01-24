@@ -32,8 +32,8 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -80,7 +80,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         }
     }
 
-    @NotNull
+    @Nonnull
     @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
@@ -103,14 +103,14 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
     @Override
     @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
-    public @NotNull BlockState rotate(BlockState blockState, Rotation rotation) {
+    public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
 
     @Override
     @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
-    public @NotNull BlockState mirror(BlockState blockState, Mirror mirror) {
+    public @Nonnull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
     }
 
@@ -120,7 +120,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
     }
 
     @Override
-    protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         super.createBlockStateDefinition(builder);
     }

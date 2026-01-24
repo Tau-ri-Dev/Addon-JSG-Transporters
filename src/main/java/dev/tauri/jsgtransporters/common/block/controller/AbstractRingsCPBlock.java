@@ -31,9 +31,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
+import javax.annotation.Nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -55,16 +53,14 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
-    public @NotNull BlockState rotate(BlockState blockState, Rotation rotation) {
+    public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
-    public @NotNull BlockState mirror(BlockState blockState, Mirror mirror) {
+    public @Nonnull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
     }
 
@@ -74,7 +70,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
-    protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(@Nonnull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         builder.add(BlockStateProperties.WATERLOGGED);
         super.createBlockStateDefinition(builder);
@@ -82,7 +78,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+    public BlockState getStateForPlacement(@Nonnull BlockPlaceContext ctx) {
         Player placer = ctx.getPlayer();
         if (placer == null) return defaultBlockState();
         var direction = ctx.getClickedFace();
@@ -96,7 +92,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @SuppressWarnings("deprecation")
-    public @NotNull FluidState getFluidState(@Nonnull BlockState pState) {
+    public @Nonnull FluidState getFluidState(@Nonnull BlockState pState) {
         return pState.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
 
@@ -136,7 +132,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     @Nonnull
     public RenderShape getRenderShape(BlockState blockState) {
@@ -150,7 +145,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         Direction direction = pState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return this.canAttachTo(pLevel, pPos.relative(direction.getOpposite()), direction);
@@ -162,7 +156,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     @Nonnull
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {

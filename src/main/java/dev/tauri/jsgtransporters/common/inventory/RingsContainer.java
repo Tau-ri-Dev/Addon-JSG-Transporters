@@ -26,7 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -96,7 +96,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
+    public @Nonnull ItemStack quickMoveStack(@Nonnull Player player, int index) {
         ItemStack stack = getSlot(index).getItem();
 
         if (!CreativeItemsChecker.canInteractWith(stack, hasCreative)) return ItemStack.EMPTY;

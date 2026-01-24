@@ -73,8 +73,8 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -114,7 +114,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
 
         @Override
-        protected int getStackLimit(int slot, @NotNull ItemStack stack) {
+        protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
             return 1;
         }
 
@@ -302,12 +302,12 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Nonnull
-    public Level getLevelNotNull() {
+    public Level getLevelNonnull() {
         return Objects.requireNonNull(getLevel());
     }
 
     public long getTime() {
-        return getLevelNotNull().getGameTime();
+        return getLevelNonnull().getGameTime();
     }
 
     protected TargetPoint targetPoint;
@@ -355,10 +355,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     private boolean addedToNetwork;
 
     @Override
-    public void tick(@NotNull Level level) {
+    public void tick(@Nonnull Level level) {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, getTime());
-        if (!getLevelNotNull().isClientSide) {
+        if (!getLevelNonnull().isClientSide) {
             if (!addedToNetwork) {
                 addedToNetwork = true;
                 getDeviceHolder().connectToWirelessNetwork();
@@ -444,7 +444,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public void generateAddresses(boolean reset) {
         if (reset && ringsPos != null)
             RingsNetwork.INSTANCE.removeRings(ringsPos);
-        Random random = new Random(pos.hashCode() * 31L + getLevelNotNull().dimension().location().hashCode());
+        Random random = new Random(pos.hashCode() * 31L + getLevelNonnull().dimension().location().hashCode());
 
         for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
             var address = getRingsAddress(symbolType);
@@ -464,7 +464,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     protected void initRingsPos() {
         var oldPos = ringsPos;
-        ringsPos = new RingsPos(getLevelNotNull().dimension(), getBlockPos(), getSymbolType());
+        ringsPos = new RingsPos(getLevelNonnull().dimension(), getBlockPos(), getSymbolType());
         if (oldPos != null)
             ringsPos.setName(oldPos.getName());
         var ringsFromNetwork = RingsNetwork.INSTANCE.getRings(getRingsAddress(SymbolTypeRegistry.GOAULD));
@@ -513,7 +513,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public void executeTask(ScheduledTaskType task, @NotNull CompoundTag context) {
+    public void executeTask(ScheduledTaskType task, @Nonnull CompoundTag context) {
         if (task == RingsScheduledTaskType.RINGS_START_ANIMATION) {
             if (level == null) return;
             if (level.isClientSide()) return;
@@ -590,7 +590,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public ItemStack getAddressPage(AbstractSymbolType<?> symbolType, int[] symbolsToDisplay) {
         JSGTransporters.logger.info("Giving Notebook page of address {}", symbolType);
 
-        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getBiomeKeyFromWorld(getLevelNotNull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
+        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getBiomeKeyFromWorld(getLevelNonnull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
 
         var stack = new ItemStack(dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get(), 1);
         stack.setTag(compound);
@@ -654,7 +654,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public State getState(@NotNull StateType stateType) {
+    public State getState(@Nonnull StateType stateType) {
         return stateType.stateSupplier()
                 .tryType(StateType.GUI_STATE, () -> new RingsContainerGuiState(addressMap, getConfig()))
                 .tryType(StateType.GUI_UPDATE, () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress))
@@ -667,7 +667,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public State createState(@NotNull StateType stateType) {
+    public State createState(@Nonnull StateType stateType) {
         return stateType.stateSupplier()
                 .tryType(StateType.GUI_STATE, () -> new RingsContainerGuiState(getConfig()))
                 .tryType(StateType.GUI_UPDATE, RingsContainerGuiUpdate::new)
@@ -676,7 +676,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public void setState(@NotNull StateType stateType, @NotNull State state) {
+    public void setState(@Nonnull StateType stateType, @Nonnull State state) {
         stateType.stateExecutor()
                 .tryType(StateType.RENDERER_STATE, () -> {
                     rendererState = (RingsRendererState) state;
@@ -705,7 +705,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     // ------------------------------------------------------------------------
     // NBT
     @Override
-    public void saveAdditional(@NotNull CompoundTag compound) {
+    public void saveAdditional(@Nonnull CompoundTag compound) {
         for (var address : addressMap.values()) {
             compound.put("address_" + address.getSymbolType(), address.serializeNBT());
         }
@@ -734,7 +734,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public void load(@NotNull CompoundTag compound) {
+    public void load(@Nonnull CompoundTag compound) {
         super.load(compound);
         for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
             if (compound.contains("address_" + symbolType))
@@ -793,9 +793,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         pos = getBlockPos();
         var block = getControlPanelBlocks();
         if (block == null) return;
-        BlockPos closestCP = LinkingHelper.findClosestUnlinked(getLevelNotNull(), pos, LinkingHelper.getDhdRange(), block);
+        BlockPos closestCP = LinkingHelper.findClosestUnlinked(getLevelNonnull(), pos, LinkingHelper.getDhdRange(), block);
 
-        if (closestCP != null && getLevelNotNull().getBlockEntity(closestCP) instanceof AbstractRingsCPBE be) {
+        if (closestCP != null && getLevelNonnull().getBlockEntity(closestCP) instanceof AbstractRingsCPBE be) {
             be.setLinkedDevice(pos);
             setLinkedDevice(closestCP);
             setChanged();
@@ -818,7 +818,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public RingsPos targetRings;
     public boolean outbound = false;
 
-    @NotNull
+    @Nonnull
     public RingsConnectResult tryConnect() {
         if (level == null || level.isClientSide()) return RingsConnectResult.CLIENT;
         RingsPos rings;
@@ -961,7 +961,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Override
-    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, Direction facing) {
+    public @Nonnull <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if (capability == ForgeCapabilities.ITEM_HANDLER) {
             return LazyOptional.of(() -> inventory).cast();
         }
@@ -976,13 +976,13 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public EnergyRequiredToOperateRings energyToOperate;
 
-    public EnergyRequiredToOperateRings getEnergyToOperate(@NotNull RingsPos targetRings) {
+    public EnergyRequiredToOperateRings getEnergyToOperate(@Nonnull RingsPos targetRings) {
         var energyRequired = EnergyRequiredToOperateRings.rings();
 
         BlockPos sPos = pos;
         BlockPos tPos = targetRings.ringsPos;
 
-        ResourceKey<Level> sourceDim = getLevelNotNull().dimension();
+        ResourceKey<Level> sourceDim = getLevelNonnull().dimension();
         ResourceKey<Level> targetDim = targetRings.getWorld().dimension();
 
         if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER) {

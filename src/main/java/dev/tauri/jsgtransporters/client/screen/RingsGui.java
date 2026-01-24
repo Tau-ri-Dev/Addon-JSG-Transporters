@@ -32,7 +32,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.*;
 
@@ -120,7 +120,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
 
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@Nonnull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.disableDepthTest();
         GuiHelper.currentStack = graphics.pose();
 
@@ -194,7 +194,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.disableDepthTest();
 
         renderTransparentBackground(graphics, this);
@@ -250,7 +250,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void renderLabels(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         RenderSystem.disableDepthTest();
         String caps = I18n.format("gui.stargate.capacitors");
         graphics.drawString(font, caps, this.imageWidth - 8 - font.width(caps), 16, 4210752, false);

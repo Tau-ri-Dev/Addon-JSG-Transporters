@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.joml.Vector3d;
 
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class TeleportHelper {
         entity.setYHeadRot(yawRotated);
     }
 
-    @NotNull
+    @Nonnull
     public static BlockState applyStateChanges(BlockState oldState) {
         final FluidState waterState = Blocks.WATER.defaultBlockState().getFluidState();
         FluidState fluidState = oldState.getFluidState();
@@ -92,12 +92,12 @@ public class TeleportHelper {
 
     public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, RingsAbstractBE sourceRings, RingsAbstractBE targetRings, ArrayList<BlockToTeleport> pistonHeads) {
         var toPlace = poses.map(pp -> {
-            var localLevel = sourceRings.getLevelNotNull();
-            var remoteLevel = targetRings.getLevelNotNull();
+            var localLevel = sourceRings.getLevelNonnull();
+            var remoteLevel = targetRings.getLevelNonnull();
             var local = pp.getKey();
             var remote = pp.getValue();
             var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
-            var remoteBlock = TeleportHelper.applyStateChanges(targetRings.getLevelNotNull().getBlockState(remote));
+            var remoteBlock = TeleportHelper.applyStateChanges(targetRings.getLevelNonnull().getBlockState(remote));
 
             // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))

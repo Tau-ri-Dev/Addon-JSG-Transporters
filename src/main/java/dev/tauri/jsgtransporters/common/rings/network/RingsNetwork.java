@@ -14,7 +14,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -197,7 +197,7 @@ public class RingsNetwork extends SavedData {
     }
 
     @Override
-    public @NotNull CompoundTag save(@NotNull CompoundTag compound) {
+    public @Nonnull CompoundTag save(@Nonnull CompoundTag compound) {
         JSGTransporters.logger.info("Saving RINGS NETWORK: Started");
         ListTag ringsTagList = new ListTag();
 

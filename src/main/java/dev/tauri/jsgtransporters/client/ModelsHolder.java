@@ -4,7 +4,7 @@ import dev.tauri.jsg.api.client.IModelsHolder;
 import dev.tauri.jsg.api.client.LoadersHolder;
 import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,22 +31,22 @@ public enum ModelsHolder implements IModelsHolder {
     }
 
     @Override
-    public @NotNull LoadersHolder getLoadersHolder() {
+    public @Nonnull LoadersHolder getLoadersHolder() {
         return ClientConstants.LOADERS_HOLDER;
     }
 
     @Override
-    public @NotNull ResourceLocation getModelLocation() {
+    public @Nonnull ResourceLocation getModelLocation() {
         return model;
     }
 
     @Override
-    public @NotNull Map<BiomeOverlayRegistry.BiomeOverlayInstance, ResourceLocation> getBiomeTextureResourceMap() {
+    public @Nonnull Map<BiomeOverlayRegistry.BiomeOverlayInstance, ResourceLocation> getBiomeTextureResourceMap() {
         return biomeTextureResourceMap;
     }
 
     @Override
-    public @NotNull List<BiomeOverlayRegistry.BiomeOverlayInstance> getNonExistingTexturesReported() {
+    public @Nonnull List<BiomeOverlayRegistry.BiomeOverlayInstance> getNonExistingTexturesReported() {
         return nonExistingReported;
     }
 }
