@@ -49,25 +49,25 @@
 
   "_comment302": "===>>> Upgrade Crystals <<<<<<<<<<<<<<<<<<<<<<<<<<",
 
-  "item.jsg.crystal_glyph_rings_goauld.tooltip": "Upgrade for Transport Rings",
-  "item.jsg.crystal_glyph_rings_goauld.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Goauld address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 1st slot!",
+  "item.jsg_transporters.crystal_glyph_rings_goauld.tooltip": "Upgrade for Transport Rings",
+  "item.jsg_transporters.crystal_glyph_rings_goauld.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Goauld address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 1st slot!",
 
-  "item.jsg.crystal_glyph_rings_ori.tooltip": "Upgrade for Transport Rings",
-  "item.jsg.crystal_glyph_rings_ori.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ori address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 2nd slot!",
+  "item.jsg_transporters.crystal_glyph_rings_ori.tooltip": "Upgrade for Transport Rings",
+  "item.jsg_transporters.crystal_glyph_rings_ori.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ori address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 2nd slot!",
 
-  "item.jsg.crystal_glyph_rings_ancient.tooltip": "Upgrade for Transport Rings",
-  "item.jsg.crystal_glyph_rings_ancient.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ancient address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 3rd slot!",
+  "item.jsg_transporters.crystal_glyph_rings_ancient.tooltip": "Upgrade for Transport Rings",
+  "item.jsg_transporters.crystal_glyph_rings_ancient.tooltip.extended": "This crystal allows you to §lONLY DISPLAY%nl%transport ring's Ancient address when%nl%placed into a rings.%nl%%nl%§oThis upgrade can be combined with other%nl%§otransport rings upgrades!%nl%%nl%This crystal can be placed only in 3rd slot!",
 
-  "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip": "Upgrade for Transport Rings",
-  "item.jsg.crystal_upgrade_dimensional_tunneling.tooltip.extended": "This crystal allows you to §lUSE%nl%transport rings for interdimensional%nl%travel. Only outgoing transport rings%nl%require this crystal!%nl%%nl%§oThis upgrade can be combined%nl%§owith other transport rings upgrades!%nl%%nl%This crystal can be placed only in 4th slot!",
+  "item.jsg_transporters.crystal_upgrade_dimensional_tunneling.tooltip": "Upgrade for Transport Rings",
+  "item.jsg_transporters.crystal_upgrade_dimensional_tunneling.tooltip.extended": "This crystal allows you to §lUSE%nl%transport rings for interdimensional%nl%travel. Only outgoing transport rings%nl%require this crystal!%nl%%nl%§oThis upgrade can be combined%nl%§owith other transport rings upgrades!%nl%%nl%This crystal can be placed only in 4th slot!",
 
   "_comment303": ">>> Blocks <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
   "_comment304": "===>>> Transport Rings Control Panels <<<<<<<<<<<<",
 
-  "item.jsg.block.jsg_transporters.rings_goauld_control_panel_block.tooltip": "Control panel for Goa'uld transport rings",
-  "item.jsg.block.jsg_transporters.rings_ori_control_panel_block.tooltip": "Control panel for Ori transport rings",
-  "item.jsg.block.jsg_transporters.rings_ancient_control_panel_block.tooltip": "Control panel for Ancient transport rings",
+  "item.jsg_transporters.block.jsg_transporters.rings_goauld_control_panel_block.tooltip": "Control panel for Goa'uld transport rings",
+  "item.jsg_transporters.block.jsg_transporters.rings_ori_control_panel_block.tooltip": "Control panel for Ori transport rings",
+  "item.jsg_transporters.block.jsg_transporters.rings_ancient_control_panel_block.tooltip": "Control panel for Ancient transport rings",
 
   "_comment400": "---------------------- GUI -----------------------",
 
