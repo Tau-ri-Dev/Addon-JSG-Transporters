@@ -19,6 +19,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -148,6 +149,17 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         Direction direction = pState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return this.canAttachTo(pLevel, pPos.relative(direction.getOpposite()), direction);
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
+    public BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
+            LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
+        if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
+          return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(currState, updatedFrom, neighborState, level, currentPos, neighborPos);
     }
 
     @Override
