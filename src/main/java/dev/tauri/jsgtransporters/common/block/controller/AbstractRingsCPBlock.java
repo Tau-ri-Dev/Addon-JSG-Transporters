@@ -24,6 +24,9 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -35,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
-public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock {
+public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock, SimpleWaterloggedBlock {
     public static final Properties PANEL_PROPS = Properties.of()
             .explosionResistance(30f)
             .destroyTime(3f)
@@ -47,6 +50,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
         super(PANEL_PROPS);
         this.registerDefaultState(
                 defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.NORTH)
+                .setValue(BlockStateProperties.WATERLOGGED, false)
         );
     }
 
@@ -72,6 +76,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(JSGProperties.FACING_HORIZONTAL_PROPERTY);
+        builder.add(BlockStateProperties.WATERLOGGED);
         super.createBlockStateDefinition(builder);
     }
 
@@ -84,7 +89,15 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
         if (direction.getAxis() == Direction.Axis.Y) return null;
         if (!canAttachTo(ctx.getLevel(), ctx.getClickedPos().immutable().offset(direction.getOpposite().getNormal()), direction))
             return null;
-        return defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, direction);
+        return defaultBlockState()
+            .setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, direction)
+            .setValue(BlockStateProperties.WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).getType() == Fluids.WATER);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public @NotNull FluidState getFluidState(@Nonnull BlockState pState) {
+        return pState.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
 
     @Override
