@@ -11,10 +11,20 @@ public enum RingsConnectResult {
     NO_ORIGIN,
     BUSY,
     BUSY_TARGET,
-    OBFUSCATED,
-    OBFUSCATED_TARGET,
+    OBSTRUCTED,
+    OBSTRUCTED_TARGET,
 
     CLIENT;
+    /**
+     * @deprecated use {@link #OBSTRUCTED} instead
+     */
+    @Deprecated(forRemoval = true)
+    public static final RingsConnectResult OBFUSCATED = OBSTRUCTED;
+    /**
+     * @deprecated use {@link #OBSTRUCTED_TARGET} instead
+     */
+    @Deprecated(forRemoval = true)
+    public static final RingsConnectResult OBFUSCATED_TARGET = OBSTRUCTED_TARGET;
 
     public final String translationKey;
 

@@ -856,8 +856,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             return RingsConnectResult.BUSY;
         }
 
-        if (!ringsBe.setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED_TARGET;
-        if (!setBorderBlocks(false, true)) return RingsConnectResult.OBFUSCATED;
+        if (!ringsBe.setBorderBlocks(false, true)) return RingsConnectResult.obstructed_TARGET;
+        if (!setBorderBlocks(false, true)) return RingsConnectResult.OBSTRUCTED;
 
         outbound = true;
         busy = true;

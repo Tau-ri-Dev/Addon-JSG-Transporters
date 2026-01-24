@@ -137,8 +137,8 @@
   "block.jsg_transporters.rings.message.no_origin": "Address malformed",
   "block.jsg_transporters.rings.message.busy": "Rings are busy",
   "block.jsg_transporters.rings.message.busy_target": "Target rings are busy",
-  "block.jsg_transporters.rings.message.obfuscated": "Rings are obfuscated",
-  "block.jsg_transporters.rings.message.obfuscated_target": "Target rings are obfuscated",
+  "block.jsg_transporters.rings.message.obstructed": "Rings are obstructed",
+  "block.jsg_transporters.rings.message.obstructed_target": "Target rings are obstructed",
 
   "_comment800": "----------------- DEATH MESSAGES -----------------",
 
