@@ -35,6 +35,9 @@ import net.minecraftforge.registries.RegistryObject;
 import javax.annotation.Nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock, SimpleWaterloggedBlock {
@@ -142,6 +145,11 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     private boolean canAttachTo(BlockGetter pBlockReader, BlockPos pPos, Direction pDirection) {
         BlockState blockstate = pBlockReader.getBlockState(pPos);
         return blockstate.isFaceSturdy(pBlockReader, pPos, pDirection);
+    }
+
+    @Override
+    public @NotNull VoxelShape getBlockSupportShape(BlockState pState, BlockGetter world, BlockPos pPos) {
+        return Shapes.empty();
     }
 
     @Override
