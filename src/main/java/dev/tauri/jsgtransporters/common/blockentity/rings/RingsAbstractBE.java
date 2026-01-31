@@ -74,8 +74,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
