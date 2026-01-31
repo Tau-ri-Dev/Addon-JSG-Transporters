@@ -11,14 +11,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class LanteanTransporterPylon extends JSGTabbedBlock implements SimpleWaterloggedBlock {
 
-  public LanteanTransporterPylon(Properties pProperties) {
-    super(pProperties);
-    //TODO Auto-generated constructor stub
-  }
+    public LanteanTransporterPylon(Properties pProperties) {
+        super(pProperties);
+        // TODO Auto-generated constructor stub
+    }
 
-  @Override
-  protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> pBuilder) {
-    pBuilder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.WATERLOGGED);
-    super.createBlockStateDefinition(pBuilder);
-  }
+    @Override
+    protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> pBuilder) {
+        pBuilder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.WATERLOGGED);
+        super.createBlockStateDefinition(pBuilder);
+    }
 }

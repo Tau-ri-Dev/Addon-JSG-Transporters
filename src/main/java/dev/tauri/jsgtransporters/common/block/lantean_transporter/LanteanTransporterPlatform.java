@@ -6,15 +6,15 @@ import dev.tauri.jsg.api.block.JSGTabbedBlock;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.registries.RegistryObject;
 
-public class LanteanTransporterPlatform extends JSGTabbedBlock{
-  public LanteanTransporterPlatform(Properties blockProperties) {
-    super(blockProperties);
-    //TODO Auto-generated constructor stub
-  }
+public class LanteanTransporterPlatform extends JSGTabbedBlock {
+    public LanteanTransporterPlatform(Properties blockProperties) {
+        super(blockProperties);
+        // TODO Auto-generated constructor stub
+    }
 
-  @Override
-  public List<RegistryObject<CreativeModeTab>> getTabs() {
-    // TODO Auto-generated method stub
-    return super.getTabs();
-  }
+    @Override
+    public List<RegistryObject<CreativeModeTab>> getTabs() {
+        // TODO Auto-generated method stub
+        return super.getTabs();
+    }
 }

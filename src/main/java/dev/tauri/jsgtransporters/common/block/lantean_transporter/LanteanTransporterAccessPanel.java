@@ -24,20 +24,20 @@ public class LanteanTransporterAccessPanel extends TickableBEBlock implements II
     @Override
     @Nullable
     @ParametersAreNonnullByDefault
-    public BlockEntity newBlockEntity( BlockPos pPos, BlockState pState) {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'newBlockEntity'");
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'newBlockEntity'");
     }
 
     @Override
     public JSGBlockItem getItemBlock() {
-      // TODO Auto-generated method stub
-      throw new UnsupportedOperationException("Unimplemented method 'getItemBlock'");
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getItemBlock'");
     }
 
     @Override
     protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> blockStateBuilder) {
-    blockStateBuilder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.WATERLOGGED);
-    super.createBlockStateDefinition(blockStateBuilder);
+        blockStateBuilder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.WATERLOGGED);
+        super.createBlockStateDefinition(blockStateBuilder);
     }
 }

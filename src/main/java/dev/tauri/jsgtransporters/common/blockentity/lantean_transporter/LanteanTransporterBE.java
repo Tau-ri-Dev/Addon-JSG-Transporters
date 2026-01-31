@@ -35,167 +35,166 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
                                                                                                                 * LanteanTransporterMergeHelper>
                                                                                                                 */ {
 
-  protected final UUID[] networks = new UUID[2];
-  private float doorState = 0f;
+    protected final UUID[] networks = new UUID[2];
+    private float doorState = 0f;
 
-  public LanteanTransporterBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
-    super(pType, pPos, pBlockState);
-    // TODO Auto-generated constructor stub
-  }
-
-  @Override
-  public void tick(@NotNull Level arg0) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'tick'");
-  }
-  /*
-   * @Override
-   * public LanteanTransporterMergeHelper getMergeHelper() {
-   * return new LanteanTransporterMergeHelper(this);
-   * }
-   */
-
-  @Override
-  public boolean prepareBE() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'prepareBE'");
-  }
-
-  protected final JSGItemStackHandler inventory = new JSGItemStackHandler(6) {
-    public boolean isItemValid(int slot, net.minecraft.world.item.ItemStack stack) {
-      Item item = stack.getItem();
-      return switch (slot) {
-        case 0, 1 -> false; // TODO Network filter/link items
-        case 2 -> false; // TODO identity crystal
-        case 3, 4, 5 -> item instanceof CapacitorItemBlock;
-        default -> false;
-      };
+    public LanteanTransporterBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
+        super(pType, pPos, pBlockState);
+        // TODO Auto-generated constructor stub
     }
 
-    protected int getStackLimit(int slot, net.minecraft.world.item.ItemStack stack) {
-      return 1;
-    }
-
-    protected void onContentsChanged(int slot) {
-      switch (slot) {
-        case 0, 1 -> {
-          updateNetworkLinks();
-        }
-        case 2 -> {
-          updateIdentity();
-        }
-        case 3, 4, 5 -> {
-          updatePowerTier();
-        }
-      }
-    }
-  };
-
-  private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
     @Override
-    protected void onEnergyChanged() {
-      setChanged();
+    public void tick(@NotNull Level arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'tick'");
     }
-  };
+    /*
+     * @Override
+     * public LanteanTransporterMergeHelper getMergeHelper() {
+     * return new LanteanTransporterMergeHelper(this);
+     * }
+     */
 
-  /**
-   * @return the energyStorage
-   */
-  public LargeEnergyStorage getEnergyStorage() {
-    return energyStorage;
-  }
-
-  public int getEnergyStored() {
-    return energyStorage.getEnergyStored();
-  }
-
-  protected int currentPowerTier = 1;
-
-  public int getCurrentPowerTier() {
-    return currentPowerTier;
-  }
-
-  public void updatePowerTier() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updatePowerTier'");
-  }
-
-  @Override
-  public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-    if (cap == ForgeCapabilities.ENERGY) {
-      return LazyOptional.of(this::getEnergyStorage).cast();
+    @Override
+    public boolean prepareBE() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'prepareBE'");
     }
-    return super.getCapability(cap, side);
-  }
 
-  public void updateIdentity() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateIdentity'");
-  }
+    protected final JSGItemStackHandler inventory = new JSGItemStackHandler(6) {
+        public boolean isItemValid(int slot, net.minecraft.world.item.ItemStack stack) {
+            Item item = stack.getItem();
+            return switch (slot) {
+                case 0, 1 -> false; // TODO Network filter/link items
+                case 2 -> false; // TODO identity crystal
+                case 3, 4, 5 -> item instanceof CapacitorItemBlock;
+                default -> false;
+            };
+        }
 
-  public void updateNetworkLinks() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateNetworkLinks'");
-  }
+        protected int getStackLimit(int slot, net.minecraft.world.item.ItemStack stack) {
+            return 1;
+        }
 
-  @Override
-  public void load(@Nonnull CompoundTag pTag) {
-    if (pTag.contains("networks")) {
-      CompoundTag networksTag = pTag.getCompound("networks");
-      networks[0] = networksTag.contains("A") ? networksTag.getUUID("A") : null;
-      networks[1] = networksTag.contains("B") ? networksTag.getUUID("B") : null;
-    } else {
-      networks[0] = null;
-      networks[1] = null;
+        protected void onContentsChanged(int slot) {
+            switch (slot) {
+                case 0, 1 -> {
+                    updateNetworkLinks();
+                }
+                case 2 -> {
+                    updateIdentity();
+                }
+                case 3, 4, 5 -> {
+                    updatePowerTier();
+                }
+            }
+        }
+    };
+
+    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
+        @Override
+        protected void onEnergyChanged() {
+            setChanged();
+        }
+    };
+
+    /**
+     * @return the energyStorage
+     */
+    public LargeEnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
-    this.doorState = pTag.getFloat("doorState");
-    super.load(pTag);
-  }
 
-  @Override
-  protected void saveAdditional(@Nonnull CompoundTag pTag) {
-    CompoundTag networksTag = new CompoundTag();
-    if (networks[0] != null) {
-      networksTag.putUUID("A", networks[0]);
+    public int getEnergyStored() {
+        return energyStorage.getEnergyStored();
     }
-    if (networks[1] != null) {
-      networksTag.putUUID("B", networks[1]);
+
+    protected int currentPowerTier = 1;
+
+    public int getCurrentPowerTier() {
+        return currentPowerTier;
     }
-    if (!networksTag.isEmpty()) {
-      pTag.put("networks", networksTag);
+
+    public void updatePowerTier() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updatePowerTier'");
     }
-    pTag.putFloat("doorState", doorState);
-    // TODO Auto-generated method stub
-    super.saveAdditional(pTag);
-  }
 
-  @Override
-  public State createState(StateType arg0) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'createState'");
-  }
+    @Override
+    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.ENERGY) {
+            return LazyOptional.of(this::getEnergyStorage).cast();
+        }
+        return super.getCapability(cap, side);
+    }
 
-  @Override
-  public State getState(StateType arg0) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getState'");
-  }
+    public void updateIdentity() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateIdentity'");
+    }
 
-  @Override
-  public void sendState(StateType arg0, State arg1) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'sendState'");
-  }
+    public void updateNetworkLinks() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateNetworkLinks'");
+    }
 
-  @Override
-  public void setState(StateType arg0, State arg1) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setState'");
-  }
+    @Override
+    public void load(@Nonnull CompoundTag pTag) {
+        if (pTag.contains("networks")) {
+            CompoundTag networksTag = pTag.getCompound("networks");
+            networks[0] = networksTag.contains("A") ? networksTag.getUUID("A") : null;
+            networks[1] = networksTag.contains("B") ? networksTag.getUUID("B") : null;
+        } else {
+            networks[0] = null;
+            networks[1] = null;
+        }
+        this.doorState = pTag.getFloat("doorState");
+        super.load(pTag);
+    }
 
-  protected void teleportVolume() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'teleportVolume'");
-  }
+    @Override
+    protected void saveAdditional(@Nonnull CompoundTag pTag) {
+        CompoundTag networksTag = new CompoundTag();
+        if (networks[0] != null) {
+            networksTag.putUUID("A", networks[0]);
+        }
+        if (networks[1] != null) {
+            networksTag.putUUID("B", networks[1]);
+        }
+        if (!networksTag.isEmpty()) {
+            pTag.put("networks", networksTag);
+        }
+        pTag.putFloat("doorState", doorState);
+        // TODO Auto-generated method stub
+        super.saveAdditional(pTag);
+    }
+
+    @Override
+    public State createState(StateType arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createState'");
+    }
+
+    @Override
+    public State getState(StateType arg0) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getState'");
+    }
+
+    @Override
+    public void sendState(StateType arg0, State arg1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sendState'");
+    }
+
+    @Override
+    public void setState(StateType arg0, State arg1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setState'");
+    }
+
+    protected void teleportVolume() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'teleportVolume'");
+    }
 }
-
