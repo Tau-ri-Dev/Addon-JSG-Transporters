@@ -910,12 +910,24 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         var maxPos = new BlockPos(1, getVerticalOffset() + index, 1).offset(getBlockPos());
         var poses = StreamSupport.stream(BlockPos.betweenClosed(minPos, maxPos).spliterator(), false);
         var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
-        for (var e : entities) {
-            if (ignoredEntities.contains(e)) continue;
-            var energyToTransport = energyToOperate.getEnergyForTransport(e);
+
+        boolean crossDimensional = level.dimension() != this.targetRings.dimension;
+
+        for (var entity : entities) {
+            if (ignoredEntities.contains(entity)) continue;
+
+            // During cross-dimensional transport, only process root entities.
+            // Passengers are transferred together with their vehicle/entity hierarchy.
+            if (crossDimensional && entity.isPassenger()) continue;
+
+            var energyToTransport = energyToOperate.getEnergyForTransport(entity);
             if (getEnergyStored() < energyToTransport) continue;
-            targetRings.ignoredEntities.add(e);
-            TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
+
+            Entity teleportedEntity = TeleportHelper.teleportEntity(entity, ringsPos, this.targetRings);
+            if (teleportedEntity != null) {
+                markIgnoredRecursive(targetRings, teleportedEntity);
+            }
+
             getEnergyStorage().extractEnergy(energyToTransport, false);
         }
 
@@ -927,10 +939,21 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
                     return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
                 })
-                .filter(pp -> !level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) && !targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));
+                .filter(pp -> !level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK)
+                        && !targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));
+
         TeleportHelper.teleportBlocks(filteredPoses, this, targetRings, pistonHeads);
+
         if (isLast) {
             pistonHeads.forEach(pp -> pp.placeOrAdd(null));
+        }
+    }
+
+    private static void markIgnoredRecursive(RingsAbstractBE rings, Entity entity) {
+        rings.ignoredEntities.add(entity);
+
+        for (Entity passenger : entity.getPassengers()) {
+            markIgnoredRecursive(rings, passenger);
         }
     }
 
