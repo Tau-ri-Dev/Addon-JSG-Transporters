@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.config.ingame;
 
-import dev.tauri.jsg.api.config.ingame.BEConfigOptionProvider;
-import dev.tauri.jsg.api.config.ingame.option.ConfigOptionsHolder;
-import dev.tauri.jsg.api.config.ingame.option.type.IntegerBEConfigOption;
+import dev.tauri.jsg.core.common.config.ingame.BEConfigOptionProvider;
+import dev.tauri.jsg.core.common.config.ingame.option.ConfigOptionsHolder;
+import dev.tauri.jsg.core.common.config.ingame.option.type.IntegerBEConfigOption;
 
 public class RingsConfigOptions {
     public static class Common {

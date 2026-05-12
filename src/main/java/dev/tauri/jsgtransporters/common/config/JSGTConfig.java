@@ -1,24 +1,16 @@
 package dev.tauri.jsgtransporters.common.config;
 
-import dev.tauri.jsg.api.config.JSGConfig;
-import dev.tauri.jsg.api.config.values.JSGConfigValue;
-import dev.tauri.jsg.screen.provider.ConfigScreenClientRegister;
+import dev.tauri.jsg.core.common.config.JSGConfigChild;
+import dev.tauri.jsg.core.common.config.JSGCoreConfig;
+import dev.tauri.jsg.core.common.config.values.JSGConfigValue;
 import dev.tauri.jsgtransporters.JSGTransporters;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.ArrayList;
 
 public class JSGTConfig {
-    private static final String CONFIG_FILE_NAME = "jsg/transporters/";
-
-    private static final ArrayList<JSGConfig.JSGConfigChild> LIST = new ArrayList<>();
-
-    public static final JSGConfig.JSGConfigChild C_GENERAL = new JSGConfig.JSGConfigChild(() -> General.BUILDER, "General", JSGTransporters.MOD_ID);
-    public static final JSGConfig.JSGConfigChild C_ENERGY = new JSGConfig.JSGConfigChild(() -> Energy.BUILDER, "Energy", JSGTransporters.MOD_ID);
+    public static final JSGConfigChild C_GENERAL = new JSGConfigChild(() -> General.BUILDER, "General", JSGTransporters.MOD_ID);
+    public static final JSGConfigChild C_ENERGY = new JSGConfigChild(() -> Energy.BUILDER, "Energy", JSGTransporters.MOD_ID);
 
 
     public static class General {
@@ -64,16 +56,19 @@ public class JSGTConfig {
         ));
     }
 
+    // ----------------------------------------------------
+    // REGISTRATION
+
+    private static final String CONFIG_FILE_NAME = "jsg/transporters/";
+
+    private static final ArrayList<JSGConfigChild> LIST = new ArrayList<>();
+
     public static void register() {
         LIST.clear();
         LIST.add(C_GENERAL);
         LIST.add(C_ENERGY);
 
-        for (JSGConfig.JSGConfigChild child : LIST) {
-            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, child.builder.get().build(), CONFIG_FILE_NAME + child.name + ".toml");
-        }
-
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ConfigScreenClientRegister.register(JSGTransporters.MOD_ID, LIST));
+        JSGCoreConfig.register(JSGTransporters.MOD_ID, CONFIG_FILE_NAME, LIST);
     }
 
     public static void load() {

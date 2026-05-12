@@ -7,6 +7,7 @@ import dev.tauri.jsg.core.common.item.ITabbedItem;
 import dev.tauri.jsg.core.common.registry.CoreTabs;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
+import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -116,7 +117,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
 
     @Override
     public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(TabRegistry.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
+        return List.of(JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override

@@ -1,10 +1,12 @@
 package dev.tauri.jsgtransporters.common.state.gui;
 
-import dev.tauri.jsg.api.config.ingame.BEConfig;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.state.State;
+import dev.tauri.jsg.core.common.config.ingame.BEConfig;
+import dev.tauri.jsg.core.common.entity.State;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +16,18 @@ public class RingsContainerGuiState extends State {
         this.config = config;
     }
 
-    public Map<AbstractSymbolType<?>, RingsAddress> addressMap = new HashMap<>();
+    public Map<SymbolType<?>, RingsAddress> addressMap = new HashMap<>();
     public final BEConfig config;
 
-    public RingsContainerGuiState(Map<AbstractSymbolType<?>, RingsAddress> addressMap, BEConfig config) {
+    public RingsContainerGuiState(Map<SymbolType<?>, RingsAddress> addressMap, BEConfig config) {
         this.addressMap = addressMap;
         this.config = config;
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
-        for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+    public void toBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
+        for (SymbolType<?> symbolType : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             addressMap.get(symbolType).toBytes(buf);
         }
 
@@ -32,10 +35,11 @@ public class RingsContainerGuiState extends State {
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
         addressMap = new HashMap<>(3);
 
-        for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+        for (SymbolType<?> symbolType : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             var address = new RingsAddress(symbolType);
             address.fromBytes(buf);
             addressMap.put(symbolType, address);

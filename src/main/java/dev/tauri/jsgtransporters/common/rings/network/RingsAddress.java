@@ -1,12 +1,23 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
+import dev.tauri.jsg.core.common.entity.NotebookPageType;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsg.core.common.symbol.SymbolType;
 import dev.tauri.jsg.core.common.symbol.address.IAddress;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsg.core.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
+import dev.tauri.jsgtransporters.common.registry.JSGTNotebookPageTypes;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.biome.Biome;
+import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -39,6 +50,25 @@ public class RingsAddress implements IAddress {
     @Override
     public SymbolType<?> getSymbolType() {
         return symbolType;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public CompoundTag getCompound(int[] symbolsToDisplay, ResourceKey<Biome> resourceKey, @Nullable PointOfOrigin pointOfOrigin) {
+        return getNotebookPageType().createCompoundTag(new RingsAddressData(new RingsAddressDynamic(this), symbolsToDisplay), resourceKey);
+    }
+
+    @Override
+    public NotebookPageType<RingsAddressData> getNotebookPageType() {
+        return JSGTNotebookPageTypes.RINGS_ADDRESS.get();
+    }
+
+    @Override
+    public IAddress addOriginIfMissingAndImmutable() {
+        return Util.make(new RingsAddressDynamic(getSymbolType()), (a) -> {
+            a.addAll(this.address);
+            a.addOrigin();
+        });
     }
 
     /**
@@ -105,7 +135,7 @@ public class RingsAddress implements IAddress {
     public CompoundTag serializeNBT() {
         CompoundTag compound = new CompoundTag();
 
-        compound.putString("symbolType", symbolType.getId());
+        compound.putString("symbolType", symbolType.getId().toString());
 
         for (int i = 0; i < getSavedSymbols(); i++)
             compound.putInt("symbol" + i, address.get(i).getId());
@@ -122,26 +152,28 @@ public class RingsAddress implements IAddress {
             return;
         }
 
-        symbolType = AbstractSymbolType.byId(compound.getString("symbolType"));
+        symbolType = SymbolType.byId(JSGMapping.rl(compound.getString("symbolType")));
 
         for (int i = 0; i < getSavedSymbols(); i++)
             address.add(symbolType.valueOf(compound.getInt("symbol" + i)));
     }
 
-    public void toBytes(ByteBuf buf) {
-        buf.writeByte(AbstractSymbolType.getId(symbolType));
+    public void toBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
+        buf.writeResourceLocation(symbolType.getId());
 
         for (int i = 0; i < getSavedSymbols(); i++)
             buf.writeByte(address.get(i).getId());
     }
 
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
         if (!address.isEmpty()) {
             JSGTransporters.logger.error("Tried to deserialize address already containing symbols");
             return;
         }
 
-        symbolType = AbstractSymbolType.byId(buf.readByte());
+        symbolType = SymbolType.byId(buf.readResourceLocation());
 
         for (int i = 0; i < getSavedSymbols(); i++)
             address.add(symbolType.valueOf(buf.readByte()));

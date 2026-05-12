@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.packet.packets;
 
-import dev.tauri.jsg.packet.PositionedPacket;
+import dev.tauri.jsg.core.common.packet.packets.PositionedPacket;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

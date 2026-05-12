@@ -1,48 +1,46 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
-import dev.tauri.jsg.api.chunkloader.ChunkManager;
-import dev.tauri.jsg.api.config.ingame.BEConfig;
-import dev.tauri.jsg.api.config.ingame.IConfigurable;
-import dev.tauri.jsg.api.config.ingame.option.ConfigOptionsHolder;
-import dev.tauri.jsg.api.integration.ComputerDeviceProvider;
-import dev.tauri.jsg.api.pointoforigins.PointOfOrigin;
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
-import dev.tauri.jsg.api.registry.ScheduledTaskType;
-import dev.tauri.jsg.api.stargate.network.address.IAddress;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.state.State;
-import dev.tauri.jsg.api.state.StateType;
-import dev.tauri.jsg.api.util.*;
-import dev.tauri.jsg.api.util.blockentity.IPreparable;
-import dev.tauri.jsg.api.util.blockentity.ITickable;
-import dev.tauri.jsg.api.util.blockentity.IUpgradable;
-import dev.tauri.jsg.api.util.blockentity.ScheduledTaskExecutorInterface;
-import dev.tauri.jsg.blockentity.IAddressProvider;
-import dev.tauri.jsg.blockentity.util.ILinkable;
-import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
-import dev.tauri.jsg.core.common.util.EnumKeyInterface;
-import dev.tauri.jsg.core.common.util.IUpgrade;
-import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.helpers.LinkingHelper;
-import dev.tauri.jsg.integration.ComputerDeviceHolder;
-import dev.tauri.jsg.item.energy.CapacitorItemBlock;
-import dev.tauri.jsg.item.notebook.PageNotebookItemFilled;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.packet.packets.StateUpdateRequestToServer;
-import dev.tauri.jsg.registry.BlockRegistry;
-import dev.tauri.jsg.sound.JSGSoundHelper;
-import dev.tauri.jsg.state.StateProviderInterface;
-import dev.tauri.jsg.state.stargate.StargateBiomeOverrideState;
+import dev.tauri.jsg.core.common.blockentity.*;
+import dev.tauri.jsg.core.common.chunkloader.ChunkManager;
+import dev.tauri.jsg.core.common.config.JSGCoreConfig;
+import dev.tauri.jsg.core.common.config.ingame.BEConfig;
+import dev.tauri.jsg.core.common.config.ingame.IConfigurable;
+import dev.tauri.jsg.core.common.config.ingame.option.ConfigOptionsHolder;
+import dev.tauri.jsg.core.common.config.json.dimension.JSGDimensionConfig;
+import dev.tauri.jsg.core.common.entity.*;
+import dev.tauri.jsg.core.common.helper.BlockPosHelper;
+import dev.tauri.jsg.core.common.helper.LinkingHelper;
+import dev.tauri.jsg.core.common.integration.ComputerDeviceHolder;
+import dev.tauri.jsg.core.common.integration.ComputerDeviceProvider;
+import dev.tauri.jsg.core.common.item.capacitor.CapacitorItemBlock;
+import dev.tauri.jsg.core.common.item.notebook.PageNotebookItemFilled;
+import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsg.core.common.packet.packets.StateUpdateRequestToServer;
+import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsg.core.common.registry.CoreBiomeOverlays;
+import dev.tauri.jsg.core.common.registry.CoreBlocks;
+import dev.tauri.jsg.core.common.registry.CoreItems;
+import dev.tauri.jsg.core.common.registry.CoreStateTypes;
+import dev.tauri.jsg.core.common.sound.JSGSoundHelper;
+import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.symbol.address.IAddress;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsg.core.common.util.*;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.config.ingame.RingsConfigOptions;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
+import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
+import dev.tauri.jsgtransporters.common.registry.*;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
-import dev.tauri.jsgtransporters.common.rings.network.*;
+import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
+import dev.tauri.jsgtransporters.common.rings.network.RingsAddressDynamic;
+import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
+import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiUpdate;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
@@ -70,11 +68,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, IConfigurable, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
@@ -83,7 +83,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         super(pType, pPos, pBlockState);
     }
 
-    protected Map<AbstractSymbolType<?>, RingsAddress> addressMap = new HashMap<>();
+    protected Map<SymbolType<?>, RingsAddress> addressMap = new HashMap<>();
     protected RingsPos ringsPos;
     protected int verticalOffset = 0;
     protected final RingsAddressDynamic dialedAddress = new RingsAddressDynamic(getSymbolType());
@@ -100,11 +100,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                         RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
                 case 4, 5, 6 -> isItemCapacitor && getSupportedCapacitors() >= (slot - 3);
                 case 7, 8, 9 ->
-                        item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_EMPTY.get() || item == dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get();
+                        item == CoreItems.NOTEBOOK_PAGE_EMPTY.get() || item == CoreItems.NOTEBOOK_PAGE_FILLED.get();
                 case BIOME_OVERRIDE_SLOT -> {
-                    var override = BiomeOverlayRegistry.getBiomeOverlayByItem(stack);
+                    var override = BiomeOverlayInstance.getBiomeOverlayByItem(stack);
 
-                    yield getSupportedOverlays().contains(override);
+                    yield getSupportedOverlays().stream().map(Supplier::get).toList().contains(override);
                 }
                 default -> true;
             };
@@ -127,7 +127,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     break;
 
                 case BIOME_OVERRIDE_SLOT:
-                    sendState(StateType.BIOME_OVERRIDE_STATE, new StargateBiomeOverrideState(determineBiomeOverride()));
+                    sendState(CoreStateTypes.BIOME_OVERRIDE_STATE.get(), new StargateBiomeOverrideState(determineBiomeOverride()));
                     break;
                 default:
                     break;
@@ -138,14 +138,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     };
 
     // Server
-    private BiomeOverlayRegistry.BiomeOverlayInstance determineBiomeOverride() {
+    private BiomeOverlayInstance determineBiomeOverride() {
         ItemStack stack = inventory.getStackInSlot(BIOME_OVERRIDE_SLOT);
 
         if (stack.isEmpty()) {
             return null;
         }
 
-        var biomeOverlay = BiomeOverlayRegistry.getBiomeOverlayByItem(stack);
+        var biomeOverlay = BiomeOverlayInstance.getBiomeOverlayByItem(stack);
 
         if (getSupportedOverlays().contains(biomeOverlay)) {
             return biomeOverlay;
@@ -159,10 +159,10 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     public enum RingsUpgradeEnum implements EnumKeyInterface<Item>, IUpgrade {
-        GOAULD_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_GOAULD.get(), 0),
-        ORI_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ORI.get(), 1),
-        ANCIENT_GLYPHS(ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get(), 2),
-        DIMENSIONAL_TUNNELING(ItemRegistry.CRYSTAL_UPGRADE_DIM_TUNNELING.get(), 3);
+        GOAULD_GLYPHS(JSGTItems.CRYSTAL_GLYPH_GOAULD.get(), 0),
+        ORI_GLYPHS(JSGTItems.CRYSTAL_GLYPH_ORI.get(), 1),
+        ANCIENT_GLYPHS(JSGTItems.CRYSTAL_GLYPH_ANCIENT.get(), 2),
+        DIMENSIONAL_TUNNELING(JSGTItems.CRYSTAL_UPGRADE_DIM_TUNNELING.get(), 3);
 
         public final Item item;
         public final int slot;
@@ -192,7 +192,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return inventory.getStackInSlot(3).getItem() == RingsUpgradeEnum.DIMENSIONAL_TUNNELING.item;
     }
 
-    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
+    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage(JSGCoreConfig.Energy.capacitorEnergyStorage.get(), JSGCoreConfig.Energy.capacitorMaxEnergyTransfer.get()) {
 
         @Override
         protected void onEnergyChanged() {
@@ -298,21 +298,17 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return true;
     }
 
-    @Nonnull
-    public Level getLevelNonnull() {
-        return Objects.requireNonNull(getLevel());
-    }
-
     public long getTime() {
-        return getLevelNonnull().getGameTime();
+        var level = getLevel();
+        if (level == null) return 0;
+        return level.getGameTime();
     }
 
     protected TargetPoint targetPoint;
-    protected BlockPos pos;
 
     @Override
     public void onLoad() {
-        this.pos = getBlockPos();
+        var pos = getBlockPos();
         if (level != null) {
             if (!level.isClientSide) {
                 this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
@@ -322,8 +318,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 generateAddresses(false);
                 updatePowerTier();
             } else {
-                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateType.RENDERER_STATE));
-                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateType.GUI_STATE));
+                JSGCorePacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), CoreStateTypes.RENDERER_STATE.get()));
+                JSGCorePacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), CoreStateTypes.GUI_STATE.get()));
             }
         }
         super.onLoad();
@@ -355,7 +351,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public void tick(@Nonnull Level level) {
         // Scheduled tasks
         ScheduledTask.iterate(scheduledTasks, getTime());
-        if (!getLevelNonnull().isClientSide) {
+        if (!level.isClientSide) {
             if (!addedToNetwork) {
                 addedToNetwork = true;
                 getDeviceHolder().connectToWirelessNetwork();
@@ -411,7 +407,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         } else {
             // Client -> request to update client config & request addresses from the server
             if (getConfig() == null || getConfig().getOptions().isEmpty() || addressMap.isEmpty()) {
-                JSGPacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), StateType.GUI_STATE));
+                JSGCorePacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), CoreStateTypes.GUI_STATE.get()));
             }
         }
     }
@@ -427,23 +423,25 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     }
 
     @Nullable
-    public RingsAddress getRingsAddress(AbstractSymbolType<?> symbolType) {
+    public RingsAddress getRingsAddress(SymbolType<?> symbolType) {
         if (addressMap == null) return null;
 
         return addressMap.get(symbolType);
     }
 
     @Override
-    public IAddress getAddress(AbstractSymbolType<?> symbolTypeEnum) {
+    public IAddress getAddress(SymbolType<?> symbolTypeEnum) {
         return getRingsAddress(symbolTypeEnum);
     }
 
     public void generateAddresses(boolean reset) {
         if (reset && ringsPos != null)
             RingsNetwork.INSTANCE.removeRings(ringsPos);
-        Random random = new Random(pos.hashCode() * 31L + getLevelNonnull().dimension().location().hashCode());
+        var level = getLevel();
+        if (level == null) return;
+        Random random = new Random(getBlockPos().hashCode() * 31L + level.dimension().location().hashCode());
 
-        for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+        for (var symbolType : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             var address = getRingsAddress(symbolType);
 
             if (address == null || reset) {
@@ -457,19 +455,21 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         }
     }
 
-    public abstract AbstractSymbolType<?> getSymbolType();
+    public abstract SymbolType<?> getSymbolType();
 
     protected void initRingsPos() {
         var oldPos = ringsPos;
-        ringsPos = new RingsPos(getLevelNonnull().dimension(), getBlockPos(), getSymbolType());
+        var level = getLevel();
+        if (level == null) return;
+        ringsPos = new RingsPos(level.dimension(), getBlockPos(), getSymbolType());
         if (oldPos != null)
             ringsPos.setName(oldPos.getName());
-        var ringsFromNetwork = RingsNetwork.INSTANCE.getRings(getRingsAddress(SymbolTypeRegistry.GOAULD));
+        var ringsFromNetwork = RingsNetwork.INSTANCE.getRings(getRingsAddress(JSGTSymbolTypes.GOAULD.get()));
         if (ringsFromNetwork != null)
             ringsPos.setName(ringsFromNetwork.getName());
     }
 
-    public void setRingsAddress(AbstractSymbolType<?> symbolType, RingsAddress address) {
+    public void setRingsAddress(SymbolType<?> symbolType, RingsAddress address) {
         initRingsPos();
         addressMap.put(symbolType, address);
         RingsNetwork.INSTANCE.putRings(address, ringsPos);
@@ -505,38 +505,38 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         setChanged();
     }
 
-    public BlockPos getCenterTransportPos(){
+    public BlockPos getCenterTransportPos() {
         return getBlockPos().offset(0, getVerticalOffset() + 1, 0);
     }
 
     @Override
     public void executeTask(ScheduledTaskType task, @Nonnull CompoundTag context) {
-        if (task == RingsScheduledTaskType.RINGS_START_ANIMATION) {
+        if (task == JSGTScheduledTaskTypes.RINGS_START_ANIMATION.get()) {
             if (level == null) return;
             if (level.isClientSide()) return;
             if (!context.contains("start") && !context.contains("end") && !context.contains("index") && !context.contains("tp") && !context.contains("playEnd")) {
                 context = new CompoundTag();
                 context.putBoolean("start", true);
                 addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
-                JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), SoundRegistry.RINGS_TRANSPORT_START);
+                JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), JSGTSoundEvents.RINGS_TRANSPORT_START);
 
                 context = new CompoundTag();
                 context.putBoolean("playEnd", true);
                 addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
             } else {
                 if (context.getBoolean("playEnd")) {
-                    JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), SoundRegistry.RINGS_TRANSPORT_END);
+                    JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), JSGTSoundEvents.RINGS_TRANSPORT_END);
                 } else if (context.getBoolean("start")) {
                     rendererState.startAnimation(level.getGameTime());
                     setChanged();
-                    getAndSendState(StateType.RENDERER_STATE);
+                    getAndSendState(CoreStateTypes.RENDERER_STATE.get());
                     context = new CompoundTag();
                     context.putBoolean("end", true);
                     addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
-                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, 10));
+                    addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS, 10));
                     var c = new CompoundTag();
                     c.putBoolean("clear", true);
-                    addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, c));
+                    addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, c));
 
                     var offset = getVerticalOffset();
                     for (int i = 0; i < 3; i++) {
@@ -558,11 +558,16 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     return;
                 }
             }
-        } else if (task == RingsScheduledTaskType.RINGS_SOLID_BLOCKS) {
+        } else if (task == JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS.get()) {
             setBorderBlocks(context.getBoolean("clear"), false);
         } else if (task == ScheduledTaskType.STARGATE_GIVE_PAGE) {
+            // TODO(Mine): Refactor this and fix this to actually make this working
             if (pageSlotId < 7) return;
-            AbstractSymbolType<?> symbolType = null;
+
+            // Temp
+            var symbolType = JSGTSymbolTypes.GOAULD.get();
+
+            /*SymbolType<?> symbolType = null;
             switch (pageSlotId) {
                 case 7:
                     symbolType = SymbolTypeRegistry.GOAULD;
@@ -576,7 +581,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 default:
                     break;
             }
-            if (symbolType == null) return;
+            if (symbolType == null) return;*/
             var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
             inventory.setStackInSlot(pageSlotId, stack);
 
@@ -584,14 +589,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         setChanged();
     }
 
-    public ItemStack getAddressPage(AbstractSymbolType<?> symbolType, int[] symbolsToDisplay) {
+    public ItemStack getAddressPage(SymbolType<?> symbolType, int[] symbolsToDisplay) {
         JSGTransporters.logger.info("Giving Notebook page of address {}", symbolType);
-
-        CompoundTag compound = PageNotebookItemFilled.getCompoundFromAddress(addressMap.get(symbolType), symbolsToDisplay, PageNotebookItemFilled.getBiomeKeyFromWorld(getLevelNonnull(), pos), getPointOfOrigin(symbolType), AddressTypeRegistry.RINGS_ADDRESS_TYPE);
-
-        var stack = new ItemStack(dev.tauri.jsg.registry.ItemRegistry.NOTEBOOK_PAGE_FILLED.get(), 1);
-        stack.setTag(compound);
-        return stack;
+        return JSGTNotebookPageTypes.RINGS_ADDRESS.get().createPage(new RingsAddressData(new RingsAddressDynamic(addressMap.get(symbolType)), symbolsToDisplay), PageNotebookItemFilled.getBiomeKeyFromWorld(getLevel(), getBlockPos()));
     }
 
     protected boolean setBorderBlocks(boolean clear, boolean simulate) {
@@ -604,15 +604,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     var pos = getBlockPos().offset(x, getVerticalOffset() + y, z);
                     var state = level.getBlockState(pos);
                     if (clear) {
-                        if (state.getBlock() != BlockRegistry.INVISIBLE_BLOCK.get()) continue;
+                        if (state.getBlock() != CoreBlocks.INVISIBLE_BLOCK.get()) continue;
                         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
                         continue;
                     }
                     if (!state.canBeReplaced()) return false;
                     if (simulate) continue;
                     var ctx = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(pos.getCenter(), Direction.UP, pos, false));
-                    var stateNew = BlockRegistry.INVISIBLE_BLOCK.get().getStateForPlacement(ctx);
-                    if (stateNew == null) stateNew = BlockRegistry.INVISIBLE_BLOCK.get().defaultBlockState();
+                    var stateNew = CoreBlocks.INVISIBLE_BLOCK.get().getStateForPlacement(ctx);
+                    if (stateNew == null) stateNew = CoreBlocks.INVISIBLE_BLOCK.get().defaultBlockState();
                     level.setBlock(pos, stateNew, 3);
                 }
             }
@@ -626,10 +626,15 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             return;
         }
         if (targetPoint != null) {
-            JSGPacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
+            JSGCorePacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
         } else {
             JSGTransporters.logger.debug("targetPoint as null trying to send {} from {}", this, this.getClass().getCanonicalName());
         }
+    }
+
+    @Override
+    public PacketDistributor.TargetPoint getTargetPoint() {
+        return targetPoint;
     }
 
     protected final ComputerDeviceHolder deviceHolder = new ComputerDeviceHolder(this);
@@ -653,9 +658,9 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public State getState(@Nonnull StateType stateType) {
         return stateType.stateSupplier()
-                .tryType(StateType.GUI_STATE, () -> new RingsContainerGuiState(addressMap, getConfig()))
-                .tryType(StateType.GUI_UPDATE, () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress))
-                .tryType(StateType.RENDERER_STATE, () -> {
+                .tryType(CoreStateTypes.GUI_STATE.get(), () -> new RingsContainerGuiState(addressMap, getConfig()))
+                .tryType(CoreStateTypes.GUI_UPDATE.get(), () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress))
+                .tryType(CoreStateTypes.RENDERER_STATE.get(), () -> {
                     var state = getRendererStateClient();
                     state.verticalOffset = verticalOffset;
                     return state;
@@ -666,27 +671,27 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public State createState(@Nonnull StateType stateType) {
         return stateType.stateSupplier()
-                .tryType(StateType.GUI_STATE, () -> new RingsContainerGuiState(getConfig()))
-                .tryType(StateType.GUI_UPDATE, RingsContainerGuiUpdate::new)
-                .tryType(StateType.RENDERER_STATE, RingsRendererState::new)
+                .tryType(CoreStateTypes.GUI_STATE, () -> new RingsContainerGuiState(getConfig()))
+                .tryType(CoreStateTypes.GUI_UPDATE, RingsContainerGuiUpdate::new)
+                .tryType(CoreStateTypes.RENDERER_STATE, RingsRendererState::new)
                 .orElseThrow(this);
     }
 
     @Override
     public void setState(@Nonnull StateType stateType, @Nonnull State state) {
         stateType.stateExecutor()
-                .tryType(StateType.RENDERER_STATE, () -> {
+                .tryType(CoreStateTypes.RENDERER_STATE, () -> {
                     rendererState = (RingsRendererState) state;
                     verticalOffset = rendererState.verticalOffset;
                     setChanged();
                 })
-                .tryType(StateType.GUI_STATE, () -> {
+                .tryType(CoreStateTypes.GUI_STATE, () -> {
                     var guiState = (RingsContainerGuiState) state;
                     addressMap = guiState.addressMap;
                     setConfig(guiState.config);
                     setChanged();
                 })
-                .tryType(StateType.GUI_UPDATE, () -> {
+                .tryType(CoreStateTypes.GUI_UPDATE, () -> {
                     RingsContainerGuiUpdate guiUpdate = (RingsContainerGuiUpdate) state;
                     energyStorage.setEnergyStoredInternally(guiUpdate.energyStored);
                     energyTransferredLastTick = guiUpdate.transferedLastTick;
@@ -733,7 +738,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public void load(@Nonnull CompoundTag compound) {
         super.load(compound);
-        for (AbstractSymbolType<?> symbolType : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+        for (SymbolType<?> symbolType : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             if (compound.contains("address_" + symbolType))
                 addressMap.put(symbolType, new RingsAddress(compound.getCompound("address_" + symbolType)));
         }
@@ -787,12 +792,14 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     public abstract TagKey<Block> getControlPanelBlocks();
 
     public void updateLinkStatus() {
-        pos = getBlockPos();
+        var pos = getBlockPos();
         var block = getControlPanelBlocks();
         if (block == null) return;
-        BlockPos closestCP = LinkingHelper.findClosestUnlinked(getLevelNonnull(), pos, LinkingHelper.getDhdRange(), block);
+        var level = getLevel();
+        if (level == null) return;
+        BlockPos closestCP = LinkingHelper.findClosestUnlinked(level, pos, new BlockPos(25, 15, 25), block);
 
-        if (closestCP != null && getLevelNonnull().getBlockEntity(closestCP) instanceof AbstractRingsCPBE be) {
+        if (closestCP != null && level.getBlockEntity(closestCP) instanceof AbstractRingsCPBE be) {
             be.setLinkedDevice(pos);
             setLinkedDevice(closestCP);
             setChanged();
@@ -882,7 +889,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (verticalOffset < 1 && verticalOffset > -4) verticalOffset = -4;
         this.verticalOffset = verticalOffset - 2;
         setChanged();
-        getAndSendState(StateType.RENDERER_STATE);
+        getAndSendState(CoreStateTypes.RENDERER_STATE.get());
     }
 
     protected void startTeleportAnimation() {
@@ -890,7 +897,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         ignoredEntities.clear();
         pistonHeads.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
-        addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_START_ANIMATION, 40));
+        addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_START_ANIMATION, 40));
     }
 
     public final List<Entity> ignoredEntities = new ArrayList<>();
@@ -924,7 +931,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
                     return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
                 })
-                .filter(pp -> !level.getBlockState(pp.getKey()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK) && !targetRings.level.getBlockState(pp.getValue()).is(TagsRegistry.UNTRANSPORTABLE_BLOCK));
+                .filter(pp -> !level.getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !targetRings.level.getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
         TeleportHelper.teleportBlocks(filteredPoses, this, targetRings, pistonHeads);
         if (isLast) {
             pistonHeads.forEach(pp -> pp.placeOrAdd(null));
@@ -945,7 +952,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public void onConfigUpdated() {
         setChanged();
-        sendState(StateType.GUI_STATE, getState(StateType.GUI_STATE));
+        sendState(CoreStateTypes.GUI_STATE.get(), getState(CoreStateTypes.GUI_STATE.get()));
     }
 
     @Override
@@ -953,8 +960,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         return "RINGS";
     }
 
-    public List<BiomeOverlayRegistry.BiomeOverlayInstance> getSupportedOverlays() {
-        return List.of(BiomeOverlayRegistry.NORMAL);
+    public List<Supplier<BiomeOverlayInstance>> getSupportedOverlays() {
+        return List.of(CoreBiomeOverlays.NORMAL);
     }
 
     @Override
@@ -975,11 +982,13 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
 
     public EnergyRequiredToOperateRings getEnergyToOperate(@Nonnull RingsPos targetRings) {
         var energyRequired = EnergyRequiredToOperateRings.rings();
+        var level = getLevel();
+        if (level == null) return energyRequired;
 
-        BlockPos sPos = pos;
+        BlockPos sPos = getBlockPos();
         BlockPos tPos = targetRings.ringsPos;
 
-        ResourceKey<Level> sourceDim = getLevelNonnull().dimension();
+        ResourceKey<Level> sourceDim = level.dimension();
         ResourceKey<Level> targetDim = targetRings.getWorld().dimension();
 
         if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER) {
@@ -993,11 +1002,11 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
         if (distance < 50) distance *= 0.8;
         else distance = 50 * Math.log10(distance) / Math.log10(50);
 
-        return energyRequired.mul(distance).add(StargateDimensionConfig.INSTANCE.getCost(sourceDim, targetDim).mul(0.01));
+        return energyRequired.mul(distance).add(EnergyRequiredToOperateRings.rings().mul(JSGDimensionConfig.INSTANCE.getDistanceBetween(sourceDim, targetDim)).mul(0.1));
     }
 
     @Override
-    public @Nullable PointOfOrigin getPointOfOrigin(AbstractSymbolType<?> abstractSymbolType) {
+    public @Nullable PointOfOrigin getPointOfOrigin(SymbolType<?> abstractSymbolType) {
         return null;
     }
 }

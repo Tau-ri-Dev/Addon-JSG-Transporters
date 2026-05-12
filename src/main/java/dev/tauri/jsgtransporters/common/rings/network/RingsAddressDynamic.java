@@ -40,6 +40,15 @@ public class RingsAddressDynamic extends RingsAddress {
         return Math.min(addressSize, 5);
     }
 
+    @Override
+    public RingsAddressDynamic addOriginIfMissingAndImmutable() {
+        var newAddress = new RingsAddressDynamic(this);
+        if (newAddress.getSymbolType().hasOrigin() && !newAddress.contains(newAddress.getSymbolType().getOrigin())) {
+            newAddress.addSymbol(newAddress.getSymbolType().getOrigin());
+        }
+        return newAddress;
+    }
+
     // ---------------------------------------------------------------------------------
     // Address
 

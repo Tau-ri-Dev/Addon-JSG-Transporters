@@ -1,4 +1,4 @@
-package dev.tauri.jsgtransporters.client.renderer.rings;
+package dev.tauri.jsgtransporters.client.renderer.blockentity.rings;
 
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAncientBE;

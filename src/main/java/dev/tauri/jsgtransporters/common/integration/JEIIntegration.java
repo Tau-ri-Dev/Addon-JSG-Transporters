@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.integration;
 
 
-import dev.tauri.jsg.integration.jei.JEIAdvancedGuiHandler;
+import dev.tauri.jsg.core.common.integration.jei.JEIAdvancedGuiHandler;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import mezz.jei.api.IModPlugin;

@@ -1,23 +1,15 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
 import dev.tauri.jsg.core.common.item.JSGBlockItem;
-import dev.tauri.jsgtransporters.JSGTransporters;
-import dev.tauri.jsgtransporters.client.ClientConstants;
-import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
-import dev.tauri.jsgtransporters.common.item.ControllerItem;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolGoauldEnum;
+import dev.tauri.jsgtransporters.common.item.controller.RingsGoauldControllerItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
-    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_button_0.jpg");
-    public static final ResourceLocation LIGHT_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/goauld/goauld_light_0.jpg");
-
     public RingsGoauldCPBlock() {
         super();
     }
@@ -30,22 +22,6 @@ public class RingsGoauldCPBlock extends AbstractRingsCPBlock {
 
     @Override
     public JSGBlockItem getItemBlock() {
-        return new ControllerItem(this) {
-            @Override
-            public JSGModelOBJInGUIRenderer.RenderPartInterface getRenderPartInterface() {
-                return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
-                    stack.translate(-0.9, -0.4, 0);
-                    stack.scale(1.8f, 1.8f, 1.8f);
-                    ModelsHolder.RINGS_CONTROLLER_GOAULD.bindTexture().render(stack, bufferSource, light);
-
-                    for (var symbol : SymbolGoauldEnum.values()) {
-                        stack.pushPose();
-                        ClientConstants.LOADERS_HOLDER.texture().getTexture(symbol.brb() ? LIGHT_TEX : SYMBOLS_TEX).bindTexture();
-                        ClientConstants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
-                        stack.popPose();
-                    }
-                };
-            }
-        };
+        return new RingsGoauldControllerItem(this);
     }
 }

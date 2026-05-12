@@ -1,13 +1,28 @@
 package dev.tauri.jsgtransporters.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.tauri.jsg.core.client.loader.texture.Texture;
+import dev.tauri.jsg.core.client.screen.tab.ITab;
+import dev.tauri.jsg.core.client.screen.tab.TabSideEnum;
 import dev.tauri.jsg.core.client.screen.tab.TabbedContainerScreen;
+import dev.tauri.jsg.core.client.screen.tab.tabs.Tab;
 import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
+import dev.tauri.jsg.core.client.screen.tab.tabs.TabBiomeOverlay;
+import dev.tauri.jsg.core.client.screen.tab.tabs.TabConfig;
+import dev.tauri.jsg.core.client.screen.util.GuiHelper;
+import dev.tauri.jsg.core.common.config.JSGCoreConfig;
+import dev.tauri.jsg.core.common.forgeutil.SlotHandler;
+import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsg.core.common.packet.packets.SaveConfigToServer;
+import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -17,13 +32,15 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import java.util.*;
+
+import static dev.tauri.jsg.core.client.screen.util.GuiHelper.*;
 
 public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
-    private final Map<AbstractSymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
+    private final Map<SymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;
     private TabConfig configTab;
@@ -54,7 +71,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     @Override
     protected void initTabs(List<Tab> tabs) {
         int i = 0;
-        for (AbstractSymbolType<?> type : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+        for (SymbolType<?> type : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             ITab.ITabBuilder tab = TabAddress.builder()
                     .setAddressProvider(menu.ringsTile)
                     .setSymbolType(type)
@@ -124,7 +141,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         for (int i = menu.ringsTile.getPowerTier(); i < 4; i++)
             drawModalRectWithCustomSizedTexture(leftPos + 10 + 39 * i, topPos + 69, 0, 173, 39, 6, 512, 512);
 
-        int width = Math.round((energyStored / (float) JSGConfig.Stargate.stargateEnergyStorage.get() * 156));
+        int width = Math.round((energyStored / (float) JSGCoreConfig.Energy.capacitorEnergyStorage.get() * 156));
         drawGradientRect(graphics.pose(), leftPos + 10, topPos + 69, leftPos + 10 + width, topPos + 69 + 6, 0xffcc2828, 0xff731616);
 
         // Draw ancient title
@@ -274,7 +291,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     }
 
     private void saveConfig() {
-        JSGPacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
+        JSGCorePacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
         menu.ringsTile.setConfig(configTab.getConfig());
     }
 

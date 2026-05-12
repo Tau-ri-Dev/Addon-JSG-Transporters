@@ -6,7 +6,10 @@ import dev.tauri.jsg.core.common.block.util.IItemBlock;
 import dev.tauri.jsg.core.common.blockstate.JSGProperties;
 import dev.tauri.jsg.core.common.helper.BlockPosHelper;
 import dev.tauri.jsg.core.common.item.ITabbedItem;
+import dev.tauri.jsg.core.common.registry.CoreTabs;
+import dev.tauri.jsg.core.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
+import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,19 +54,21 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
     public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
 
     @Override
     @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
     public @Nonnull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
     }
 
     @Override
     public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(dev.tauri.jsgtransporters.common.registry.old.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
+        return List.of(JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override
@@ -131,6 +136,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
+    @SuppressWarnings("deprecation")
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
@@ -141,12 +147,14 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public @NotNull VoxelShape getBlockSupportShape(BlockState pState, BlockGetter world, BlockPos pPos) {
         return Shapes.empty();
     }
 
     @Override
     @ParametersAreNonnullByDefault
+    @SuppressWarnings("deprecation")
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         Direction direction = pState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return this.canAttachTo(pLevel, pPos.relative(direction.getOpposite()), direction);
@@ -155,8 +163,8 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
-    public BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
-                                  LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
+                                           LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -171,6 +179,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
+    @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
         BlockPos min = new BlockPos(4, 0, 14);
         BlockPos max = new BlockPos(12, 16, 16);

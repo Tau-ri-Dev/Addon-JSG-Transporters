@@ -1,8 +1,8 @@
-package dev.tauri.jsgtransporters.client.renderer.controller;
+package dev.tauri.jsgtransporters.client.renderer.blockentity.controller;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.tauri.jsg.api.client.renderer.IRaycasterButtonsRenderer;
-import dev.tauri.jsg.api.client.renderer.LinkableRenderer;
+import dev.tauri.jsg.core.client.renderer.IRaycasterButtonsRenderer;
+import dev.tauri.jsg.core.client.renderer.LinkableRenderer;
 import dev.tauri.jsgtransporters.common.block.controller.AbstractRingsCPBlock;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;

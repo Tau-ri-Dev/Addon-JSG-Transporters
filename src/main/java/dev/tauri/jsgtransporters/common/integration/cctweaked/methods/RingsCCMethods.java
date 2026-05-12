@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.integration.cctweaked.methods;
 
-import dev.tauri.jsg.integration.cctweaked.methods.AbstractCCMethods;
+import dev.tauri.jsg.core.common.integration.cctweaked.methods.AbstractCCMethods;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
 import net.minecraft.world.level.block.entity.BlockEntity;

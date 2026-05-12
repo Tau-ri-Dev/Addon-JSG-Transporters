@@ -1,8 +1,9 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.api.chunkloader.ChunkManager;
-import dev.tauri.jsg.api.helper.DimensionsHelper;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.core.common.chunkloader.ChunkManager;
+import dev.tauri.jsg.core.common.helper.DimensionsHelper;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import io.netty.buffer.ByteBuf;
@@ -25,7 +26,7 @@ import java.util.Objects;
 public class RingsPos implements INBTSerializable<CompoundTag> {
     public ResourceKey<Level> dimension;
     public BlockPos ringsPos;
-    private AbstractSymbolType<?> symbolType;
+    private SymbolType<?> symbolType;
     private String name;
 
     public void setName(String name) {
@@ -36,7 +37,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         return this.name == null ? "" : this.name;
     }
 
-    public RingsPos(ResourceKey<Level> dimension, BlockPos ringsPos, AbstractSymbolType<?> symbolType) {
+    public RingsPos(ResourceKey<Level> dimension, BlockPos ringsPos, SymbolType<?> symbolType) {
         this.dimension = dimension;
         this.ringsPos = ringsPos;
         this.symbolType = symbolType;
@@ -50,13 +51,10 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         this.fromBytes(new FriendlyByteBuf(buf));
     }
 
-    public AbstractSymbolType<?> getSymbolType() {
-        if (this.symbolType != null) {
-            return this.symbolType;
-        } else {
+    public SymbolType<?> getSymbolType() {
+        if (this.symbolType == null)
             this.symbolType = this.getBlockEntity().getSymbolType();
-            return this.symbolType;
-        }
+        return this.symbolType;
     }
 
     public Level getWorld() {
@@ -91,7 +89,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         compound.putLong("pos", ringsPos.asLong());
         compound.putString("name", this.name == null ? "" : this.name);
         if (this.symbolType != null) {
-            compound.putString("symbolType", symbolType.getId());
+            compound.putString("symbolType", symbolType.getId().toString());
         }
         return compound;
     }
@@ -102,7 +100,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         this.ringsPos = BlockPos.of(compound.getLong("pos"));
         this.name = compound.getString("name");
         if (compound.contains("symbolType")) {
-            this.symbolType = AbstractSymbolType.byId(compound.getString("symbolType"));
+            this.symbolType = SymbolType.byId(JSGMapping.rl(compound.getString("symbolType")));
         }
     }
 
@@ -119,7 +117,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
 
         if (this.symbolType != null) {
             buf.writeBoolean(true);
-            buf.writeInt(AbstractSymbolType.getId(this.symbolType));
+            buf.writeResourceLocation(this.symbolType.getId());
         } else {
             buf.writeBoolean(false);
         }
@@ -134,7 +132,7 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         }
 
         if (buf.readBoolean()) {
-            this.symbolType = AbstractSymbolType.byId(buf.readInt());
+            this.symbolType = SymbolType.byId(buf.readResourceLocation());
         }
     }
 

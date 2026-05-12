@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.api.registry.BiomeOverlayRegistry;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.state.State;
-import dev.tauri.jsg.renderer.activation.Activation;
+import dev.tauri.jsg.core.client.renderer.Activation;
+import dev.tauri.jsg.core.common.entity.BiomeOverlayInstance;
+import dev.tauri.jsg.core.common.entity.State;
+import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsgtransporters.common.activation.RingsCPActivation;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -22,18 +22,18 @@ public abstract class RingsControlPanelRendererState extends State {
     public final Map<SymbolInterface, Integer> BUTTON_STATE_MAP = new HashMap<>();
     public final Map<SymbolInterface, Float> ACTUAL_BUTTON_STATE_MAP = new HashMap<>();
 
-    protected BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay;
-    public BiomeOverlayRegistry.BiomeOverlayInstance biomeOverride;
+    protected BiomeOverlayInstance biomeOverlay;
+    public BiomeOverlayInstance biomeOverride;
     private boolean clearingSymbols;
 
-    public BiomeOverlayRegistry.BiomeOverlayInstance getBiomeOverlay() {
+    public BiomeOverlayInstance getBiomeOverlay() {
         if (biomeOverride != null)
             return biomeOverride;
 
         return biomeOverlay;
     }
 
-    public abstract ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay);
+    public abstract ResourceLocation getButtonTexture(SymbolInterface symbol, BiomeOverlayInstance biomeOverlay);
 
 
     public void activateSymbol(long totalWorldTime, SymbolInterface symbol) {
@@ -53,7 +53,7 @@ public abstract class RingsControlPanelRendererState extends State {
     }
 
 
-    public void setBiomeOverlay(BiomeOverlayRegistry.BiomeOverlayInstance biomeOverlay) {
+    public void setBiomeOverlay(BiomeOverlayInstance biomeOverlay) {
         this.biomeOverlay = biomeOverlay;
     }
 

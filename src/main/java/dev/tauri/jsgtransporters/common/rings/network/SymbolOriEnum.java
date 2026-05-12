@@ -1,9 +1,22 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
+import dev.tauri.jsg.core.client.model.IModelLoader;
+import dev.tauri.jsg.core.client.screen.tab.ITab;
+import dev.tauri.jsg.core.client.screen.tab.ITabAddress;
+import dev.tauri.jsg.core.client.texture.ITextureLoader;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.symbol.SymbolUsage;
+import dev.tauri.jsg.core.common.symbol.address.IAddress;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.IPointOfOriginType;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsg.core.common.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
+import dev.tauri.jsgtransporters.common.registry.JSGTItems;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -98,8 +111,8 @@ public enum SymbolOriEnum implements SymbolInterface {
     }
 
     @Override
-    public AbstractSymbolType<?> getSymbolType() {
-        return SymbolTypeRegistry.ORI;
+    public SymbolType<?> getSymbolType() {
+        return JSGTSymbolTypes.ORI.get();
     }
 
     @Override
@@ -114,7 +127,7 @@ public enum SymbolOriEnum implements SymbolInterface {
             id += (previous ? -1 : 1);
             if (id < 0) id = 15;
             id = id % 16;
-            var symbol = SymbolTypeRegistry.ORI.valueOf(id);
+            var symbol = getSymbolType().valueOf(id);
             if (symbol != null && symbol.isValidForAddress()) return symbol;
         }
     }
@@ -161,28 +174,28 @@ public enum SymbolOriEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolUsage getSymbolUsage() {
+            return JSGTSymbolUsages.RINGS.get();
+        }
+
+        @Override
         public SymbolOriEnum[] getValues() {
             return SymbolOriEnum.values();
         }
 
         @Override
         public Block getBaseBlock() {
-            return BlockRegistry.RINGS_ORI.get();
+            return JSGTBlocks.RINGS_ORI.get();
         }
 
         @Override
         public Item getGlyphUpgrade() {
-            return ItemRegistry.CRYSTAL_GLYPH_ORI.get();
+            return JSGTItems.CRYSTAL_GLYPH_ORI.get();
         }
 
         @Override
         public Block getDHDBlock() {
             return null;
-        }
-
-        @Override
-        public String getId() {
-            return "ori";
         }
 
         @Override
@@ -221,7 +234,7 @@ public enum SymbolOriEnum implements SymbolInterface {
         }
 
         @Override
-        public int getMinimalSymbolCountTo(AbstractSymbolType<?> symbolType, boolean localDial) {
+        public int getMinimalSymbolCountTo(SymbolType<?> symbolType, boolean localDial) {
             return 4;
         }
 

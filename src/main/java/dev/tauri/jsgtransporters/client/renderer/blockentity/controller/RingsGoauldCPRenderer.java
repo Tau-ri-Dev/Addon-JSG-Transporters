@@ -1,9 +1,9 @@
-package dev.tauri.jsgtransporters.client.renderer.controller;
+package dev.tauri.jsgtransporters.client.renderer.blockentity.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.raycaster.Raycaster;
-import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.raycaster.Raycaster;
+import dev.tauri.jsg.core.common.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;

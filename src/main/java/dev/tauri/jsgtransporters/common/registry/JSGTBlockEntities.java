@@ -2,12 +2,12 @@ package dev.tauri.jsgtransporters.common.registry;
 
 import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
 import dev.tauri.jsgtransporters.JSGTransporters;
-import dev.tauri.jsgtransporters.client.renderer.controller.RingsAncientCPRenderer;
-import dev.tauri.jsgtransporters.client.renderer.controller.RingsGoauldCPRenderer;
-import dev.tauri.jsgtransporters.client.renderer.controller.RingsOriCPRenderer;
-import dev.tauri.jsgtransporters.client.renderer.rings.RingsAncientRenderer;
-import dev.tauri.jsgtransporters.client.renderer.rings.RingsGoauldRenderer;
-import dev.tauri.jsgtransporters.client.renderer.rings.RingsOriRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.controller.RingsAncientCPRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.controller.RingsGoauldCPRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.controller.RingsOriCPRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.rings.RingsAncientRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.rings.RingsGoauldRenderer;
+import dev.tauri.jsgtransporters.client.renderer.blockentity.rings.RingsOriRenderer;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsGoauldCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;

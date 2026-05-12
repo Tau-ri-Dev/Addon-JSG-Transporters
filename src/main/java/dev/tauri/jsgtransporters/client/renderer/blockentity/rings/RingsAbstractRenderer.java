@@ -1,12 +1,11 @@
-package dev.tauri.jsgtransporters.client.renderer.rings;
+package dev.tauri.jsgtransporters.client.renderer.blockentity.rings;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import dev.tauri.jsg.api.client.renderer.LinkableRenderer;
-import dev.tauri.jsg.api.util.math.MathFunctionImpl;
-import dev.tauri.jsg.api.util.vectors.Vector2f;
-import dev.tauri.jsg.loader.model.OBJModel;
+import dev.tauri.jsg.core.client.renderer.LinkableRenderer;
+import dev.tauri.jsg.core.common.util.math.MathFunctionImpl;
+import dev.tauri.jsg.core.common.util.vectors.Vector2f;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsRendererState;
 import it.unimi.dsi.fastutil.Pair;

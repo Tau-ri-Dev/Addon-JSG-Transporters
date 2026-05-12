@@ -1,14 +1,26 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsg.core.client.model.IModelLoader;
+import dev.tauri.jsg.core.client.screen.tab.ITab;
+import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
 import dev.tauri.jsg.core.client.texture.ITextureLoader;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.symbol.SymbolUsage;
+import dev.tauri.jsg.core.common.symbol.address.IAddress;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.IPointOfOriginType;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsg.core.common.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
+import dev.tauri.jsgtransporters.common.registry.JSGTItems;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -92,8 +104,8 @@ public enum SymbolGoauldEnum implements SymbolInterface {
     }
 
     @Override
-    public AbstractSymbolType<?> getSymbolType() {
-        return SymbolTypeRegistry.GOAULD;
+    public SymbolType<?> getSymbolType() {
+        return JSGTSymbolTypes.GOAULD.get();
     }
 
     @Override
@@ -108,7 +120,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
             id += (previous ? -1 : 1);
             if (id < 0) id = 5;
             id = id % 6;
-            var symbol = SymbolTypeRegistry.GOAULD.valueOf(id);
+            var symbol = getSymbolType().valueOf(id);
             if (symbol != null && symbol.isValidForAddress()) return symbol;
         }
     }
@@ -154,28 +166,28 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolUsage getSymbolUsage() {
+            return JSGTSymbolUsages.RINGS.get();
+        }
+
+        @Override
         public SymbolGoauldEnum[] getValues() {
             return SymbolGoauldEnum.values();
         }
 
         @Override
         public Block getBaseBlock() {
-            return BlockRegistry.RINGS_GOAULD.get();
+            return JSGTBlocks.RINGS_GOAULD.get();
         }
 
         @Override
         public Item getGlyphUpgrade() {
-            return ItemRegistry.CRYSTAL_GLYPH_GOAULD.get();
+            return JSGTItems.CRYSTAL_GLYPH_GOAULD.get();
         }
 
         @Override
         public Block getDHDBlock() {
             return null;
-        }
-
-        @Override
-        public String getId() {
-            return "goauld";
         }
 
         @Override
@@ -214,7 +226,7 @@ public enum SymbolGoauldEnum implements SymbolInterface {
         }
 
         @Override
-        public int getMinimalSymbolCountTo(AbstractSymbolType<?> symbolType, boolean localDial) {
+        public int getMinimalSymbolCountTo(SymbolType<?> symbolType, boolean localDial) {
             return 4;
         }
 

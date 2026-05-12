@@ -1,5 +1,7 @@
 package dev.tauri.jsgtransporters.common.blockentity.controller;
 
+import dev.tauri.jsgtransporters.common.registry.JSGTBlockEntities;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsGoauldCPRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.TagKey;
@@ -8,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class RingsGoauldCPBE extends AbstractRingsCPBE {
     public RingsGoauldCPBE(BlockPos pPos, BlockState pBlockState) {
-        super(BlockEntityRegistry.RINGS_CP_GOAULD_BE.get(), pPos, pBlockState);
+        super(JSGTBlockEntities.RINGS_CP_GOAULD_BE.get(), pPos, pBlockState);
     }
 
     protected RingsGoauldCPRendererState rendererState = new RingsGoauldCPRendererState();
@@ -20,6 +22,6 @@ public class RingsGoauldCPBE extends AbstractRingsCPBE {
 
     @Override
     public TagKey<Block> getRingsBlocks() {
-        return TagsRegistry.PANEL_GOAULD_LINKABLE;
+        return JSGTBlockTags.PANEL_GOAULD_LINKABLE;
     }
 }

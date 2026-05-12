@@ -1,19 +1,12 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import com.mojang.math.Axis;
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.item.JSGBlockItem;
-import dev.tauri.jsg.api.util.JSGAxisAlignedBB;
-import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
-import dev.tauri.jsgtransporters.JSGTransporters;
-import dev.tauri.jsgtransporters.client.ClientConstants;
-import dev.tauri.jsgtransporters.client.ModelsHolder;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.item.JSGBlockItem;
+import dev.tauri.jsg.core.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
-import dev.tauri.jsgtransporters.common.item.ControllerItem;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolOriEnum;
+import dev.tauri.jsgtransporters.common.item.controller.RingsOriControllerItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,8 +18,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class RingsOriCPBlock extends AbstractRingsCPBlock {
-    public static final ResourceLocation SYMBOLS_TEX = new ResourceLocation(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
-
     public RingsOriCPBlock() {
         super();
     }
@@ -71,23 +62,6 @@ public class RingsOriCPBlock extends AbstractRingsCPBlock {
 
     @Override
     public JSGBlockItem getItemBlock() {
-        return new ControllerItem(this) {
-            @Override
-            public JSGModelOBJInGUIRenderer.RenderPartInterface getRenderPartInterface() {
-                return (itemStack, itemDisplayContext, stack, bufferSource, light, overlay) -> {
-                    stack.translate(0, 0.5, 0);
-                    stack.scale(3, 3, 3);
-                    stack.mulPose(Axis.YP.rotationDegrees(180));
-                    ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTexture().render(stack, bufferSource, light);
-
-                    for (var symbol : SymbolOriEnum.values()) {
-                        stack.pushPose();
-                        ClientConstants.LOADERS_HOLDER.texture().getTexture(SYMBOLS_TEX).bindTexture();
-                        ClientConstants.LOADERS_HOLDER.model().getModel(symbol.modelResource).render(stack, bufferSource, light);
-                        stack.popPose();
-                    }
-                };
-            }
-        };
+        return new RingsOriControllerItem(this);
     }
 }

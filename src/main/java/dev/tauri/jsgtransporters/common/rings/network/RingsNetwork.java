@@ -1,9 +1,7 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.JSG;
-import dev.tauri.jsg.api.helper.DimensionsHelper;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
+import dev.tauri.jsg.core.common.config.json.dimension.JSGDimensionConfig;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import io.netty.buffer.ByteBuf;
@@ -14,7 +12,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import javax.annotation.Nonnull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,10 +29,10 @@ public class RingsNetwork extends SavedData {
     public RingsNetwork() {
     }
 
-    private final Map<RingsPos, Map<AbstractSymbolType<?>, RingsAddress>> RINGS_MAP_BY_POS = new LinkedHashMap<>();
+    private final Map<RingsPos, Map<SymbolType<?>, RingsAddress>> RINGS_MAP_BY_POS = new LinkedHashMap<>();
     private final Map<RingsAddress, RingsPos> RINGS_MAP_BY_ADDRESS = new LinkedHashMap<>();
 
-    public Map<RingsPos, Map<AbstractSymbolType<?>, RingsAddress>> getAll() {
+    public Map<RingsPos, Map<SymbolType<?>, RingsAddress>> getAll() {
         return RINGS_MAP_BY_POS;
     }
 
@@ -52,7 +49,7 @@ public class RingsNetwork extends SavedData {
     }
 
     @Nullable
-    public Map<AbstractSymbolType<?>, RingsAddress> getAddresses(RingsPos pos) {
+    public Map<SymbolType<?>, RingsAddress> getAddresses(RingsPos pos) {
         if (pos == null) return null;
         var m = RINGS_MAP_BY_POS.get(pos);
         if (m == null) return null;
@@ -79,12 +76,12 @@ public class RingsNetwork extends SavedData {
     }
 
     public void putRings(RingsAddress address, RingsPos pos) {
-        var map = new HashMap<AbstractSymbolType<?>, RingsAddress>();
+        var map = new HashMap<SymbolType<?>, RingsAddress>();
         map.put(address.getSymbolType(), address);
         putRings(map, pos);
     }
 
-    public void putRings(Map<AbstractSymbolType<?>, RingsAddress> addressMap, RingsPos ringsPos) {
+    public void putRings(Map<SymbolType<?>, RingsAddress> addressMap, RingsPos ringsPos) {
         if (addressMap == null) {
             JSGTransporters.logger.warn("Tried to add NULL-address gate! Aborting...", new NullPointerException());
             return;
@@ -100,20 +97,7 @@ public class RingsNetwork extends SavedData {
         for (var address : addressMap.values()) {
             RINGS_MAP_BY_ADDRESS.put(address, ringsPos);
         }
-        checkForInvalidDims();
         setDirty();
-    }
-
-    private void checkForInvalidDims() {
-        if (JSG.currentServer == null) return; // we are on client - do not check
-        var map = new HashMap<>(RINGS_MAP_BY_POS);
-        for (var e : map.entrySet()) {
-            var pos = e.getKey();
-            if (DimensionsHelper.getLevel(pos.dimension) == null) {
-                JSGTransporters.logger.info("Removing rings at {} from the network as dim is INVALID!", pos);
-                removeRings(pos);
-            }
-        }
     }
 
     public void renameRings(RingsPos pos, String newName) {
@@ -137,11 +121,7 @@ public class RingsNetwork extends SavedData {
 
         if (dim != targetDim) {
             if (!hasDimUpgrade) return true;
-            var sourceEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(dim);
-            var targetEntry = StargateDimensionConfig.INSTANCE.getConfigEntry(targetDim);
-            if (sourceEntry == null || targetEntry == null) return true;
-
-            var distance = Math.abs(sourceEntry.distance - targetEntry.distance);
+            var distance = JSGDimensionConfig.INSTANCE.getDistanceBetween(dim, targetDim);
             if (distance > dimRange) return true;
 
             if (targetDim == Level.NETHER)

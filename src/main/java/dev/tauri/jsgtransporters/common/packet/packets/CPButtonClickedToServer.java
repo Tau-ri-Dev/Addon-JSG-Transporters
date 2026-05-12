@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.packet.packets;
 
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.packet.PositionedPacket;
+import dev.tauri.jsg.core.common.packet.packets.PositionedPacket;
+import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,7 +16,7 @@ public class CPButtonClickedToServer extends PositionedPacket {
     }
 
     public SymbolInterface symbol;
-    public AbstractSymbolType<?> symbolType;
+    public SymbolType<?> symbolType;
     public boolean force;
 
     public CPButtonClickedToServer(BlockPos pos, SymbolInterface symbol) {
@@ -38,7 +38,7 @@ public class CPButtonClickedToServer extends PositionedPacket {
     public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
 
-        buf.writeInt(AbstractSymbolType.getId(symbolType));
+        buf.writeResourceLocation(symbolType.getId());
         buf.writeInt(symbol.getId());
         buf.writeBoolean(force);
     }
@@ -47,7 +47,7 @@ public class CPButtonClickedToServer extends PositionedPacket {
     public void fromBytes(FriendlyByteBuf buf) {
         super.fromBytes(buf);
 
-        symbolType = AbstractSymbolType.byId(buf.readInt());
+        symbolType = SymbolType.byId(buf.readResourceLocation());
         symbol = symbolType.valueOf(buf.readInt());
         force = buf.readBoolean();
     }

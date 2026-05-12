@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.packet;
 
-import dev.tauri.jsg.api.packet.SimplePacketHandler;
+import dev.tauri.jsg.core.common.packet.SimplePacketHandler;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
 import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;

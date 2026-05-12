@@ -3,7 +3,6 @@ package dev.tauri.jsgtransporters;
 import dev.tauri.jsg.core.JSGAddon;
 import dev.tauri.jsg.core.JSGAddons;
 import dev.tauri.jsg.core.LoggerWrapper;
-import dev.tauri.jsg.core.client.LoadersHolder;
 import dev.tauri.jsg.core.common.integration.Integrations;
 import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
 import dev.tauri.jsgtransporters.client.ClientConstants;
@@ -34,7 +33,6 @@ public class JSGTransporters implements JSGAddon {
     public static final String MC_VERSION = "1.20.1";
 
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(JSGTransporters.MOD_ID);
-    public static final LoadersHolder LOADERS_HOLDER = LoadersHolder.getOrCreate(JSGTransporters.MOD_ID, JSGTransporters.class);
 
     public JSGTransporters() {
         logger = new LoggerWrapper("[jsg transporters] ", LoggerFactory.getLogger(MOD_NAME));

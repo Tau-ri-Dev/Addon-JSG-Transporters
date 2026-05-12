@@ -1,12 +1,26 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
+import dev.tauri.jsg.core.client.model.IModelLoader;
+import dev.tauri.jsg.core.client.screen.tab.ITab;
+import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
+import dev.tauri.jsg.core.client.texture.ITextureLoader;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.symbol.SymbolUsage;
+import dev.tauri.jsg.core.common.symbol.address.IAddress;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.IPointOfOriginType;
+import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsg.core.common.util.I18n;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
+import dev.tauri.jsgtransporters.common.registry.JSGTItems;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -90,8 +104,8 @@ public enum SymbolAncientEnum implements SymbolInterface {
     }
 
     @Override
-    public AbstractSymbolType<?> getSymbolType() {
-        return SymbolTypeRegistry.ANCIENT;
+    public SymbolType<?> getSymbolType() {
+        return JSGTSymbolTypes.ANCIENT.get();
     }
 
     @Override
@@ -106,7 +120,7 @@ public enum SymbolAncientEnum implements SymbolInterface {
             id += (previous ? -1 : 1);
             if (id < 0) id = 8;
             id = id % 9;
-            var symbol = SymbolTypeRegistry.ANCIENT.valueOf(id);
+            var symbol = getSymbolType().valueOf(id);
             if (symbol != null && symbol.isValidForAddress()) return symbol;
         }
     }
@@ -152,28 +166,28 @@ public enum SymbolAncientEnum implements SymbolInterface {
         }
 
         @Override
+        public SymbolUsage getSymbolUsage() {
+            return JSGTSymbolUsages.RINGS.get();
+        }
+
+        @Override
         public SymbolAncientEnum[] getValues() {
             return SymbolAncientEnum.values();
         }
 
         @Override
         public Block getBaseBlock() {
-            return BlockRegistry.RINGS_ANCIENT.get();
+            return JSGTBlocks.RINGS_ANCIENT.get();
         }
 
         @Override
         public Item getGlyphUpgrade() {
-            return ItemRegistry.CRYSTAL_GLYPH_ANCIENT.get();
+            return JSGTItems.CRYSTAL_GLYPH_ANCIENT.get();
         }
 
         @Override
         public Block getDHDBlock() {
             return null;
-        }
-
-        @Override
-        public String getId() {
-            return "ancient";
         }
 
         @Override
@@ -212,7 +226,7 @@ public enum SymbolAncientEnum implements SymbolInterface {
         }
 
         @Override
-        public int getMinimalSymbolCountTo(AbstractSymbolType<?> symbolType, boolean localDial) {
+        public int getMinimalSymbolCountTo(SymbolType<?> symbolType, boolean localDial) {
             return 4;
         }
 

@@ -1,22 +1,22 @@
-package dev.tauri.jsgtransporters.client.renderer.controller;
+package dev.tauri.jsgtransporters.client.renderer.blockentity.controller;
 
 import com.mojang.math.Axis;
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.raycaster.Raycaster;
-import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.raycaster.Raycaster;
+import dev.tauri.jsg.core.common.raycaster.util.RayCastedButton;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;
-import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
-import dev.tauri.jsgtransporters.common.raycaster.OriCPRaycaster;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolOriEnum;
-import dev.tauri.jsgtransporters.common.state.renderer.RingsOriCPRendererState;
+import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
+import dev.tauri.jsgtransporters.common.raycaster.AncientCPRaycaster;
+import dev.tauri.jsgtransporters.common.rings.network.SymbolAncientEnum;
+import dev.tauri.jsgtransporters.common.state.renderer.RingsAncientCPRendererState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 
 import java.util.List;
 
-public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRendererState, RingsOriCPBE> {
-    public RingsOriCPRenderer(BlockEntityRendererProvider.Context ignored) {
+public class RingsAncientCPRenderer extends AbstractRingsCPRenderer<RingsAncientCPRendererState, RingsAncientCPBE> {
+    public RingsAncientCPRenderer(BlockEntityRendererProvider.Context ignored) {
         super(ignored);
     }
 
@@ -47,12 +47,12 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
     @Override
     protected void renderController() {
         translateToPos();
-        stack.scale(1.5f, 1.5f, 1.5f);
+        stack.scale(2, 2, 2);
 
-        ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTexture().render(stack, source, combinedLight);
+        ModelsHolder.RINGS_CONTROLLER_ANCIENT_BASE.bindTexture().render(stack, source, combinedLight);
 
 
-        for (var symbol : SymbolOriEnum.values()) {
+        for (var symbol : SymbolAncientEnum.values()) {
             stack.pushPose();
             var state = rendererState.getActualButtonState(symbol) / 15f;
             stack.translate(0, 0, -0.008f * state);
@@ -65,11 +65,11 @@ public class RingsOriCPRenderer extends AbstractRingsCPRenderer<RingsOriCPRender
 
     @Override
     public List<RayCastedButton> getRaycasterButtons() {
-        return OriCPRaycaster.BUTTONS;
+        return AncientCPRaycaster.BUTTONS;
     }
 
     @Override
     public Raycaster getRaycaster() {
-        return OriCPRaycaster.INSTANCE;
+        return AncientCPRaycaster.INSTANCE;
     }
 }
