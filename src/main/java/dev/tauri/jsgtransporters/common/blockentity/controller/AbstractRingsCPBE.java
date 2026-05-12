@@ -16,8 +16,6 @@ import dev.tauri.jsg.sound.JSGSoundHelper;
 import dev.tauri.jsg.state.StateProviderInterface;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.registry.RingsScheduledTaskType;
-import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsCPButtonPushedState;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
 import net.minecraft.core.BlockPos;
@@ -32,7 +30,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 
 import java.util.ArrayList;
 import java.util.List;

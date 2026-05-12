@@ -1,19 +1,9 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.api.client.model.IModelLoader;
-import dev.tauri.jsg.api.client.screen.ITab;
-import dev.tauri.jsg.api.client.screen.ITabAddress;
-import dev.tauri.jsg.api.client.texture.ITextureLoader;
-import dev.tauri.jsg.api.pointoforigins.IPointOfOriginType;
-import dev.tauri.jsg.api.pointoforigins.PointOfOrigin;
-import dev.tauri.jsg.api.stargate.network.address.IAddress;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.util.I18n;
+import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
-import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
-import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -138,7 +128,7 @@ public enum SymbolOriEnum implements SymbolInterface {
     // ------------------------------------------------------------
     // Static
 
-    public static class Provider extends AbstractSymbolType<SymbolOriEnum> {
+    public static class Provider extends SymbolType<SymbolOriEnum> {
         @Override
         public ITextureLoader getTextureLoader() {
             return ClientConstants.LOADERS_HOLDER.texture();

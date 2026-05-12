@@ -4,7 +4,6 @@ import dev.tauri.jsg.helpers.FluidHelper;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
-import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

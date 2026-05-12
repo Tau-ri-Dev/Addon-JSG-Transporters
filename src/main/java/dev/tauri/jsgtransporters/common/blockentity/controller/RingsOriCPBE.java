@@ -1,7 +1,5 @@
 package dev.tauri.jsgtransporters.common.blockentity.controller;
 
-import dev.tauri.jsgtransporters.common.registry.BlockEntityRegistry;
-import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsOriCPRendererState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.TagKey;

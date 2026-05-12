@@ -1,10 +1,10 @@
 package dev.tauri.jsgtransporters.common.block.rings;
 
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.item.ITabbedItem;
-import dev.tauri.jsg.block.TickableBEBlock;
-import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.registry.TabRegistry;
+import dev.tauri.jsg.core.common.block.TickableBEBlock;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.helper.BlockPosHelper;
+import dev.tauri.jsg.core.common.item.ITabbedItem;
+import dev.tauri.jsg.core.common.registry.CoreTabs;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
 import net.minecraft.core.BlockPos;
@@ -116,7 +116,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
 
     @Override
     public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
+        return List.of(TabRegistry.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override

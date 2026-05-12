@@ -1,19 +1,8 @@
 package dev.tauri.jsgtransporters.common.inventory;
 
-import dev.tauri.jsg.api.client.screen.util.ContainerHelper;
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.state.StateType;
-import dev.tauri.jsg.forgeutil.SlotHandler;
-import dev.tauri.jsg.item.energy.CapacitorItemBlock;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.screen.inventory.JSGContainer;
-import dev.tauri.jsg.screen.inventory.OpenTabHolderInterface;
-import dev.tauri.jsg.util.CreativeItemsChecker;
+import dev.tauri.jsg.core.client.screen.tab.OpenTabHolderInterface;
+import dev.tauri.jsg.core.common.menu.JSGContainer;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.registry.MenuTypeRegistry;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,7 +17,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;

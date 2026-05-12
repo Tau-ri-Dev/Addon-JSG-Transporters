@@ -1,23 +1,21 @@
 package dev.tauri.jsgtransporters.common.raycaster;
 
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.raycaster.Raycaster;
-import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
-import dev.tauri.jsg.api.util.vectors.Vector3f;
-import dev.tauri.jsgtransporters.common.block.controller.RingsAncientCPBlock;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.raycaster.util.RayCastedButton;
+import dev.tauri.jsg.core.common.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
 public class AncientCPRaycaster extends AbstractCPRaycaster {
-
     public static final AncientCPRaycaster INSTANCE = new AncientCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
             new RayCastedButton(0, SymbolTypeRegistry.ANCIENT, List.of(
@@ -99,8 +97,9 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
             ))
     );
 
-    public static void register() {
-        Raycaster.register(RingsAncientCPBlock.class, INSTANCE);
+    @Override
+    public boolean testBlockState(BlockState blockState) {
+        return blockState.is(JSGTBlocks.RINGS_CP_ANCIENT.get());
     }
 
     @Override
@@ -137,7 +136,7 @@ public class AncientCPRaycaster extends AbstractCPRaycaster {
     @Override
     protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(InteractionHand.MAIN_HAND, true);
-        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.ANCIENT.valueOf(button), false));
+        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.ANCIENT.get().valueOf(button), false));
         return true;
     }
 }

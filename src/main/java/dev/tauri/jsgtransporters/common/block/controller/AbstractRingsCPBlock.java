@@ -1,13 +1,11 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.api.block.util.IHighlightBlock;
-import dev.tauri.jsg.api.block.util.IItemBlock;
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.item.ITabbedItem;
-import dev.tauri.jsg.api.util.JSGAxisAlignedBB;
-import dev.tauri.jsg.block.TickableBEBlock;
-import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.registry.TabRegistry;
+import dev.tauri.jsg.core.common.block.TickableBEBlock;
+import dev.tauri.jsg.core.common.block.util.IHighlightBlock;
+import dev.tauri.jsg.core.common.block.util.IItemBlock;
+import dev.tauri.jsg.core.common.blockstate.JSGProperties;
+import dev.tauri.jsg.core.common.helper.BlockPosHelper;
+import dev.tauri.jsg.core.common.item.ITabbedItem;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,11 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,12 +26,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.registries.RegistryObject;
-import javax.annotation.Nullable;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 public abstract class AbstractRingsCPBlock extends TickableBEBlock implements ITabbedItem, IHighlightBlock, IItemBlock, SimpleWaterloggedBlock {
@@ -52,7 +45,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
         super(PANEL_PROPS);
         this.registerDefaultState(
                 defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.NORTH)
-                .setValue(BlockStateProperties.WATERLOGGED, false)
+                        .setValue(BlockStateProperties.WATERLOGGED, false)
         );
     }
 
@@ -70,7 +63,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
+        return List.of(dev.tauri.jsgtransporters.common.registry.old.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
     }
 
     @Override
@@ -90,8 +83,8 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
         if (!canAttachTo(ctx.getLevel(), ctx.getClickedPos().immutable().offset(direction.getOpposite().getNormal()), direction))
             return null;
         return defaultBlockState()
-            .setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, direction)
-            .setValue(BlockStateProperties.WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).getType() == Fluids.WATER);
+                .setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, direction)
+                .setValue(BlockStateProperties.WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).getType() == Fluids.WATER);
     }
 
     @Override
@@ -163,9 +156,9 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @ParametersAreNonnullByDefault
     @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
-            LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
+                                  LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
-          return Blocks.AIR.defaultBlockState();
+            return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(currState, updatedFrom, neighborState, level, currentPos, neighborPos);
     }

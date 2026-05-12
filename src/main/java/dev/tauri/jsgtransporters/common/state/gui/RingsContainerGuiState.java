@@ -3,7 +3,6 @@ package dev.tauri.jsgtransporters.common.state.gui;
 import dev.tauri.jsg.api.config.ingame.BEConfig;
 import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
 import dev.tauri.jsg.api.state.State;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
 import io.netty.buffer.ByteBuf;
 

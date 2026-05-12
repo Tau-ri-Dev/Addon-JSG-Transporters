@@ -1,7 +1,6 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.api.item.JSGBlockItem;
-import dev.tauri.jsg.item.JSGModelOBJInGUIRenderer;
+import dev.tauri.jsg.core.common.item.JSGBlockItem;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;

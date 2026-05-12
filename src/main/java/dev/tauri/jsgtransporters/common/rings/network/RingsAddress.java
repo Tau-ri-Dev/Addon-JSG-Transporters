@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.api.stargate.network.address.IAddress;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
+import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsg.core.common.symbol.address.IAddress;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class RingsAddress implements IAddress {
 
-    public RingsAddress(AbstractSymbolType<?> symbolType) {
+    public RingsAddress(SymbolType<?> symbolType) {
         this.symbolType = symbolType;
     }
 
@@ -33,11 +33,11 @@ public class RingsAddress implements IAddress {
 
     // ---------------------------------------------------------------------------------
     // Address
-    protected AbstractSymbolType<?> symbolType;
+    protected SymbolType<?> symbolType;
     protected List<SymbolInterface> address = new ArrayList<>(4);
 
     @Override
-    public AbstractSymbolType<?> getSymbolType() {
+    public SymbolType<?> getSymbolType() {
         return symbolType;
     }
 

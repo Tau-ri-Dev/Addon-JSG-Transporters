@@ -1,28 +1,13 @@
 package dev.tauri.jsgtransporters.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.tauri.jsg.api.client.screen.ITab;
-import dev.tauri.jsg.api.client.screen.TabSideEnum;
-import dev.tauri.jsg.api.client.screen.util.GuiHelper;
-import dev.tauri.jsg.api.config.JSGConfig;
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.util.I18n;
-import dev.tauri.jsg.forgeutil.SlotHandler;
-import dev.tauri.jsg.loader.texture.Texture;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.stargate.SaveConfigToServer;
-import dev.tauri.jsg.screen.element.tabs.Tab;
-import dev.tauri.jsg.screen.element.tabs.TabAddress;
-import dev.tauri.jsg.screen.element.tabs.TabBiomeOverlay;
-import dev.tauri.jsg.screen.element.tabs.TabConfig;
-import dev.tauri.jsg.screen.inventory.TabbedContainerScreen;
+import dev.tauri.jsg.core.client.screen.tab.TabbedContainerScreen;
+import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -35,8 +20,6 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 
 import java.util.*;
-
-import static dev.tauri.jsg.api.client.screen.util.GuiHelper.*;
 
 public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");

@@ -22,6 +22,8 @@ import dev.tauri.jsg.api.util.blockentity.ScheduledTaskExecutorInterface;
 import dev.tauri.jsg.blockentity.IAddressProvider;
 import dev.tauri.jsg.blockentity.util.ILinkable;
 import dev.tauri.jsg.config.stargate.StargateDimensionConfig;
+import dev.tauri.jsg.core.common.util.EnumKeyInterface;
+import dev.tauri.jsg.core.common.util.IUpgrade;
 import dev.tauri.jsg.helpers.BlockPosHelper;
 import dev.tauri.jsg.helpers.LinkingHelper;
 import dev.tauri.jsg.integration.ComputerDeviceHolder;
@@ -39,10 +41,6 @@ import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE
 import dev.tauri.jsgtransporters.common.config.ingame.RingsConfigOptions;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
-import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
-import dev.tauri.jsgtransporters.common.registry.RingsScheduledTaskType;
-import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
-import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.*;
 import dev.tauri.jsgtransporters.common.state.gui.RingsContainerGuiState;
@@ -76,7 +74,6 @@ import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
