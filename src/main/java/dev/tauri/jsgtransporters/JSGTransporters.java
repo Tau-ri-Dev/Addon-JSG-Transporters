@@ -10,6 +10,7 @@ import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.registry.JSGTRegistriesInit;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.worldgen.JSGTTemplatePoolInjectors;
@@ -49,13 +50,7 @@ public class JSGTransporters implements JSGAddon {
         Constants.init();
         JSGTRegistriesInit.init();
 
-        //AddressTypeRegistry.register();
-        //SymbolTypeRegistry.register();
-        //GoauldCPRaycaster.register();
-        //OriCPRaycaster.register();
-        //AncientCPRaycaster.register();
-        //JSGTPacketHandler.init();
-        //RingsScheduledTaskType.load();
+        JSGTPacketHandler.init();
 
         JSGTTemplatePoolInjectors.register();
 

@@ -18,11 +18,9 @@ import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.core.common.registry.CoreBiomeOverlays;
-import dev.tauri.jsg.core.common.registry.CoreBlocks;
-import dev.tauri.jsg.core.common.registry.CoreItems;
-import dev.tauri.jsg.core.common.registry.CoreStateTypes;
+import dev.tauri.jsg.core.common.registry.*;
 import dev.tauri.jsg.core.common.sound.JSGSoundHelper;
+import dev.tauri.jsg.core.common.state.BiomeOverrideState;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
 import dev.tauri.jsg.core.common.symbol.SymbolType;
 import dev.tauri.jsg.core.common.symbol.address.IAddress;
@@ -127,7 +125,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                     break;
 
                 case BIOME_OVERRIDE_SLOT:
-                    sendState(CoreStateTypes.BIOME_OVERRIDE_STATE.get(), new StargateBiomeOverrideState(determineBiomeOverride()));
+                    sendState(CoreStateTypes.BIOME_OVERRIDE_STATE.get(), new BiomeOverrideState(determineBiomeOverride()));
                     break;
                 default:
                     break;
@@ -390,7 +388,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                             doPageProgress = true;
                             lockPage = true;
                             pageSlotId = i;
-                            givePageTask = new ScheduledTask(ScheduledTaskType.STARGATE_GIVE_PAGE, 36);
+                            givePageTask = new ScheduledTask(CoreScheduledTasks.GIVE_PAGE, 36);
                             givePageTask.setTaskCreated(getTime());
                             givePageTask.setExecutor(this);
 
@@ -560,7 +558,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             }
         } else if (task == JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS.get()) {
             setBorderBlocks(context.getBoolean("clear"), false);
-        } else if (task == ScheduledTaskType.STARGATE_GIVE_PAGE) {
+        } else if (task == CoreScheduledTasks.GIVE_PAGE.get()) {
             // TODO(Mine): Refactor this and fix this to actually make this working
             if (pageSlotId < 7) return;
 
