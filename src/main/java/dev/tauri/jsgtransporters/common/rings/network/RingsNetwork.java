@@ -83,7 +83,7 @@ public class RingsNetwork extends SavedData {
 
     public void putRings(Map<SymbolType<?>, RingsAddress> addressMap, RingsPos ringsPos) {
         if (addressMap == null) {
-            JSGTransporters.logger.warn("Tried to add NULL-address gate! Aborting...", new NullPointerException());
+            JSGTransporters.logger.warn("Tried to add NULL-address rings! Aborting...", new NullPointerException());
             return;
         }
 

@@ -31,15 +31,21 @@ public class RingsCPButtonPushedState extends State {
     public void toBytes(ByteBuf buff) {
         var buf = new FriendlyByteBuf(buff);
         buf.writeInt(symbolId);
-        buf.writeResourceLocation(symbolType.getId());
         buf.writeBoolean(dim);
+        if (symbolType == null)
+            buf.writeBoolean(false);
+        else {
+            buf.writeBoolean(true);
+            buf.writeResourceLocation(symbolType.getId());
+        }
     }
 
     @Override
     public void fromBytes(ByteBuf buff) {
         var buf = new FriendlyByteBuf(buff);
         symbolId = buf.readInt();
-        symbolType = SymbolType.byId(buf.readResourceLocation());
         dim = buf.readBoolean();
+        if (buf.readBoolean())
+            symbolType = SymbolType.byId(buf.readResourceLocation());
     }
 }
