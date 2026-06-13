@@ -88,6 +88,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     gradlePluginPortal()
+    mavenCentral()
     maven {
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net/'
@@ -110,7 +111,7 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("dev.tauri:jsg-core-${minecraft_version}:${core_version}")
+    implementation(fg.deobf("eu.justsgmod:jsg-core-${minecraft_version}:${core_version}:") { transitive = false })
 
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")

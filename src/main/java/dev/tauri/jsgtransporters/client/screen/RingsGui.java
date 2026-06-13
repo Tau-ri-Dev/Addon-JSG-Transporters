@@ -107,7 +107,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
                 .setIconTextureLocation(304, 0).build();
 
 
-        overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
+        overlayTab = createOverlayTab(imageWidth, imageHeight, leftPos, topPos);
         overlayTab.setMenu(menu);
         configTab.setOnTabClose(this::saveConfig);
 

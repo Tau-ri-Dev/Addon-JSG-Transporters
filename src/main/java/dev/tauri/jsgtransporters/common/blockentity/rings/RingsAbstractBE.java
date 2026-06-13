@@ -18,7 +18,10 @@ import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.core.common.registry.*;
+import dev.tauri.jsg.core.common.registry.CoreBlocks;
+import dev.tauri.jsg.core.common.registry.CoreItems;
+import dev.tauri.jsg.core.common.registry.CoreScheduledTasks;
+import dev.tauri.jsg.core.common.registry.CoreStateTypes;
 import dev.tauri.jsg.core.common.sound.JSGSoundHelper;
 import dev.tauri.jsg.core.common.state.BiomeOverrideState;
 import dev.tauri.jsg.core.common.symbol.SymbolInterface;
@@ -72,7 +75,6 @@ import net.minecraftforge.network.PacketDistributor.TargetPoint;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, IConfigurable, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
@@ -99,11 +101,8 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
                 case 4, 5, 6 -> isItemCapacitor && getSupportedCapacitors() >= (slot - 3);
                 case 7, 8, 9 ->
                         item == CoreItems.NOTEBOOK_PAGE_EMPTY.get() || item == CoreItems.NOTEBOOK_PAGE_FILLED.get();
-                case BIOME_OVERRIDE_SLOT -> {
-                    var override = BiomeOverlayInstance.getBiomeOverlayByItem(stack);
-
-                    yield getSupportedOverlays().stream().map(Supplier::get).toList().contains(override);
-                }
+                case BIOME_OVERRIDE_SLOT ->
+                        BiomeOverlayInstance.values().stream().map(BiomeOverlayInstance::getOverlayItems).anyMatch(i -> i.contains(item));
                 default -> true;
             };
         }
@@ -143,13 +142,7 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
             return null;
         }
 
-        var biomeOverlay = BiomeOverlayInstance.getBiomeOverlayByItem(stack);
-
-        if (getSupportedOverlays().contains(biomeOverlay)) {
-            return biomeOverlay;
-        }
-
-        return null;
+        return BiomeOverlayInstance.getBiomeOverlayByItem(stack);
     }
 
     public int getSupportedCapacitors() {
@@ -956,10 +949,6 @@ public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<A
     @Override
     public String getDeviceType() {
         return "RINGS";
-    }
-
-    public List<Supplier<BiomeOverlayInstance>> getSupportedOverlays() {
-        return List.of(CoreBiomeOverlays.NORMAL);
     }
 
     @Override

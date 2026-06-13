@@ -6,7 +6,6 @@ import dev.tauri.jsg.core.LoggerWrapper;
 import dev.tauri.jsg.core.common.integration.Integrations;
 import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
 import dev.tauri.jsgtransporters.client.ClientConstants;
-import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
@@ -19,7 +18,6 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +54,6 @@ public class JSGTransporters implements JSGAddon {
 
         JSGTRegistriesInit.register(eventBus);
 
-        eventBus.addListener(this::onCommonSetup);
         MinecraftForge.EVENT_BUS.register(this);
 
         Integrations.OC2.addOnLoad(OCDevicesRegistry::load);
@@ -69,10 +66,6 @@ public class JSGTransporters implements JSGAddon {
     public void onServerStarting(ServerStartingEvent event) {
         var currentServer = event.getServer();
         new RingsNetwork().register(currentServer.overworld().getDataStorage());
-    }
-
-    public void onCommonSetup(FMLClientSetupEvent event) {
-        JSGTAdvancements.register();
     }
 
     @Override
