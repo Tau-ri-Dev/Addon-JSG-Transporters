@@ -5,6 +5,7 @@ import dev.tauri.jsg.core.JSGAddons;
 import dev.tauri.jsg.core.LoggerWrapper;
 import dev.tauri.jsg.core.common.integration.Integrations;
 import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
+import dev.tauri.jsg.core.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
@@ -13,6 +14,7 @@ import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.registry.JSGTRegistriesInit;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
 import dev.tauri.jsgtransporters.common.worldgen.JSGTTemplatePoolInjectors;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -86,5 +88,10 @@ public class JSGTransporters implements JSGAddon {
     @Override
     public void onJSGCoreLoad() {
         ClientConstants.load();
+    }
+
+    public static ResourceLocation fixRL(String id) {
+        if (!id.contains(":")) id = "jsg_transporters:" + id;
+        return JSGMapping.rl(id);
     }
 }

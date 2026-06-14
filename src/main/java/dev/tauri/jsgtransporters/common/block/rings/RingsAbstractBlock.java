@@ -117,7 +117,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
 
     @Override
     public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
+        return List.of(JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION.get());
     }
 
     @Override

@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -96,11 +95,11 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(CompoundTag compound) {
-        this.dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("dim")));
+        this.dimension = ResourceKey.create(Registries.DIMENSION, JSGMapping.rl(compound.getString("dim")));
         this.ringsPos = BlockPos.of(compound.getLong("pos"));
         this.name = compound.getString("name");
         if (compound.contains("symbolType")) {
-            this.symbolType = SymbolType.byId(JSGMapping.rl(compound.getString("symbolType")));
+            this.symbolType = SymbolType.byId(JSGTransporters.fixRL(compound.getString("symbolType")));
         }
     }
 

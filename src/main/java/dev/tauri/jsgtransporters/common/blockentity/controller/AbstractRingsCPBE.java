@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable<RingsAbstractBE>, ITickable, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable<RingsAbstractBE>, ITickable, ScheduledTaskExecutorInterface, BEStateProvider, IPreparable {
     public AbstractRingsCPBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }

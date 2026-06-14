@@ -37,6 +37,7 @@ import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
+import dev.tauri.jsgtransporters.common.rings.Rings;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddressDynamic;
@@ -60,7 +61,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -77,8 +77,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
-public abstract class RingsAbstractBE extends BlockEntity implements ILinkable<AbstractRingsCPBE>, IUpgradable, IConfigurable, IAddressProvider, ITickable, ComputerDeviceProvider, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
-
+public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, ILinkable<AbstractRingsCPBE>, IConfigurable, IAddressProvider, ComputerDeviceProvider, ScheduledTaskExecutorInterface, BEStateProvider {
     public RingsAbstractBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }
