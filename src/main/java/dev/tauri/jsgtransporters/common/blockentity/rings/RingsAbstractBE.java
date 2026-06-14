@@ -551,27 +551,24 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         } else if (task == JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS.get()) {
             setBorderBlocks(context.getBoolean("clear"), false);
         } else if (task == CoreScheduledTasks.GIVE_PAGE.get()) {
-            // TODO(Mine): Refactor this and fix this to actually make this working
+            // TODO(Mine): Refactor this
             if (pageSlotId < 7) return;
 
-            // Temp
-            var symbolType = JSGTSymbolTypes.GOAULD.get();
-
-            /*SymbolType<?> symbolType = null;
+            SymbolType<?> symbolType = null;
             switch (pageSlotId) {
                 case 7:
-                    symbolType = SymbolTypeRegistry.GOAULD;
+                    symbolType = JSGTSymbolTypes.GOAULD.get();
                     break;
                 case 8:
-                    symbolType = SymbolTypeRegistry.ANCIENT;
+                    symbolType = JSGTSymbolTypes.ANCIENT.get();
                     break;
                 case 9:
-                    symbolType = SymbolTypeRegistry.ORI;
+                    symbolType = JSGTSymbolTypes.ORI.get();
                     break;
                 default:
                     break;
             }
-            if (symbolType == null) return;*/
+            if (symbolType == null) return;
             var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
             inventory.setStackInSlot(pageSlotId, stack);
 
@@ -612,7 +609,9 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
 
     @Override
     public void sendState(StateType type, State state) {
-        if (Objects.requireNonNull(getLevel()).isClientSide) {
+        var level = getLevel();
+        if (level == null) return;
+        if (level.isClientSide) {
             return;
         }
         if (targetPoint != null) {

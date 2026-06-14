@@ -5,12 +5,16 @@ import dev.tauri.jsg.core.common.entity.INotebookPageData;
 import dev.tauri.jsg.core.common.symbol.address.IAddress;
 import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddressDynamic;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
 public class RingsAddressData implements INBTSerializable<CompoundTag>, IAddressNotebookPageData {
     public RingsAddressDynamic address;
     public int[] symbolsToDisplay;
@@ -37,7 +41,7 @@ public class RingsAddressData implements INBTSerializable<CompoundTag>, IAddress
     }
 
     @Override
-    public IAddress getAddress() {
+    public RingsAddressDynamic getAddress() {
         return address;
     }
 
@@ -52,8 +56,8 @@ public class RingsAddressData implements INBTSerializable<CompoundTag>, IAddress
     }
 
     @Override
-    public void setSymbolsToDisplay(int[] ints) {
-
+    public void setSymbolsToDisplay(int[] symbolsToDisplay) {
+        this.symbolsToDisplay = symbolsToDisplay;
     }
 
     @Override
@@ -62,22 +66,30 @@ public class RingsAddressData implements INBTSerializable<CompoundTag>, IAddress
     }
 
     @Override
-    public void setAddress(IAddress iAddress) {
-
+    public void setAddress(IAddress address) {
+        if (address instanceof RingsAddressDynamic ringsAddress)
+            this.address = ringsAddress;
     }
 
     @Override
-    public <D extends INotebookPageData> void update(D d) {
-
+    public <D extends INotebookPageData> void update(D newData) {
+        if (!(newData instanceof IAddressNotebookPageData addressNotebookPageData)) return;
+        this.symbolsToDisplay = addressNotebookPageData.getSymbolsToDisplay();
+        if (!(newData instanceof RingsAddressData ringsAddressData)) return;
+        this.address = ringsAddressData.getAddress();
     }
 
     @Override
     public CompoundTag serializeNBT() {
-        return null;
+        var compound = new CompoundTag();
+        compound.put("address", new RingsAddressDynamic(address).serializeNBT());
+        compound.putIntArray("symbolsToDisplay", symbolsToDisplay);
+        return compound;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-
+    public void deserializeNBT(CompoundTag compound) {
+        address = new RingsAddressDynamic(compound.getCompound("address"));
+        symbolsToDisplay = compound.getIntArray("symbolsToDisplay");
     }
 }

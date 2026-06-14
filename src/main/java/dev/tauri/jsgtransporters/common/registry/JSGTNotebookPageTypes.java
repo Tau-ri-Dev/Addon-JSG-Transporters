@@ -13,6 +13,7 @@ public class JSGTNotebookPageTypes {
             ringsAddressData -> ringsAddressData != null ? ringsAddressData.serializeNBT() : null,
             (level, pos, random, data) -> null, // we don't want to generate addresses on cartouches now
             (stack, level, tooltip) -> {
+                // TODO(Mine): Add tooltip with symbols
             }
     ));
 
