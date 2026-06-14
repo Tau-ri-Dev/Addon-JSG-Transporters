@@ -551,27 +551,17 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         } else if (task == JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS.get()) {
             setBorderBlocks(context.getBoolean("clear"), false);
         } else if (task == CoreScheduledTasks.GIVE_PAGE.get()) {
-            // TODO(Mine): Refactor this
             if (pageSlotId < 7) return;
 
-            SymbolType<?> symbolType = null;
-            switch (pageSlotId) {
-                case 7:
-                    symbolType = JSGTSymbolTypes.GOAULD.get();
+            var i = 7;
+            for (var symbolType : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
+                if (!getItemHandler().getStackInSlot(i).isEmpty()) {
+                    var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
+                    inventory.setStackInSlot(i, stack);
                     break;
-                case 8:
-                    symbolType = JSGTSymbolTypes.ANCIENT.get();
-                    break;
-                case 9:
-                    symbolType = JSGTSymbolTypes.ORI.get();
-                    break;
-                default:
-                    break;
+                }
+                i++;
             }
-            if (symbolType == null) return;
-            var stack = getAddressPage(symbolType, new int[]{1, 2, 3, 4, 9});
-            inventory.setStackInSlot(pageSlotId, stack);
-
         }
         setChanged();
     }
