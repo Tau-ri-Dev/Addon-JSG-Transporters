@@ -1,7 +1,13 @@
 {
   "values": [
-    "#jsg:stargate/stargate_parts",
-    "#jsg:dhd/dhd_any",
+    {
+      "id": "#jsg:stargate/stargate_parts",
+      "required": false
+    },
+    {
+      "id": "#jsg:dhd/dhd_any",
+      "required": false
+    },
     "#jsg_transporters:rings_block",
     "#jsg_transporters:rings_controllers",
     "#jsg_transporters:obelisk_block",

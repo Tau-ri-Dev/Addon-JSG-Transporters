@@ -15,13 +15,13 @@
       "item": "jsg_transporters:ancient_controller_buttons"
     },
     "N": {
-      "item": "jsg:circuit_control_naquadah"
+      "item": "jsg_core:circuit_control_naquadah"
     },
     "G": {
       "tag": "forge:gems/white_small"
     },
     "C": {
-      "item": "jsg:circuit_control_crystal"
+      "item": "jsg_core:circuit_control_crystal"
     }
   },
   "result": {

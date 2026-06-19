@@ -9,16 +9,16 @@
   ],
   "key": {
     "C": {
-      "item": "jsg:circuit_control_crystal"
+      "item": "jsg_core:circuit_control_crystal"
     },
     "F": {
       "item": "jsg_transporters:fragment_rings_ori"
     },
     "N": {
-      "item": "jsg:circuit_control_naquadah"
+      "item": "jsg_core:circuit_control_naquadah"
     },
     "A": {
-      "item": "jsg:capacitor_block"
+      "item": "jsg_core:capacitor_block"
     },
     "R": {
       "item": "minecraft:comparator"
