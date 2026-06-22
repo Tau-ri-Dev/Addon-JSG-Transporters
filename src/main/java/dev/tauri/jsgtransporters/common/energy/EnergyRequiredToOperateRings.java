@@ -19,7 +19,7 @@ public class EnergyRequiredToOperateRings extends EnergyRequiredToOperate {
         return new EnergyRequiredToOperateRings(JSGTConfig.Energy.ringsStartEnergy.get(), JSGTConfig.Energy.ringsTransportEnergy.get());
     }
 
-    public int getEnergyForTransport(Object object) {
+    public long getEnergyForTransport(Object object) {
         if (object instanceof LivingEntity)
             return keepAlive;
         if (object instanceof Entity)
@@ -44,7 +44,7 @@ public class EnergyRequiredToOperateRings extends EnergyRequiredToOperate {
     }
 
     @Override
-    public EnergyRequiredToOperateRings cap(int max) {
+    public EnergyRequiredToOperateRings cap(long max) {
         return new EnergyRequiredToOperateRings(Math.min(this.energyToOpen, max), this.keepAlive);
     }
 }

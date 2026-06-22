@@ -3,7 +3,6 @@ package dev.tauri.jsgtransporters.common.inventory;
 import dev.tauri.jsg.core.client.screen.tab.OpenTabHolderInterface;
 import dev.tauri.jsg.core.client.screen.util.ContainerHelper;
 import dev.tauri.jsg.core.common.forgeutil.SlotHandler;
-import dev.tauri.jsg.core.common.item.capacitor.CapacitorItemBlock;
 import dev.tauri.jsg.core.common.menu.JSGContainer;
 import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
@@ -14,6 +13,7 @@ import dev.tauri.jsg.core.common.util.CreativeItemsChecker;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.registry.JSGTMenuTypes;
 import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,7 +29,6 @@ import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +40,8 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
     private final BlockPos pos;
     public final Inventory playerInventory;
     public boolean hasCreative;
-    private int lastEnergyStored;
-    private int energyTransferedLastTick;
-    private float lastEnergySecondsToClose;
+    private long lastEnergyStored;
+    private long energyTransferedLastTick;
     private int lastProgress;
     protected final List<Integer> openedTabsSlotsIds = new ArrayList<>();
 
@@ -126,7 +124,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
             )).toList();
 
             // Capacitors
-            if (stack.getItem() instanceof CapacitorItemBlock) {
+            if (stack.is(JSGTItemTags.RINGS_CAPACITORS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
                 for (int i = 4; i < 7; i++) {
                     if (!getSlot(i).hasItem() && getSlot(i).mayPlace(stack)) {
                         ItemStack stack1 = stack.copy();
@@ -202,7 +200,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
 
         LargeEnergyStorage energyStorage = (LargeEnergyStorage) ringsTile.getCapability(ForgeCapabilities.ENERGY, null).resolve().orElseThrow();
 
-        if (lastEnergyStored != Objects.requireNonNull(energyStorage).getEnergyStoredInternally()
+        if (lastEnergyStored != Objects.requireNonNull(energyStorage).getTrueEnergyStored()
                 || energyTransferedLastTick != ringsTile.getEnergyTransferredLastTick()
                 || lastProgress != ringsTile.getPageProgress()
 
@@ -210,7 +208,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
             if (playerInventory.player instanceof ServerPlayer sp)
                 JSGCorePacketHandler.sendTo(new StateUpdatePacketToClient(pos, CoreStateTypes.GUI_UPDATE, ringsTile.getState(CoreStateTypes.GUI_UPDATE.get())), sp);
 
-            lastEnergyStored = energyStorage.getEnergyStoredInternally();
+            lastEnergyStored = energyStorage.getTrueEnergyStored();
             energyTransferedLastTick = ringsTile.getEnergyTransferredLastTick();
             lastProgress = ringsTile.getPageProgress();
         }

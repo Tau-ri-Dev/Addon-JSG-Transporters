@@ -12,7 +12,6 @@ import dev.tauri.jsg.core.common.helper.BlockPosHelper;
 import dev.tauri.jsg.core.common.helper.LinkingHelper;
 import dev.tauri.jsg.core.common.integration.ComputerDeviceHolder;
 import dev.tauri.jsg.core.common.integration.ComputerDeviceProvider;
-import dev.tauri.jsg.core.common.item.capacitor.CapacitorItemBlock;
 import dev.tauri.jsg.core.common.item.notebook.PageNotebookItemFilled;
 import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
 import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
@@ -37,6 +36,7 @@ import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
 import dev.tauri.jsgtransporters.common.registry.*;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
 import dev.tauri.jsgtransporters.common.rings.Rings;
 import dev.tauri.jsgtransporters.common.rings.RingsConnectResult;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
@@ -93,7 +93,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             Item item = stack.getItem();
-            boolean isItemCapacitor = (item instanceof CapacitorItemBlock);
+            boolean isItemCapacitor = stack.is(JSGTItemTags.RINGS_CAPACITORS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
             return switch (slot) {
                 case 0, 1, 2, 3 ->
                         RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
@@ -182,18 +182,17 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         return inventory.getStackInSlot(3).getItem() == RingsUpgradeEnum.DIMENSIONAL_TUNNELING.item;
     }
 
-    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage(JSGCoreConfig.Energy.capacitorEnergyStorage.get(), JSGCoreConfig.Energy.capacitorMaxEnergyTransfer.get()) {
-
+    private final LargeEnergyStorage energyStorage = new LargeEnergyStorage(JSGCoreConfig.Energy.basicEnergyCrystalCapacity.get(), JSGCoreConfig.Energy.basicEnergyCrystalEnergyReceiveSpeed.get()) {
         @Override
-        protected void onEnergyChanged() {
+        public void onEnergyChanged() {
             setChanged();
         }
     };
 
-    private int energyStoredLastTick = 0;
-    protected int energyTransferredLastTick = 0;
+    private long energyStoredLastTick = 0;
+    protected long energyTransferredLastTick = 0;
 
-    public int getEnergyTransferredLastTick() {
+    public long getEnergyTransferredLastTick() {
         return energyTransferredLastTick;
     }
 
@@ -638,7 +637,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
     public State getState(@Nonnull StateType stateType) {
         return stateType.stateSupplier()
                 .tryType(CoreStateTypes.GUI_STATE.get(), () -> new RingsContainerGuiState(addressMap, getConfig()))
-                .tryType(CoreStateTypes.GUI_UPDATE.get(), () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternally(), energyTransferredLastTick, pageProgress))
+                .tryType(CoreStateTypes.GUI_UPDATE.get(), () -> new RingsContainerGuiUpdate(energyStorage.getEnergyStoredInternal(), energyTransferredLastTick, pageProgress))
                 .tryType(CoreStateTypes.RENDERER_STATE.get(), () -> {
                     var state = getRendererStateClient();
                     state.verticalOffset = verticalOffset;
@@ -672,8 +671,8 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
                 })
                 .tryType(CoreStateTypes.GUI_UPDATE, () -> {
                     RingsContainerGuiUpdate guiUpdate = (RingsContainerGuiUpdate) state;
-                    energyStorage.setEnergyStoredInternally(guiUpdate.energyStored);
-                    energyTransferredLastTick = guiUpdate.transferedLastTick;
+                    energyStorage.setEnergy(guiUpdate.energyStored, true);
+                    energyTransferredLastTick = guiUpdate.transferredLastTick;
                     pageProgress = (short) guiUpdate.pageProgress;
                     setChanged();
                 })
@@ -703,8 +702,8 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         compound.putInt("verticalOffset", verticalOffset);
 
         if (energyToOperate != null) {
-            compound.putInt("energyToOperate_start", energyToOperate.energyToOpen);
-            compound.putInt("energyToOperate_teleport", energyToOperate.keepAlive);
+            compound.putLong("energyToOperate_start", energyToOperate.energyToOpen);
+            compound.putLong("energyToOperate_teleport", energyToOperate.keepAlive);
         }
 
         compound.putBoolean("isRSPowered", isRSPowered);
@@ -734,7 +733,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         verticalOffset = compound.getInt("verticalOffset");
 
         if (compound.contains("energyToOperate_start")) {
-            energyToOperate = new EnergyRequiredToOperateRings(compound.getInt("energyToOperate_start"), compound.getInt("energyToOperate_teleport"));
+            energyToOperate = new EnergyRequiredToOperateRings(compound.getLong("energyToOperate_start"), compound.getLong("energyToOperate_teleport"));
         }
 
         isRSPowered = compound.getBoolean("isRSPowered");
@@ -845,7 +844,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         outbound = true;
         busy = true;
         targetRings = rings;
-        getEnergyStorage().extractEnergy(energyNeeded.energyToOpen, false);
+        getEnergyStorage().extractLongEnergy(energyNeeded.energyToOpen, false);
         energyToOperate = energyNeeded;
         setChanged();
         startTeleportAnimation();
@@ -899,7 +898,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
             if (getEnergyStored() < energyToTransport) continue;
             targetRings.ignoredEntities.add(e);
             TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
-            getEnergyStorage().extractEnergy(energyToTransport, false);
+            getEnergyStorage().extractLongEnergy(energyToTransport, false);
         }
 
         if (!outbound || targetRings.level == null) return;

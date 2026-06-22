@@ -7,27 +7,27 @@ public class RingsContainerGuiUpdate extends State {
     public RingsContainerGuiUpdate() {
     }
 
-    public int energyStored;
-    public int transferedLastTick;
+    public long energyStored;
+    public long transferredLastTick;
     public int pageProgress;
 
-    public RingsContainerGuiUpdate(int energyStored, int transferedLastTick, int pageProgress) {
+    public RingsContainerGuiUpdate(long energyStored, long transferredLastTick, int pageProgress) {
         this.energyStored = energyStored;
-        this.transferedLastTick = transferedLastTick;
+        this.transferredLastTick = transferredLastTick;
         this.pageProgress = pageProgress;
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(energyStored);
-        buf.writeInt(transferedLastTick);
+        buf.writeLong(energyStored);
+        buf.writeLong(transferredLastTick);
         buf.writeInt(pageProgress);
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        energyStored = buf.readInt();
-        transferedLastTick = buf.readInt();
+        energyStored = buf.readLong();
+        transferredLastTick = buf.readLong();
         pageProgress = buf.readInt();
     }
 }
