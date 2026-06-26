@@ -155,8 +155,8 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         drawGradientRect(graphics.pose(), leftPos + 10, topPos + 69 + 3, leftPos + 10 + widthInternal, topPos + 69 + 6, 0xffCDBC29, 0xff707316);
 
         // Draw ancient title
-        int[] pos = menu.ringsTile.getSymbolType().getAncientTitlePos();
-        drawModalRectWithCustomSizedTexture(leftPos + 137, topPos + 4, pos[0], pos[1], 35, 8, 512, 512);
+        /*int[] pos = menu.ringsTile.getSymbolType().getAncientTitlePos();
+        drawModalRectWithCustomSizedTexture(leftPos + 137, topPos + 4, pos[0], pos[1], 35, 8, 512, 512);*/
 
         boolean drawICFirstCable = false;
 
