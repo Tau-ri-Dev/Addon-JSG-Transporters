@@ -21,8 +21,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 @Mod(JSGTransporters.MOD_ID)
 public class JSGTransporters implements JSGAddon {
@@ -71,18 +74,34 @@ public class JSGTransporters implements JSGAddon {
     }
 
     @Override
-    public String getName() {
-        return MOD_NAME;
-    }
-
-    @Override
+    @NotNull
     public String getId() {
         return MOD_ID;
     }
 
     @Override
-    public String getVersion() {
-        return MOD_VERSION;
+    public String @NotNull [] getWelcomeLogo() {
+        return new String[]{
+                "░░░░░██╗░██████╗░██████╗░██╗██████╗░██╗███╗░░██╗░██████╗░░██████╗░░░█████╗░███╗░░██╗██████╗░",
+                "░░░░░██║██╔════╝██╔════╝░╚═╝██╔══██╗██║████╗░██║██╔════╝░██╔════╝░░██╔══██╗████╗░██║██╔══██╗",
+                "░░░░░██║╚█████╗░██║░░██╗░░░░██████╔╝██║██╔██╗██║██║░░██╗░╚█████╗░░░███████║██╔██╗██║██║░░██║",
+                "██╗░░██║░╚═══██╗██║░░╚██╗░░░██╔══██╗██║██║╚████║██║░░╚██╗░╚═══██╗░░██╔══██║██║╚████║██║░░██║",
+                "╚█████╔╝██████╔╝╚██████╔╝██╗██║░░██║██║██║░╚███║╚██████╔╝██████╔╝░░██║░░██║██║░╚███║██████╔╝",
+                "░╚════╝░╚═════╝░░╚═════╝░╚═╝╚═╝░░╚═╝╚═╝╚═╝░░╚══╝░╚═════╝░╚═════╝░░░╚═╝░░╚═╝╚═╝░░╚══╝╚═════╝░",
+                "",
+                "████████╗██████╗░░█████╗░███╗░░██╗░██████╗██████╗░░█████╗░██████╗░████████╗███████╗██████╗░░██████╗",
+                "╚══██╔══╝██╔══██╗██╔══██╗████╗░██║██╔════╝██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██╔══██╗██╔════╝",
+                "░░░██║░░░██████╔╝███████║██╔██╗██║╚█████╗░██████╔╝██║░░██║██████╔╝░░░██║░░░█████╗░░██████╔╝╚█████╗░",
+                "░░░██║░░░██╔══██╗██╔══██║██║╚████║░╚═══██╗██╔═══╝░██║░░██║██╔══██╗░░░██║░░░██╔══╝░░██╔══██╗░╚═══██╗",
+                "░░░██║░░░██║░░██║██║░░██║██║░╚███║██████╔╝██║░░░░░╚█████╔╝██║░░██║░░░██║░░░███████╗██║░░██║██████╔╝",
+                "░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░░╚══╝╚═════╝░╚═╝░░░░░░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═╝░░╚═╝╚═════╝░"
+        };
+    }
+
+    @Override
+    @NotNull
+    public Optional<LoggerWrapper> getLoggerWrapper() {
+        return JSGAddon.super.getLoggerWrapper();
     }
 
     @Override

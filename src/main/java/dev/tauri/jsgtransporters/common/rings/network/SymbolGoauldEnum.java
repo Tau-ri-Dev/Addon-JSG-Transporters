@@ -144,12 +144,6 @@ public enum SymbolGoauldEnum implements SymbolInterface {
             return ClientConstants.LOADERS_HOLDER.model();
         }
 
-        // used for rings gui - the title (u, v of the texture)
-        @Override
-        public int[] getAncientTitlePos() {
-            return new int[]{330, 0};
-        }
-
         @Override
         public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
             return builder.setTexture(new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)

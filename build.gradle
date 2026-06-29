@@ -89,6 +89,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 repositories {
     gradlePluginPortal()
     mavenCentral()
+    mavenLocal()
     maven {
         name = 'MinecraftForge'
         url = 'https://maven.minecraftforge.net/'
