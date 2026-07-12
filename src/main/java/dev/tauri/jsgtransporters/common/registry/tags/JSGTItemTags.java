@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 
 public class JSGTItemTags {
     public static final TagKey<Item> RINGS_ENERGY_CRYSTALS = tag("rings_energy_crystals");
+    public static final TagKey<Item> LANTEAN_ENERGY_CRYSTALS = tag("lantean_transporter_energy_crystals");
 
     private static TagKey<Item> tag(String name) {
         return ItemTags.create(JSGMapping.rl(JSGTransporters.MOD_ID, name));

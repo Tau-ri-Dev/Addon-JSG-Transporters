@@ -2,7 +2,7 @@ package dev.tauri.jsgtransporters.common.block.lantean_transporter;
 
 import java.util.List;
 
-import dev.tauri.jsg.api.block.JSGTabbedBlock;
+import dev.tauri.jsg.core.common.block.JSGTabbedBlock;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraftforge.registries.RegistryObject;
 

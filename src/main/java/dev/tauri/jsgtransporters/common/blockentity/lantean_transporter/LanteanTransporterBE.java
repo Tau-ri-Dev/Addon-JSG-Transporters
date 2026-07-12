@@ -8,14 +8,17 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.state.State;
-import dev.tauri.jsg.api.state.StateType;
-import dev.tauri.jsg.api.util.JSGItemStackHandler;
-import dev.tauri.jsg.api.util.blockentity.IPreparable;
-import dev.tauri.jsg.api.util.blockentity.ITickable;
-import dev.tauri.jsg.item.energy.CapacitorItemBlock;
-import dev.tauri.jsg.state.StateProviderInterface;
+import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsg.core.common.registry.CoreStateTypes;
+import dev.tauri.jsg.core.common.entity.State;
+import dev.tauri.jsg.core.common.entity.StateType;
+import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsg.core.common.packet.packets.StateUpdateRequestToServer;
+import dev.tauri.jsg.core.common.util.JSGItemStackHandler;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
+import dev.tauri.jsg.core.common.blockentity.IPreparable;
+import dev.tauri.jsg.core.common.blockentity.ITickable;
+import dev.tauri.jsg.core.common.blockentity.StateProviderInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -27,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.network.PacketDistributor.TargetPoint;
 
 public class LanteanTransporterBE extends BlockEntity implements ITickable, IPreparable, StateProviderInterface/*
                                                                                                                 * ,
@@ -64,10 +68,11 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
     protected final JSGItemStackHandler inventory = new JSGItemStackHandler(6) {
         public boolean isItemValid(int slot, net.minecraft.world.item.ItemStack stack) {
             Item item = stack.getItem();
+            boolean isItemCapacitor = stack.is(JSGTItemTags.LANTEAN_TRANSPORTER_CAPACITORS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
             return switch (slot) {
                 case 0, 1 -> false; // TODO Network filter/link items
                 case 2 -> false; // TODO identity crystal
-                case 3, 4, 5 -> item instanceof CapacitorItemBlock;
+                case 3, 4, 5 -> isItemCapacitor;
                 default -> false;
             };
         }
@@ -93,7 +98,7 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
 
     private final LargeEnergyStorage energyStorage = new LargeEnergyStorage() {
         @Override
-        protected void onEnergyChanged() {
+        public void onEnergyChanged() {
             setChanged();
         }
     };
@@ -196,5 +201,35 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
     protected void teleportVolume() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'teleportVolume'");
+    }
+
+    protected TargetPoint targetPoint;
+
+    @Override
+    public void onLoad() {
+        var pos = getBlockPos();
+        if (level != null) {
+            if (!level.isClientSide) {
+                this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, level.dimension());
+
+                updatePowerTier();
+            } else {
+                JSGCorePacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), CoreStateTypes.RENDERER_STATE.get()));
+                JSGCorePacketHandler.sendToServer(new StateUpdateRequestToServer(getBlockPos(), CoreStateTypes.GUI_STATE.get()));
+            }
+        }
+        super.onLoad();
+    }
+
+    @Override
+    public TargetPoint getTargetPoint() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTargetPoint'");
+    }
+
+    @Override
+    public BlockPos getStateHandlerBlockPos() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getStateHandlerBlockPos'");
     }
 }

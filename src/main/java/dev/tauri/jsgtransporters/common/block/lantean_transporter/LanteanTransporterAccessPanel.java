@@ -4,9 +4,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import dev.tauri.jsg.api.block.util.IItemBlock;
-import dev.tauri.jsg.api.item.JSGBlockItem;
-import dev.tauri.jsg.block.TickableBEBlock;
+import dev.tauri.jsg.core.common.block.util.IItemBlock;
+import dev.tauri.jsg.core.common.item.JSGBlockItem;
+import dev.tauri.jsg.core.common.block.TickableBEBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
