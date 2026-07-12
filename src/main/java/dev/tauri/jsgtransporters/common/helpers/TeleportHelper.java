@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
-import dev.tauri.jsgcore.common.registry.helper.FluidHelper;
+import dev.tauri.jsg.core.common.registry.helper.FluidHelper;
+import dev.tauri.jsg.core.common.util.RotationUtil;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
@@ -28,6 +29,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+
+import org.joml.Quaternionf;
 import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;

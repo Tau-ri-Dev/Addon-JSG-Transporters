@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 import org.jetbrains.annotations.NotNull;
 
-import dev.tauri.jsg.api.multistructure.merging.IMergeHelper;
+import dev.tauri.jsg.core.common.multistructure.merging.IMergeHelper;
 import dev.tauri.jsgtransporters.common.blockentity.lantean_transporter.LanteanTransporterBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
