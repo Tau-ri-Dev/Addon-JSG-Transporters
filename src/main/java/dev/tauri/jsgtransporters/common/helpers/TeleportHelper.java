@@ -1,10 +1,13 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
 import dev.tauri.jsg.core.common.registry.helper.FluidHelper;
+import dev.tauri.jsg.core.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsg.core.common.util.RotationUtil;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
+import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.BlockToTeleport;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTFluidTags;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import net.minecraft.core.BlockPos;
@@ -39,6 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class TeleportHelper {
     public static void teleportEntity(Entity entity, RingsPos sourceRings, RingsPos targetRings) {
@@ -160,12 +164,89 @@ public class TeleportHelper {
         });
     }
 
+    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, Level localLevel, Level remoteLevel, ArrayList<BlockToTeleport> pistonHeads) {
+        var toPlace = poses.map(pp -> {
+            if (localLevel == null || remoteLevel == null)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+            var local = pp.getKey();
+            var remote = pp.getValue();
+            var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
+            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel.getBlockState(remote));
+
+            // map blocks
+            var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
+                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
+                    .orElseGet(() -> {
+                        if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
+                            return new BlockToTeleport.Piston(localBlock, remote, remoteLevel);
+                        if (localBlock.getBlock() == Blocks.PISTON_HEAD)
+                            return new BlockToTeleport.Void();
+                        return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
+                    });
+            var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
+                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
+                    .orElseGet(() -> {
+                        if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
+                            return new BlockToTeleport.Piston(remoteBlock, local, localLevel);
+                        if (remoteBlock.getBlock() == Blocks.PISTON_HEAD)
+                            return new BlockToTeleport.Void();
+                        return new BlockToTeleport.Block(remoteBlock, local, localLevel);
+                    });
+
+            // check energy
+            // var energyLocal = sourceRings.getEnergyStored();
+            // if (sourceRings.energyToOperate == null)
+            //     return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+            // var energyNeededLocal = sourceRings.energyToOperate.getEnergyForTransport(bttLocal);
+            // if (energyLocal < energyNeededLocal)
+            //     return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+
+            // var energyRemote = targetRings.getEnergyStored();
+            // if (targetRings.energyToOperate == null)
+            //     return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+            // var energyNeededRemote = targetRings.energyToOperate.getEnergyForTransport(bttRemote);
+            // if (energyRemote < energyNeededRemote)
+            //     return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
+
+            // remove blocks
+            if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
+                bttLocal.removeLocal(local, localLevel);
+            if (remoteBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
+                bttRemote.removeLocal(remote, remoteLevel);
+            return Map.entry(bttLocal, bttRemote);
+        });
+        toPlace.forEach(pp -> {
+            pp.getKey().placeOrAdd(pistonHeads);
+            pp.getValue().placeOrAdd(pistonHeads);
+        });
+    }
+
     public static void rotateAndSwapVolumes(Volume a, Volume b) {
         Quaternionf rotOffset = a.getRotOffset(b);
         if (!a.getShape().equals(RotationUtil.rotate(b.getShape(), rotOffset))) {
             throw new IllegalArgumentException("Volumes shapes do not match after rotation");
         }
         //TODO implement block rotation on teleport
+        Stream<BlockPos> poses = StreamSupport.stream(BlockPos.betweenClosed(new BlockPos(0, 0, 0), a.getShape()).spliterator(), false);
+
+        // var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
+        // for (var e : entities) {
+        //     if (ignoredEntities.contains(e)) continue;
+        //     var energyToTransport = energyToOperate.getEnergyForTransport(e);
+        //     if (getEnergyStored() < energyToTransport) continue;
+        //     targetRings.ignoredEntities.add(e);
+        //     TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
+        //     getEnergyStorage().extractLongEnergy(energyToTransport, false);
+        // }
+
+        // if (!outbound || targetRings.level == null) return;
+
+        Stream<Map.Entry<BlockPos, BlockPos>> filteredPoses = poses.map(BlockPos::immutable)
+                .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, rotOffset))))
+                .filter(pp -> !a.level().getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !b.level().getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
+        TeleportHelper.teleportBlocks(filteredPoses, a.level(), b.level(), new ArrayList<>());
     }
 
     public record Volume(Level level, BlockPos backLeftTop, BlockPos frontRightBottom, Direction facing) {
