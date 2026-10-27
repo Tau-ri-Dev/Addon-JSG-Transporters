@@ -2,7 +2,7 @@ package dev.tauri.jsgtransporters.client.renderer.item.controller;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import dev.tauri.jsg.core.client.renderer.AbstractItemBEWLR;
+import dev.tauri.jsgcore.client.renderer.AbstractItemBEWLR;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.client.ModelsHolder;

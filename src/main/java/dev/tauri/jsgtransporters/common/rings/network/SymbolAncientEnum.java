@@ -1,16 +1,15 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.core.client.model.IModelLoader;
-import dev.tauri.jsg.core.client.screen.tab.ITab;
-import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
-import dev.tauri.jsg.core.client.texture.ITextureLoader;
-import dev.tauri.jsg.core.common.symbol.SymbolInterface;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
-import dev.tauri.jsg.core.common.symbol.SymbolUsage;
-import dev.tauri.jsg.core.common.symbol.address.IAddress;
-import dev.tauri.jsg.core.common.symbol.pointoforigin.IPointOfOriginType;
-import dev.tauri.jsg.core.common.symbol.pointoforigin.PointOfOrigin;
-import dev.tauri.jsg.core.common.util.I18n;
+import dev.tauri.jsgcore.client.model.IModelLoader;
+import dev.tauri.jsgcore.client.screen.tab.ITab;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabAddress;
+import dev.tauri.jsgcore.client.texture.ITextureLoader;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.symbol.SymbolUsage;
+import dev.tauri.jsgcore.common.symbol.address.IAddress;
+import dev.tauri.jsgcore.common.symbol.pointoforigin.IPointOfOriginType;
+import dev.tauri.jsgcore.common.symbol.pointoforigin.PointOfOrigin;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -96,11 +94,6 @@ public enum SymbolAncientEnum implements SymbolInterface {
     @Override
     public ResourceLocation getModelResource(IPointOfOriginType iPointOfOriginType, @Nullable PointOfOrigin pointOfOrigin, String s) {
         return modelResource;
-    }
-
-    @Override
-    public String localize() {
-        return I18n.format(translationKey);
     }
 
     @Override

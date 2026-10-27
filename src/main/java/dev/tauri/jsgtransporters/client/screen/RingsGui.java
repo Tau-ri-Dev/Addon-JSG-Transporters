@@ -1,22 +1,23 @@
 package dev.tauri.jsgtransporters.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.tauri.jsg.core.client.loader.texture.Texture;
-import dev.tauri.jsg.core.client.screen.tab.ITab;
-import dev.tauri.jsg.core.client.screen.tab.TabSideEnum;
-import dev.tauri.jsg.core.client.screen.tab.TabbedContainerScreen;
-import dev.tauri.jsg.core.client.screen.tab.tabs.Tab;
-import dev.tauri.jsg.core.client.screen.tab.tabs.TabAddress;
-import dev.tauri.jsg.core.client.screen.tab.tabs.TabBiomeOverlay;
-import dev.tauri.jsg.core.client.screen.tab.tabs.TabConfig;
-import dev.tauri.jsg.core.client.screen.util.GuiHelper;
-import dev.tauri.jsg.core.common.forgeutil.SlotHandler;
-import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
-import dev.tauri.jsg.core.common.packet.packets.SaveConfigToServer;
-import dev.tauri.jsg.core.common.power.JSGEnergyStorage;
-import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
-import dev.tauri.jsg.core.common.util.I18n;
+import dev.tauri.jsgcore.client.loader.texture.Texture;
+import dev.tauri.jsgcore.client.screen.tab.ITab;
+import dev.tauri.jsgcore.client.screen.tab.TabSideEnum;
+import dev.tauri.jsgcore.client.screen.tab.TabbedContainerScreen;
+import dev.tauri.jsgcore.client.screen.tab.tabs.Tab;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabAddress;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabBiomeOverlay;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabConfig;
+import dev.tauri.jsgcore.client.screen.util.GuiHelper;
+import dev.tauri.jsgcore.common.forgeutil.SlotHandler;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.SaveConfigToServer;
+import dev.tauri.jsgcore.common.power.JSGEnergyStorage;
+import dev.tauri.jsgcore.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.util.I18n;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
@@ -36,10 +37,10 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-import static dev.tauri.jsg.core.client.screen.util.GuiHelper.*;
+import static dev.tauri.jsgcore.client.screen.util.GuiHelper.*;
 
 public class RingsGui extends TabbedContainerScreen<RingsContainer> {
-    public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
+    public static final ResourceLocation BACKGROUND_TEXTURE = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
     private final Map<SymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;
@@ -83,7 +84,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
                     .setOpenX(-128)
                     .setHiddenX(-6)
                     .setTabSize(128, 113)
-                    .setTabTitle(I18n.format("gui.stargate." + type.getId() + "_address"))
+                    .setTabTitle(I18n.format("gui.transportrings." + type.getId().toString().replace(":", ".") + "_address"))
                     .setTabSide(TabSideEnum.LEFT);
             tab = type.finalizeAddressTab(tab);
             addressTabs.put(type, (TabAddress) ((TabAddress) tab.build()).setMenu(menu));
@@ -263,7 +264,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     @Override
     protected void renderLabels(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         RenderSystem.disableDepthTest();
-        String caps = I18n.format("gui.stargate.energy_crystals");
+        String caps = I18n.format("gui.transportrings.energy_crystals");
         graphics.drawString(font, caps, this.imageWidth - 8 - font.width(caps), 16, 4210752, false);
 
         String energyPercent = String.format("%.2f", energyStored / (float) maxEnergyStored * 100) + " %";

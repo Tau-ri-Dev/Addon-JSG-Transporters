@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.state.gui;
 
-import dev.tauri.jsg.core.common.config.ingame.BEConfig;
-import dev.tauri.jsg.core.common.entity.State;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.config.ingame.BEConfig;
+import dev.tauri.jsgcore.common.entity.State;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import dev.tauri.jsgtransporters.common.rings.network.RingsAddress;
 import io.netty.buffer.ByteBuf;

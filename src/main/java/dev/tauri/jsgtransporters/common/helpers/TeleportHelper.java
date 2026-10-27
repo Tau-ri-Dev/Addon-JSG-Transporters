@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
-import dev.tauri.jsg.core.common.registry.helper.FluidHelper;
+import dev.tauri.jsgcore.common.registry.helper.FluidHelper;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;

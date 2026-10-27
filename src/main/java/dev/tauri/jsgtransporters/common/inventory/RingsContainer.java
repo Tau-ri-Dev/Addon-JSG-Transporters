@@ -1,15 +1,15 @@
 package dev.tauri.jsgtransporters.common.inventory;
 
-import dev.tauri.jsg.core.client.screen.tab.OpenTabHolderInterface;
-import dev.tauri.jsg.core.client.screen.util.ContainerHelper;
-import dev.tauri.jsg.core.common.forgeutil.SlotHandler;
-import dev.tauri.jsg.core.common.menu.JSGContainer;
-import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
-import dev.tauri.jsg.core.common.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.core.common.registry.CoreStateTypes;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
-import dev.tauri.jsg.core.common.util.CreativeItemsChecker;
+import dev.tauri.jsgcore.client.screen.tab.OpenTabHolderInterface;
+import dev.tauri.jsgcore.client.screen.util.ContainerHelper;
+import dev.tauri.jsgcore.common.forgeutil.SlotHandler;
+import dev.tauri.jsgcore.common.menu.JSGContainer;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsgcore.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsgcore.common.registry.CoreStateTypes;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.util.CreativeItemsChecker;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.registry.JSGTMenuTypes;
 import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;

@@ -76,12 +76,13 @@
   "gui.jsg_transporters.rings_name": "Name",
   "gui.jsg_transporters.rings_distance": "Distance",
   "gui.transportrings.parameters": "Parameters",
+  "gui.transportrings.energy_crystals": "Energy Crystals",
 
   "_comment402": ">>> Address Tabs <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 
-  "gui.stargate.ancient_address": "Ancient Address",
-  "gui.stargate.goauld_address": "Goauld Address",
-  "gui.stargate.ori_address": "Ori Address",
+  "gui.transportrings.jsgtransporters.ancient_address": "Ancient Address",
+  "gui.transportrings.jsgtransporters.goauld_address": "Goauld Address",
+  "gui.transportrings.jsgtransporters.ori_address": "Ori Address",
 
   "_comment607": ">>> Transport rings <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
 

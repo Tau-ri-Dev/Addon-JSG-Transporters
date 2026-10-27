@@ -1,9 +1,9 @@
-package dev.tauri.jsgtransporters.common.integration.oc2.methods;
+package dev.tauri.jsgtransporters.common.integration.oc.methods;
 
-import dev.tauri.jsg.core.common.integration.ComputerDeviceProvider;
-import dev.tauri.jsg.core.common.integration.oc2.methods.AbstractOCMethods;
+import dev.tauri.jsgcore.common.integration.ComputerDeviceProvider;
+import dev.tauri.jsgcore.common.integration.oc.methods.AbstractOCMethods;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
+import dev.tauri.jsgtransporters.common.integration.oc.OCDevicesRegistry;
 
 public class RingsOCMethods extends AbstractOCMethods<RingsAbstractBE> {
     public RingsOCMethods(ComputerDeviceProvider ringsTile) {

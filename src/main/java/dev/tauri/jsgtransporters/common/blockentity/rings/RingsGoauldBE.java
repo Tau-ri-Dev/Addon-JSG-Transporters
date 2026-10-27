@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
-import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.common.registry.JSGTBlockEntities;
 import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;

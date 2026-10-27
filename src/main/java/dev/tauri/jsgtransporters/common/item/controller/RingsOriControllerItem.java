@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.item.controller;
 
-import dev.tauri.jsg.core.client.renderer.AbstractItemBEWLR;
+import dev.tauri.jsgcore.client.renderer.AbstractItemBEWLR;
 import dev.tauri.jsgtransporters.client.renderer.item.controller.RingsOriCPBEWLR;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.api.distmarker.Dist;

@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.core.common.item.JSGBlockItem;
+import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsAncientCPBE;
 import dev.tauri.jsgtransporters.common.item.controller.RingsAncientControllerItem;
 import net.minecraft.core.BlockPos;

@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.packet.packets;
 
-import dev.tauri.jsg.core.common.packet.packets.PositionedPacket;
-import dev.tauri.jsg.core.common.symbol.SymbolInterface;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.packet.packets.PositionedPacket;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

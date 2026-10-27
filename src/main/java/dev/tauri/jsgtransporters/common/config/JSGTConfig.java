@@ -1,10 +1,11 @@
 package dev.tauri.jsgtransporters.common.config;
 
-import dev.tauri.jsg.core.common.config.JSGConfigChild;
-import dev.tauri.jsg.core.common.config.JSGCoreConfig;
-import dev.tauri.jsg.core.common.config.values.JSGConfigValue;
+import dev.tauri.jsgcore.common.config.JSGConfigChild;
+import dev.tauri.jsgcore.common.config.JSGCoreConfig;
+import dev.tauri.jsgcore.common.config.values.JSGConfigValue;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
 
 import java.util.ArrayList;
 
@@ -63,12 +64,12 @@ public class JSGTConfig {
 
     private static final ArrayList<JSGConfigChild> LIST = new ArrayList<>();
 
-    public static void register() {
+    public static void register(ModLoadingContext ctx) {
         LIST.clear();
         LIST.add(C_GENERAL);
         LIST.add(C_ENERGY);
 
-        JSGCoreConfig.register(JSGTransporters.MOD_ID, CONFIG_FILE_NAME, LIST);
+        JSGCoreConfig.register(ctx, JSGTransporters.MOD_ID, CONFIG_FILE_NAME, LIST);
     }
 
     public static void load() {

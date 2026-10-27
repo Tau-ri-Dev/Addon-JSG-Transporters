@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.core.common.symbol.SymbolInterface;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;

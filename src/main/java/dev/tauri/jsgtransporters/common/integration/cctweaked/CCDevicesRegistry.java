@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.integration.cctweaked;
 
-import dev.tauri.jsg.core.common.integration.cctweaked.CCDevice;
+import dev.tauri.jsgcore.common.integration.cctweaked.CCDevice;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.methods.RingsCCMethods;
 
 public class CCDevicesRegistry {

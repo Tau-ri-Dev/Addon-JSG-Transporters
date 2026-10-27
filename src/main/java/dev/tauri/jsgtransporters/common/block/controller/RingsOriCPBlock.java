@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.block.controller;
 
-import dev.tauri.jsg.core.common.blockstate.JSGProperties;
-import dev.tauri.jsg.core.common.item.JSGBlockItem;
-import dev.tauri.jsg.core.common.util.JSGAxisAlignedBB;
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
+import dev.tauri.jsgcore.common.item.JSGBlockItem;
+import dev.tauri.jsgcore.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.item.controller.RingsOriControllerItem;
 import net.minecraft.core.BlockPos;

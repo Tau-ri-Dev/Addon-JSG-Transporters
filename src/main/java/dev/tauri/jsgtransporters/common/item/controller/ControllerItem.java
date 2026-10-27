@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.item.controller;
 
-import dev.tauri.jsg.core.common.helper.ItemHelper;
-import dev.tauri.jsg.core.common.item.JSGBlockItem;
+import dev.tauri.jsgcore.common.helper.ItemHelper;
+import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -20,11 +20,12 @@ import java.util.function.Consumer;
 
 public abstract class ControllerItem extends JSGBlockItem {
     public ControllerItem(Block pBlock) {
-        super(pBlock, new Item.Properties(), List.of(JSGTTabs.TAB_RINGS));
+        super(pBlock, new Item.Properties(), List.of(() -> JSGTTabs.TAB_RINGS));
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
+    @ParametersAreNonnullByDefault
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
     }
 

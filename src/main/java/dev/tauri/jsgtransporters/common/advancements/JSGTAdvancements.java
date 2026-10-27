@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.advancements;
 
-import dev.tauri.jsg.core.common.advancement.JSGCriterion;
-import dev.tauri.jsg.core.mapping.JSGMapping;
+import dev.tauri.jsgcore.common.advancement.JSGCriterion;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 
 public class JSGTAdvancements {

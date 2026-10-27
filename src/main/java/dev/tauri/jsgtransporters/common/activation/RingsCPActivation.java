@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.activation;
 
 
-import dev.tauri.jsg.core.client.renderer.Activation;
-import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.client.renderer.Activation;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
 
 public class RingsCPActivation extends Activation<SymbolInterface> {
     public RingsCPActivation(SymbolInterface textureKey, long stateChange, boolean dim) {

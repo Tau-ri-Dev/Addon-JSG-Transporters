@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.client;
 
-import dev.tauri.jsg.core.client.LoadersHolder;
+import dev.tauri.jsgcore.client.LoadersHolder;
 import dev.tauri.jsgtransporters.JSGTransporters;
 
 public class ClientConstants {

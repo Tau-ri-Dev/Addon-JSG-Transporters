@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.core.common.config.json.dimension.JSGDimensionConfig;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.config.json.dimension.JSGDimensionConfig;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import io.netty.buffer.ByteBuf;

@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.core.client.renderer.Activation;
-import dev.tauri.jsg.core.common.entity.BiomeOverlayInstance;
-import dev.tauri.jsg.core.common.entity.State;
-import dev.tauri.jsg.core.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.client.renderer.Activation;
+import dev.tauri.jsgcore.common.entity.BiomeOverlayInstance;
+import dev.tauri.jsgcore.common.entity.State;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
 import dev.tauri.jsgtransporters.common.activation.RingsCPActivation;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.resources.ResourceLocation;

@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.core.common.chunkloader.ChunkManager;
-import dev.tauri.jsg.core.common.helper.DimensionsHelper;
-import dev.tauri.jsg.core.common.symbol.SymbolType;
-import dev.tauri.jsg.core.mapping.JSGMapping;
+import dev.tauri.jsgcore.common.chunkloader.ChunkManager;
+import dev.tauri.jsgcore.common.helper.DimensionsHelper;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import io.netty.buffer.ByteBuf;

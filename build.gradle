@@ -104,8 +104,12 @@ repositories {
             includeGroup("cc.tweaked")
         }
     }
-    flatDir {
-        dir rootDir.getAbsolutePath() + "/libs"
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
     }
 }
 
@@ -118,7 +122,11 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
-    compileOnly "li.cil:oc2:1.0"
+    //compileOnly "li.cil.oc:opencomputers:${minecraft_version}-${oc_version}:api"
+    //implementation fg.deobf("li.cil.oc:opencomputers:${minecraft_version}-${oc_version}:")
+    implementation fg.deobf("maven.modrinth:FxcxomuK:lqABpuF8")
+    // scalablecatsforce - core for OC:CE
+    implementation fg.deobf("maven.modrinth:zr0QMQMo:1qV9Ew3X")
 
     compileOnly("cc.tweaked:cc-tweaked-${minecraft_version}-core-api:${cct_version}")
     compileOnly(fg.deobf("cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cct_version}"))

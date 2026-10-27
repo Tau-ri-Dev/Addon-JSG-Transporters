@@ -1,15 +1,15 @@
 package dev.tauri.jsgtransporters;
 
-import dev.tauri.jsg.core.JSGAddon;
-import dev.tauri.jsg.core.JSGAddons;
-import dev.tauri.jsg.core.LoggerWrapper;
-import dev.tauri.jsg.core.common.integration.Integrations;
-import dev.tauri.jsg.core.common.registry.helper.RegistryHelper;
-import dev.tauri.jsg.core.mapping.JSGMapping;
+import dev.tauri.jsgcore.JSGAddon;
+import dev.tauri.jsgcore.JSGAddons;
+import dev.tauri.jsgcore.LoggerWrapper;
+import dev.tauri.jsgcore.common.integration.Integrations;
+import dev.tauri.jsgcore.common.registry.helper.RegistryHelper;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
-import dev.tauri.jsgtransporters.common.integration.oc2.OCDevicesRegistry;
+import dev.tauri.jsgtransporters.common.integration.oc.OCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.registry.JSGTRegistriesInit;
 import dev.tauri.jsgtransporters.common.rings.network.RingsNetwork;
@@ -38,7 +38,7 @@ public class JSGTransporters implements JSGAddon {
 
     public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(JSGTransporters.MOD_ID);
 
-    public JSGTransporters() {
+    public JSGTransporters(FMLJavaModLoadingContext ctx) {
         logger = new LoggerWrapper("[jsg transporters] ", LoggerFactory.getLogger(MOD_NAME));
 
         ModList.get().getModContainerById(MOD_ID).ifPresentOrElse(container -> MOD_VERSION = MC_VERSION + "-" + container.getModInfo().getVersion().getQualifier(), () -> {
@@ -46,9 +46,9 @@ public class JSGTransporters implements JSGAddon {
         JSGTransporters.logger.info("Loading {} version {}", MOD_NAME, JSGTransporters.MOD_VERSION);
 
         JSGTConfig.load();
-        JSGTConfig.register();
+        JSGTConfig.register(ctx);
 
-        var eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        var eventBus = ctx.getModEventBus();
 
         Constants.init();
         JSGTRegistriesInit.init();
@@ -61,7 +61,7 @@ public class JSGTransporters implements JSGAddon {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        Integrations.OC2.addOnLoad(OCDevicesRegistry::load);
+        Integrations.OCCE.addOnLoad(OCDevicesRegistry::load);
         Integrations.CCT.addOnLoad(CCDevicesRegistry::load);
 
         JSGAddons.registerAddon(this);
