@@ -1,24 +1,23 @@
 package dev.tauri.jsgtransporters.common.packet;
 
 import dev.tauri.jsgcore.common.packet.SimplePacketHandler;
+import dev.tauri.jsgcore.common.packet.TargetPoint;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
 import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.PacketDistributor;
 
 @SuppressWarnings("unused")
 public class JSGTPacketHandler {
 
-    private static final SimplePacketHandler HANDLER = new SimplePacketHandler(new ResourceLocation(JSGTransporters.MOD_ID, "main"), "1.0");
+    private static final SimplePacketHandler HANDLER = new SimplePacketHandler(JSGMapping.rl(JSGTransporters.MOD_ID, "main"), "1.0");
 
     public static void sendToServer(Object packet) {
         HANDLER.sendToServer(packet);
     }
 
-    public static void sendToClient(Object packet, PacketDistributor.TargetPoint point) {
+    public static void sendToClient(Object packet, TargetPoint point) {
         HANDLER.sendToClient(packet, point);
     }
 
@@ -29,8 +28,8 @@ public class JSGTPacketHandler {
     public static void init() {
         int index = -1;
         // to server
-        HANDLER.registerPacket(CPButtonClickedToServer.class, ++index, NetworkDirection.PLAY_TO_SERVER, CPButtonClickedToServer::new);
-        HANDLER.registerPacket(SaveRingsSettingsToServer.class, ++index, NetworkDirection.PLAY_TO_SERVER, SaveRingsSettingsToServer::new);
+        HANDLER.registerPacketToServer(CPButtonClickedToServer.class);
+        HANDLER.registerPacketToServer(SaveRingsSettingsToServer.class);
 
         // to client
     }

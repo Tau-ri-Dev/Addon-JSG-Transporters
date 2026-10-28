@@ -8,6 +8,7 @@ import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,8 +18,9 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -42,8 +44,8 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
         this.symbolType = symbolType;
     }
 
-    public RingsPos(CompoundTag compound) {
-        this.deserializeNBT(compound);
+    public RingsPos(HolderLookup.Provider provider, CompoundTag compound) {
+        this.deserializeNBT(provider, compound);
     }
 
     public RingsPos(ByteBuf buf) {
@@ -82,7 +84,8 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
 
 
     @Override
-    public CompoundTag serializeNBT() {
+    @ParametersAreNonnullByDefault
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag compound = new CompoundTag();
         compound.putString("dim", this.dimension.location().toString());
         compound.putLong("pos", ringsPos.asLong());
@@ -94,7 +97,8 @@ public class RingsPos implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag compound) {
+    @ParametersAreNonnullByDefault
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compound) {
         this.dimension = ResourceKey.create(Registries.DIMENSION, JSGMapping.rl(compound.getString("dim")));
         this.ringsPos = BlockPos.of(compound.getLong("pos"));
         this.name = compound.getString("name");

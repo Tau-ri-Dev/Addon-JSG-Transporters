@@ -3,6 +3,7 @@ package dev.tauri.jsgtransporters.common.state.renderer;
 import dev.tauri.jsgcore.common.entity.BiomeOverlayInstance;
 import dev.tauri.jsgcore.common.registry.CoreBiomeOverlays;
 import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import net.minecraft.resources.ResourceLocation;
 
@@ -22,8 +23,8 @@ public class RingsGoauldCPRendererState extends RingsControlPanelRendererState {
             var map = new HashMap<Integer, ResourceLocation>();
             var lightMap = new HashMap<Integer, ResourceLocation>();
             for (int i = 0; i <= 5; i++) {
-                map.put(i, new ResourceLocation(JSGTransporters.MOD_ID, SYMBOL_TEXTURE_BASE + i + biomeOverlay.suffix() + "." + SYMBOL_TEXTURE_END));
-                lightMap.put(i, new ResourceLocation(JSGTransporters.MOD_ID, LIGHT_TEXTURE_BASE + i + biomeOverlay.suffix() + "." + LIGHT_TEXTURE_END));
+                map.put(i, JSGMapping.rl(JSGTransporters.MOD_ID, SYMBOL_TEXTURE_BASE + i + biomeOverlay.suffix() + "." + SYMBOL_TEXTURE_END));
+                lightMap.put(i, JSGMapping.rl(JSGTransporters.MOD_ID, LIGHT_TEXTURE_BASE + i + biomeOverlay.suffix() + "." + LIGHT_TEXTURE_END));
             }
 
             BIOME_TEXTURE_MAP.put(biomeOverlay, map);

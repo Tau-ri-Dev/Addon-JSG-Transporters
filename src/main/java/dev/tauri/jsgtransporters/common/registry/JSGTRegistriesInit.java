@@ -3,7 +3,7 @@ package dev.tauri.jsgtransporters.common.registry;
 import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.advancements.JSGTAdvancements;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.bus.api.IEventBus;
 
 public class JSGTRegistriesInit {
     public static void init() {

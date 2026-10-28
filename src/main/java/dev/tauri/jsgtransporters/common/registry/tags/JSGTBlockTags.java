@@ -1,7 +1,7 @@
 package dev.tauri.jsgtransporters.common.registry.tags;
 
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -22,6 +22,6 @@ public class JSGTBlockTags {
     public static final TagKey<Block> PANEL_ORI_LINKABLE = tag("panels/panel_ori_linkable");
 
     private static TagKey<Block> tag(String name) {
-        return BlockTags.create(new ResourceLocation(JSGTransporters.MOD_ID, name));
+        return BlockTags.create(JSGMapping.rl(JSGTransporters.MOD_ID, name));
     }
 }

@@ -17,7 +17,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
@@ -37,6 +39,13 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     public Level level;
     public float partialTicks;
     public S rendererState;
+
+    @Override
+    @ParametersAreNonnullByDefault
+    @Nonnull
+    public AABB getRenderBoundingBox(T blockEntity) {
+        return AABB.INFINITE;
+    }
 
     @Override
     @ParametersAreNonnullByDefault
@@ -282,29 +291,28 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
     private void drawWhiteFlashQuad(Vector2f start, Vector2f end) {
         stack.pushPose();
         var t = Tesselator.getInstance();
-        var b = t.getBuilder();
         var matrix = stack.last().pose();
-        b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        var b = t.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         // bottom
-        b.vertex(matrix, start.x, -0.75f, start.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, end.x, -0.75f, end.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, end.x, 1 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, start.x, 1 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.addVertex(matrix, start.x, -0.75f, start.y).setColor(1f, 1f, 1f, 0f);
+        b.addVertex(matrix, end.x, -0.75f, end.y).setColor(1f, 1f, 1f, 0f);
+        b.addVertex(matrix, end.x, 1 / 3f - 0.5f, end.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, start.x, 1 / 3f - 0.5f, start.y).setColor(1f, 1f, 1f, 1f);
 
         // middle
-        b.vertex(matrix, start.x, 1 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 1 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 2 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, start.x, 2 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
+        b.addVertex(matrix, start.x, 1 / 3f - 0.5f, start.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, end.x, 1 / 3f - 0.5f, end.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, end.x, 2 / 3f - 0.5f, end.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, start.x, 2 / 3f - 0.5f, start.y).setColor(1f, 1f, 1f, 1f);
 
         // top
-        b.vertex(matrix, start.x, 2 / 3f - 0.5f, start.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 2 / 3f - 0.5f, end.y).color(1f, 1f, 1f, 1f).endVertex();
-        b.vertex(matrix, end.x, 0.75f, end.y).color(1f, 1f, 1f, 0f).endVertex();
-        b.vertex(matrix, start.x, 0.75f, start.y).color(1f, 1f, 1f, 0f).endVertex();
+        b.addVertex(matrix, start.x, 2 / 3f - 0.5f, start.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, end.x, 2 / 3f - 0.5f, end.y).setColor(1f, 1f, 1f, 1f);
+        b.addVertex(matrix, end.x, 0.75f, end.y).setColor(1f, 1f, 1f, 0f);
+        b.addVertex(matrix, start.x, 0.75f, start.y).setColor(1f, 1f, 1f, 0f);
 
-        BufferUploader.drawWithShader(b.end());
+        BufferUploader.drawWithShader(b.buildOrThrow());
         stack.popPose();
     }
 
@@ -330,27 +338,26 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
             RenderSystem.disableCull();
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             var t = Tesselator.getInstance();
-            var b = t.getBuilder();
             var matrix = stack.last().pose();
-            b.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            var b = t.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
             // between rings
-            b.vertex(matrix, ringPointBottom.getX() - 1f, ringPointBottom.getY(), 0).color(1f, 1f, 1f, 1f).endVertex();
-            b.vertex(matrix, ringPointTop.getX() - 1f, ringPointTop.getY(), 0).color(1f, 1f, 1f, 1f).endVertex();
-            b.vertex(matrix, ringPointTop.getX() - (1 - Math.min(1, coef * 1.5f)), ringPointTop.getY(), 0).color(1f, 1f, 1f, Math.min(1, coef * 1.5f)).endVertex();
-            b.vertex(matrix, ringPointBottom.getX() - (1 - Math.min(1, coef * 1.5f)), ringPointBottom.getY(), 0).color(1f, 1f, 1f, Math.min(1, coef * 1.5f)).endVertex();
+            b.addVertex(matrix, ringPointBottom.getX() - 1f, ringPointBottom.getY(), 0).setColor(1f, 1f, 1f, 1f);
+            b.addVertex(matrix, ringPointTop.getX() - 1f, ringPointTop.getY(), 0).setColor(1f, 1f, 1f, 1f);
+            b.addVertex(matrix, ringPointTop.getX() - (1 - Math.min(1, coef * 1.5f)), ringPointTop.getY(), 0).setColor(1f, 1f, 1f, Math.min(1, coef * 1.5f));
+            b.addVertex(matrix, ringPointBottom.getX() - (1 - Math.min(1, coef * 1.5f)), ringPointBottom.getY(), 0).setColor(1f, 1f, 1f, Math.min(1, coef * 1.5f));
 
             // closer to center
-            b.vertex(matrix, ringPointBottom.getX(), ringPointBottom.getY(), 0).color(1f, 1f, 1f, 1f).endVertex();
-            b.vertex(matrix, ringPointTop.getX(), ringPointTop.getY(), 0).color(1f, 1f, 1f, 1f).endVertex();
+            b.addVertex(matrix, ringPointBottom.getX(), ringPointBottom.getY(), 0).setColor(1f, 1f, 1f, 1f);
+            b.addVertex(matrix, ringPointTop.getX(), ringPointTop.getY(), 0).setColor(1f, 1f, 1f, 1f);
 
             // outshining
             var ringPointBottomExt = new Vector2f(ringPointBottom.getX() * length, (float) (ringPointBottom.getY() + (ringPointBottom.getY() - y) * (coef * 1.5f - 0.5f)));
             var ringPointTopExt = new Vector2f(ringPointTop.getX() * length, (float) (ringPointTop.getY() + (ringPointTop.getY() - y) * (coef * 1.5f - 0.5f)));
-            b.vertex(matrix, ringPointTopExt.getX(), ringPointTopExt.getY(), 0).color(1f, 1f, 1f, 0f).endVertex();
-            b.vertex(matrix, ringPointBottomExt.getX(), ringPointBottomExt.getY(), 0).color(1f, 1f, 1f, 0f).endVertex();
+            b.addVertex(matrix, ringPointTopExt.getX(), ringPointTopExt.getY(), 0).setColor(1f, 1f, 1f, 0f);
+            b.addVertex(matrix, ringPointBottomExt.getX(), ringPointBottomExt.getY(), 0).setColor(1f, 1f, 1f, 0f);
 
-            BufferUploader.drawWithShader(b.end());
+            BufferUploader.drawWithShader(b.buildOrThrow());
             RenderSystem.disableBlend();
             stack.popPose();
         }

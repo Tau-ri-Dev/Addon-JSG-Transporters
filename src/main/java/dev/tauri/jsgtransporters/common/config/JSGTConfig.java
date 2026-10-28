@@ -4,8 +4,7 @@ import dev.tauri.jsgcore.common.config.JSGConfigChild;
 import dev.tauri.jsgcore.common.config.JSGCoreConfig;
 import dev.tauri.jsgcore.common.config.values.JSGConfigValue;
 import dev.tauri.jsgtransporters.JSGTransporters;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
 
@@ -15,7 +14,7 @@ public class JSGTConfig {
 
 
     public static class General {
-        private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+        private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
         public static final JSGConfigValue.IntValue ringsRange = C_GENERAL.add(new JSGConfigValue.IntValue(BUILDER, "Rings Horizontal Radius", 64, 5, Integer.MAX_VALUE,
                 "Rings range radius in same dimension",
@@ -46,7 +45,7 @@ public class JSGTConfig {
     }
 
     public static class Energy {
-        private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+        private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
         public static final JSGConfigValue.IntValue ringsStartEnergy = C_ENERGY.add(new JSGConfigValue.IntValue(BUILDER, "Rings start power draw", 2048, 0, 500000,
                 "SIDE: SERVER"
@@ -64,12 +63,12 @@ public class JSGTConfig {
 
     private static final ArrayList<JSGConfigChild> LIST = new ArrayList<>();
 
-    public static void register(ModLoadingContext ctx) {
+    public static void register() {
         LIST.clear();
         LIST.add(C_GENERAL);
         LIST.add(C_ENERGY);
 
-        JSGCoreConfig.register(ctx, JSGTransporters.MOD_ID, CONFIG_FILE_NAME, LIST);
+        JSGCoreConfig.register(JSGTransporters.MOD_ID, CONFIG_FILE_NAME, LIST);
     }
 
     public static void load() {

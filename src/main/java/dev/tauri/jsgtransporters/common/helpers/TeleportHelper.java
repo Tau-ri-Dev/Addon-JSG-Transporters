@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.properties.PistonType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;
@@ -49,9 +49,8 @@ public class TeleportHelper {
             //if (!fireTravelToDimEvent(entity, targetRings.dimension))
             //    return;
 
-            entity.changeDimension(
-                    Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)),
-                    new RingsTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), entity.getYRot(), null));
+            entity.changeDimension(new RingsTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), entity.getYRot(), null)
+                    .createTransition(entity, Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)));
         }
     }
 
@@ -103,7 +102,7 @@ public class TeleportHelper {
 
             // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
-                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .map(be -> be.saveCustomAndMetadata(localLevel.registryAccess()))
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
                     .orElseGet(() -> {
                         if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
@@ -113,7 +112,7 @@ public class TeleportHelper {
                         return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
                     });
             var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
-                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
+                    .map(be -> be.saveCustomAndMetadata(remoteLevel.registryAccess()))
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
                     .orElseGet(() -> {
                         if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
@@ -240,7 +239,7 @@ public class TeleportHelper {
                 if (be instanceof Container container) {
                     container.clearContent();
                 } else if (be != null) {
-                    be.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent((itemHandler) -> {
+                    Optional.ofNullable(level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null)).ifPresent((itemHandler) -> {
                         for (var slot = 0; slot < itemHandler.getSlots(); slot++) {
                             itemHandler.getStackInSlot(slot).setCount(0);
                         }
@@ -263,7 +262,7 @@ public class TeleportHelper {
                     JSGTransporters.logger.error("Expected block entity at {} in {} but no block entity found", pos, level);
                     return;
                 }
-                entity.deserializeNBT(nbt);
+                entity.loadWithComponents(nbt, level().registryAccess());
                 entity.setChanged();
             }
 

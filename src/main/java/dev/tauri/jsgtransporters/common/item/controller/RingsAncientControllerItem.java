@@ -3,9 +3,9 @@ package dev.tauri.jsgtransporters.common.item.controller;
 import dev.tauri.jsgcore.client.renderer.AbstractItemBEWLR;
 import dev.tauri.jsgtransporters.client.renderer.item.controller.RingsAncientCPBEWLR;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class RingsAncientControllerItem extends ControllerItem {
     public RingsAncientControllerItem(Block pBlock) {

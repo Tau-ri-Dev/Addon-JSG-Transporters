@@ -14,7 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,11 +32,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.function.Supplier;
@@ -61,14 +59,16 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
 
     @Override
     @ParametersAreNonnullByDefault
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
-        super.playerWillDestroy(level, pos, blockState, player);
+    @Nonnull
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
+        var result = super.playerWillDestroy(level, pos, blockState, player);
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof RingsAbstractBE rings) {
                 rings.onBroken();
             }
         }
+        return result;
     }
 
     @Override
@@ -84,34 +84,28 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
     }
 
     @Nonnull
+    @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             var be = level.getBlockEntity(pos);
             if (be instanceof RingsAbstractBE rings) {
-                /*-var nbt = PageNotebookItemFilled.getCompoundFromAddress(rings.getRingsAddress(SymbolTypeRegistry.GOAULD), List.of(1, 2, 3, 4, 9), "minecraft:plains", 0, AddressTypeRegistry.RINGS_ADDRESS_TYPE);
-                var page = new ItemStack(ItemRegistry.NOTEBOOK_PAGE_FILLED.get());
-                page.setTag(nbt);
-                player.addItem(page);*/
                 if (player instanceof ServerPlayer sp) {
-                    NetworkHooks.openScreen(sp, new SimpleMenuProvider((id, pInv, p) -> new RingsContainer(id, pInv, rings), Component.empty()), pos);
+                    sp.openMenu(new SimpleMenuProvider((id, pInv, p) -> new RingsContainer(id, pInv, rings), Component.empty()), pos);
                 }
-                return InteractionResult.SUCCESS;
+                return ItemInteractionResult.SUCCESS;
             }
         }
-        return InteractionResult.FAIL;
+        return ItemInteractionResult.FAIL;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     public @Nonnull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
@@ -149,7 +143,6 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
         if (!pLevel.isClientSide) {
             if (pLevel.getBlockEntity(pPos) instanceof RingsAbstractBE rings) {

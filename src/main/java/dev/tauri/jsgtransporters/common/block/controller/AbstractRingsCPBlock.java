@@ -55,14 +55,12 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public @Nonnull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.flipDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), mirror));
     }
@@ -94,7 +92,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public @Nonnull FluidState getFluidState(@Nonnull BlockState pState) {
         return pState.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(pState);
     }
@@ -112,14 +109,16 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
-        super.playerWillDestroy(level, pos, blockState, player);
+    @Nonnull
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState blockState, Player player) {
+        var result = super.playerWillDestroy(level, pos, blockState, player);
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof AbstractRingsCPBE cp) {
                 cp.onBroken();
             }
         }
+        return result;
     }
 
     @Override
@@ -137,7 +136,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
-    @SuppressWarnings("deprecation")
     public RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
@@ -155,7 +153,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public boolean canSurvive(BlockState pState, LevelReader pLevel, BlockPos pPos) {
         Direction direction = pState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return this.canAttachTo(pLevel, pPos.relative(direction.getOpposite()), direction);
@@ -163,7 +160,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
-    @SuppressWarnings("deprecation")
     public @NotNull BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
                                            LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
@@ -180,7 +176,6 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
-    @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
         BlockPos min = new BlockPos(4, 0, 14);
         BlockPos max = new BlockPos(12, 16, 16);

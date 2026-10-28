@@ -9,7 +9,7 @@ import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 public class JSGTNotebookPageTypes {
     public static final RegistryObjectWrapper<NotebookPageType<RingsAddressData>> RINGS_ADDRESS = JSGTransporters.REGISTRY_HELPER.notebookPage().register("rings_address", () -> new AddressNotebookPageType<>(
             RingsAddressData::new,
-            ringsAddressData -> ringsAddressData != null ? ringsAddressData.serializeNBT() : null,
+            (registries, ringsAddressData) -> ringsAddressData != null ? ringsAddressData.serializeNBT(registries) : null,
             (level, pos, random, data) -> null // we don't want to generate addresses on cartouches now
     ));
 

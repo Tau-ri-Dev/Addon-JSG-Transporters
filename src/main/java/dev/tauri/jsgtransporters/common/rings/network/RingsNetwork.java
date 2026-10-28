@@ -5,6 +5,7 @@ import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.*;
 
 public class RingsNetwork extends SavedData {
@@ -23,7 +25,7 @@ public class RingsNetwork extends SavedData {
 
     public void register(@Nonnull DimensionDataStorage storage) {
         INSTANCE = this;
-        storage.computeIfAbsent(INSTANCE::load, () -> INSTANCE, DATA_NAME);
+        storage.computeIfAbsent(new Factory<>(() -> INSTANCE, (tag, registries) -> INSTANCE.load(tag, registries), null), DATA_NAME);
     }
 
     public RingsNetwork() {
@@ -154,13 +156,13 @@ public class RingsNetwork extends SavedData {
     // ---------------------------------------------------------------------------------------------------------
     // Reading and writing
 
-    public RingsNetwork load(CompoundTag compound) {
+    public RingsNetwork load(CompoundTag compound, HolderLookup.Provider registries) {
         // create new - clear old data
-        INSTANCE.fromNBT(compound);
+        INSTANCE.fromNBT(compound, registries);
         return INSTANCE;
     }
 
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(CompoundTag compound, HolderLookup.Provider registries) {
         RINGS_MAP_BY_POS.clear();
         RINGS_MAP_BY_ADDRESS.clear();
         ListTag ringsTagList = compound.getList("rings", Tag.TAG_COMPOUND);
@@ -168,7 +170,7 @@ public class RingsNetwork extends SavedData {
         for (Tag ringsTag : ringsTagList) {
             CompoundTag ringsCompound = (CompoundTag) ringsTag;
 
-            RingsPos ringsPos = new RingsPos(ringsCompound.getCompound("pos"));
+            RingsPos ringsPos = new RingsPos(registries, ringsCompound.getCompound("pos"));
             var tagMap = ringsCompound.getList("addressMap", Tag.TAG_COMPOUND);
             for (var addressTag : tagMap) {
                 putRings(new RingsAddress((CompoundTag) addressTag), ringsPos);
@@ -177,13 +179,15 @@ public class RingsNetwork extends SavedData {
     }
 
     @Override
-    public @Nonnull CompoundTag save(@Nonnull CompoundTag compound) {
+    @ParametersAreNonnullByDefault
+    @Nonnull
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider registries) {
         JSGTransporters.logger.info("Saving RINGS NETWORK: Started");
         ListTag ringsTagList = new ListTag();
 
         for (var rings : RINGS_MAP_BY_POS.entrySet()) {
             var ringsTag = new CompoundTag();
-            ringsTag.put("pos", rings.getKey().serializeNBT());
+            ringsTag.put("pos", rings.getKey().serializeNBT(registries));
             var mapList = new ListTag();
             for (var address : rings.getValue().entrySet()) {
                 mapList.add(address.getValue().serializeNBT());

@@ -7,6 +7,7 @@ import dev.tauri.jsgcore.common.entity.State;
 import dev.tauri.jsgcore.common.entity.StateType;
 import dev.tauri.jsgcore.common.helper.LinkingHelper;
 import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.TargetPoint;
 import dev.tauri.jsgcore.common.packet.packets.StateUpdatePacketToClient;
 import dev.tauri.jsgcore.common.registry.CoreStateTypes;
 import dev.tauri.jsgcore.common.sound.JSGSoundHelper;
@@ -26,10 +27,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +119,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
-    public PacketDistributor.TargetPoint getTargetPoint() {
+    public TargetPoint getTargetPoint() {
         return targetPoint;
     }
 
@@ -134,13 +135,13 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
         }
     }
 
-    protected PacketDistributor.TargetPoint targetPoint;
+    protected TargetPoint targetPoint;
 
     @Override
     public void onLoad() {
         if (!Objects.requireNonNull(getLevel()).isClientSide) {
             var pos = getBlockPos();
-            this.targetPoint = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
+            this.targetPoint = new TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 512, Objects.requireNonNull(getLevel()).dimension());
         }
         super.onLoad();
     }
@@ -155,21 +156,22 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     // NBT
 
     @Override
-    public void saveAdditional(@Nonnull CompoundTag compound) {
+    @ParametersAreNonnullByDefault
+    public void saveAdditional(CompoundTag compound, net.minecraft.core.HolderLookup.Provider registries) {
         if (isLinked(true))
             compound.putLong("linkedPos", linkedPos.asLong());
 
         compound.put("scheduledTasks", ScheduledTask.serializeList(scheduledTasks));
-        super.saveAdditional(compound);
+        super.saveAdditional(compound, registries);
     }
 
     @Override
-    public void load(@Nonnull CompoundTag compound) {
+    @ParametersAreNonnullByDefault
+    protected void loadAdditional(CompoundTag compound, net.minecraft.core.HolderLookup.Provider registries) {
         if (compound.contains("linkedPos"))
             linkedPos = BlockPos.of(compound.getLong("linkedPos"));
         ScheduledTask.deserializeList(compound.getCompound("scheduledTasks"), scheduledTasks, this);
-
-        super.load(compound);
+        super.loadAdditional(compound, registries);
     }
 
     public abstract RingsControlPanelRendererState getRendererStateClient();

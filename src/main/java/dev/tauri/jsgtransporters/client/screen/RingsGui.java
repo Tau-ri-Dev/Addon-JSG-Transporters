@@ -31,11 +31,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static dev.tauri.jsgcore.client.screen.util.GuiHelper.*;
 
@@ -143,8 +146,8 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         int energyBarMaxWidth = 156;
         int currentIndex = 3;
         for (int i = 4; i < 7; i++) {
-            Optional<IEnergyStorage> energyStorage = menu.getSlot(i).getItem().getCapability(ForgeCapabilities.ENERGY, null).resolve();
-            if (energyStorage.isPresent())
+            IEnergyStorage energyStorage = menu.getSlot(i).getItem().getCapability(Capabilities.EnergyStorage.ITEM);
+            if (energyStorage != null)
                 continue;
             energyBarMaxWidth -= 39;
             drawModalRectWithCustomSizedTexture(leftPos + 10 + 39 * currentIndex--, topPos + 69, 0, 173, 39, 6, 512, 512);
@@ -208,7 +211,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     public void render(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.disableDepthTest();
 
-        renderTransparentBackground(graphics, this);
+        renderTransparentBackground(graphics);
 
         boolean hasAddressUpgrade = false;
 
@@ -233,16 +236,16 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         }
         configTab.setVisible(menu.hasCreative);
 
-        LargeEnergyStorage energyStorageInternal = (LargeEnergyStorage) menu.ringsTile.getCapability(ForgeCapabilities.ENERGY, null).resolve().orElseThrow();
+        LargeEnergyStorage energyStorageInternal = menu.ringsTile.getEnergyStorage();
         energyStorageInternal.clearStorages();
         energyStoredInternally = energyStorageInternal.getTrueEnergyStored();
 
         for (int i = 4; i < 7; i++) {
-            Optional<IEnergyStorage> energyStorage = menu.getSlot(i).getItem().getCapability(ForgeCapabilities.ENERGY, null).resolve();
+            IEnergyStorage energyStorage = menu.getSlot(i).getItem().getCapability(Capabilities.EnergyStorage.ITEM);
 
-            if (energyStorage.isEmpty())
+            if (energyStorage == null)
                 continue;
-            energyStorageInternal.addStorage(energyStorage.get());
+            energyStorageInternal.addStorage(energyStorage);
         }
 
         energyStored = energyStorageInternal.getTrueEnergyStored();

@@ -1,10 +1,10 @@
 package dev.tauri.jsgtransporters.common.packet.packets;
 
+import dev.tauri.jsgcore.common.packet.PacketContext;
 import dev.tauri.jsgcore.common.packet.packets.PositionedPacket;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -40,7 +40,7 @@ public class SaveRingsSettingsToServer extends PositionedPacket {
     }
 
     @Override
-    public void handle(NetworkEvent.Context ctx) {
+    public void handle(PacketContext ctx) {
         ctx.setPacketHandled(true);
         ctx.enqueueWork(() -> {
             var entity = Objects.requireNonNull(ctx.getSender()).serverLevel().getBlockEntity(pos);
