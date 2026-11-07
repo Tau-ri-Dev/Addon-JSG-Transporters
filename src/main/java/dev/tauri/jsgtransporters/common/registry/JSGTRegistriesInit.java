@@ -8,6 +8,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 public class JSGTRegistriesInit {
     public static void init() {
         CoreTabs.registerTransportationTab(() -> JSGTBlocks.RINGS_GOAULD);
+        CoreTabs.registerUpgradesTab(() -> JSGTItems.CRYSTAL_UPGRADE_DIM_TUNNELING);
 
         JSGTAdvancements.init();
         JSGTSymbolTypes.init();
