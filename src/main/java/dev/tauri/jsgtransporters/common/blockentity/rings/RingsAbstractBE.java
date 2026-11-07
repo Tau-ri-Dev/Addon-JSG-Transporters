@@ -251,6 +251,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
                 dialedAddress.addAll(lastDialedAddress);
             setChanged();
             tryConnect();
+            dialedAddress.clear();
         }
     }
 
