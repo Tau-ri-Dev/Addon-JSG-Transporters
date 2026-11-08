@@ -17,24 +17,24 @@ public class JSGTItems {
     /**
      * Glyph crystals
      */
-    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_ANCIENT = Constants.ITEM_HELPER.builder("crystal_glyph_rings_ancient").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.ANCIENT_GLYPHS);
-    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_GOAULD = Constants.ITEM_HELPER.builder("crystal_glyph_rings_goauld").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.GOAULD_GLYPHS);
-    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.builder("crystal_glyph_rings_ori").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.ORI_GLYPHS);
-    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_UPGRADE_DIM_TUNNELING = Constants.ITEM_HELPER.builder("crystal_upgrade_dimensional_tunneling").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.DIMENSIONAL_TUNNELING);
+    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_ANCIENT = Constants.ITEM_HELPER.builder("ancient_glyph_crystal").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.ANCIENT_GLYPHS);
+    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_GOAULD = Constants.ITEM_HELPER.builder("goauld_glyph_crystal").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.GOAULD_GLYPHS);
+    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_GLYPH_ORI = Constants.ITEM_HELPER.builder("ori_glyph_crystal").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.ORI_GLYPHS);
+    public static final RegistryObjectWrapper<JSGItem> CRYSTAL_UPGRADE_DIM_TUNNELING = Constants.ITEM_HELPER.builder("dimensional_tunneling_upgrade_crystal").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_UPGRADES)).buildUpgrade(() -> RingsAbstractBE.RingsUpgradeEnum.DIMENSIONAL_TUNNELING);
 
     /**
      * Ring fragments
      */
-    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_GOAULD = Constants.ITEM_HELPER.builder("fragment_rings_goauld").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
-    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_ORI = Constants.ITEM_HELPER.builder("fragment_rings_ori").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
-    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_ANCIENT = Constants.ITEM_HELPER.builder("fragment_rings_ancient").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
+    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_GOAULD = Constants.ITEM_HELPER.builder("goauld_transport_ring_fragment").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
+    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_ORI = Constants.ITEM_HELPER.builder("ori_transport_ring_fragment").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
+    public static final RegistryObjectWrapper<JSGItem> FRAGMENT_ANCIENT = Constants.ITEM_HELPER.builder("ancient_transport_ring_fragment").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
 
     /**
      * Crafting elements
      */
     public static final RegistryObjectWrapper<JSGItem> GOAULD_BUTTONS = Constants.ITEM_HELPER.builder("goauld_controller_buttons").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
     public static final RegistryObjectWrapper<JSGItem> ORI_BUTTONS = Constants.ITEM_HELPER.builder("ori_controller_buttons").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
-    public static final RegistryObjectWrapper<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.builder("ori_main_controller_button").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
+    public static final RegistryObjectWrapper<JSGItem> ORI_MAIN_BUTTON = Constants.ITEM_HELPER.builder("main_ori_controller_button").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
     public static final RegistryObjectWrapper<JSGItem> ANCIENT_BUTTONS = Constants.ITEM_HELPER.builder("ancient_controller_buttons").setInTabs(List.of(() -> JSGTTabs.TAB_RINGS)).buildGeneric();
 
 

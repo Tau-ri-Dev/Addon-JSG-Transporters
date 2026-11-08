@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.Block;
 public class JSGTBlocks {
     private static final DeferredRegisterWrapper<Block> REGISTER = JSGTransporters.REGISTRY_HELPER.block();
 
-    public static final RegistryObjectWrapper<Block> RINGS_ANCIENT = REGISTER.register("rings_ancient_block", RingsAncient::new);
-    public static final RegistryObjectWrapper<Block> RINGS_GOAULD = REGISTER.register("rings_goauld_block", RingsGoauld::new);
-    public static final RegistryObjectWrapper<Block> RINGS_ORI = REGISTER.register("rings_ori_block", RingsOri::new);
+    public static final RegistryObjectWrapper<Block> RINGS_ANCIENT = REGISTER.register("ancient_transport_rings", RingsAncient::new);
+    public static final RegistryObjectWrapper<Block> RINGS_GOAULD = REGISTER.register("goauld_transport_rings", RingsGoauld::new);
+    public static final RegistryObjectWrapper<Block> RINGS_ORI = REGISTER.register("ori_transport_rings", RingsOri::new);
 
-    public static final RegistryObjectWrapper<Block> RINGS_CP_GOAULD = REGISTER.register("rings_goauld_control_panel_block", RingsGoauldCPBlock::new);
-    public static final RegistryObjectWrapper<Block> RINGS_CP_ORI = REGISTER.register("rings_ori_control_panel_block", RingsOriCPBlock::new);
-    public static final RegistryObjectWrapper<Block> RINGS_CP_ANCIENT = REGISTER.register("rings_ancient_control_panel_block", RingsAncientCPBlock::new);
+    public static final RegistryObjectWrapper<Block> RINGS_CP_GOAULD = REGISTER.register("goauld_rings_control_panel", RingsGoauldCPBlock::new);
+    public static final RegistryObjectWrapper<Block> RINGS_CP_ORI = REGISTER.register("ori_rings_control_panel", RingsOriCPBlock::new);
+    public static final RegistryObjectWrapper<Block> RINGS_CP_ANCIENT = REGISTER.register("ancient_rings_control_panel", RingsAncientCPBlock::new);
 
     public static void init() {
     }
