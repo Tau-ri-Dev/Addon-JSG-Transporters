@@ -1,6 +1,5 @@
 package dev.tauri.jsgtransporters.datagen;
 
-import dev.tauri.jsgcore.common.block.JSGBlock;
 import dev.tauri.jsgcore.datagen.CoreItemModelProvider;
 import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
