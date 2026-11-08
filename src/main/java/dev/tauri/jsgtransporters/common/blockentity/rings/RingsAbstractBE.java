@@ -51,6 +51,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -63,6 +64,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.capabilities.Capability;
@@ -966,22 +968,47 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         ResourceKey<Level> sourceDim = level.dimension();
         ResourceKey<Level> targetDim = targetRings.getWorld().dimension();
 
-        if (sourceDim == Level.OVERWORLD && targetDim == Level.NETHER) {
-            tPos = new BlockPos(tPos.getX() * 8, tPos.getY(), tPos.getZ() * 8);
-        } else if (sourceDim == Level.NETHER && targetDim == Level.OVERWORLD) {
-            sPos = new BlockPos(sPos.getX() * 8, sPos.getY(), sPos.getZ() * 8);
-        }
+        var coordsScale = DimensionType.getTeleportationScale(level.dimensionType(), targetRings.getWorld().dimensionType());
 
-        double distance = (int) BlockPosHelper.dist(sPos, tPos.getX(), tPos.getY(), tPos.getZ());
+        double distance = (int) BlockPosHelper.dist(tPos, (int) (sPos.getX() * coordsScale), sPos.getY(), (int) (sPos.getZ() * coordsScale));
 
         if (distance < 50) distance *= 0.8;
         else distance = 50 * Math.log10(distance) / Math.log10(50);
 
-        return energyRequired.mul(distance).add(EnergyRequiredToOperateRings.rings().mul(JSGDimensionConfig.INSTANCE.getDistanceBetween(sourceDim, targetDim)).mul(0.1));
+        return energyRequired.mul(distance).add(
+                EnergyRequiredToOperateRings.rings()
+                        .mul(JSGDimensionConfig.INSTANCE.getDistanceBetween(sourceDim, targetDim))
+                        .mul(0.1)
+        );
     }
 
     @Override
     public @Nullable PointOfOrigin getPointOfOrigin(SymbolType<?> abstractSymbolType) {
         return null;
+    }
+
+    @Override
+    public ItemStack getDropBaseBlock(ServerPlayer player) {
+        var stack = new ItemStack(this.getSymbolType().getBaseBlock());
+        var tag = stack.getOrCreateTag();
+        tag.put("energyStorage", getEnergyStorage().serializeNBT());
+        tag.put("itemHandler", inventory.serializeNBT());
+        tag.put("config", getConfig().serializeNBT());
+        stack.setTag(tag);
+        return stack;
+    }
+
+    @Override
+    public void updateContainerItemsByItemStack(ItemStack stack) {
+        var tag = stack.getOrCreateTag();
+        if (!tag.contains("energyStorage")) return;
+        getEnergyStorage().deserializeNBT(tag.getCompound("energyStorage"));
+        if (tag.contains("config"))
+            getConfig().deserializeNBT(tag.getCompound("config"));
+        if (!tag.contains("itemHandler")) return;
+        inventory.deserializeNBT(tag.getCompound("itemHandler"));
+        setChanged();
+        updatePowerTier();
+        sendState(CoreStateTypes.BIOME_OVERRIDE_STATE.get(), new BiomeOverrideState(determineBiomeOverride()));
     }
 }

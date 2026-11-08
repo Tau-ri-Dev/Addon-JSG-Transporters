@@ -1,7 +1,6 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsgcore.client.model.IModelLoader;
-import dev.tauri.jsgcore.client.screen.tab.ITab;
 import dev.tauri.jsgcore.client.screen.tab.ITabAddress;
 import dev.tauri.jsgcore.client.texture.ITextureLoader;
 import dev.tauri.jsgcore.common.symbol.SymbolInterface;
@@ -10,6 +9,7 @@ import dev.tauri.jsgcore.common.symbol.SymbolUsage;
 import dev.tauri.jsgcore.common.symbol.address.IAddress;
 import dev.tauri.jsgcore.common.symbol.pointoforigin.IPointOfOriginType;
 import dev.tauri.jsgcore.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
@@ -60,8 +60,8 @@ public enum SymbolOriEnum implements SymbolInterface {
 
         this.englishName = englishName;
         this.translationKey = "glyph.jsg_transporters.transportrings.ori." + englishName.toLowerCase().replace(" ", "_");
-        this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/button_" + (id + 1) + ".obj");
+        this.iconResource = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
+        this.modelResource = JSGMapping.rl(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/button_" + (id + 1) + ".obj");
     }
 
     @Override
@@ -144,15 +144,6 @@ public enum SymbolOriEnum implements SymbolInterface {
         @Override
         public IModelLoader getModelLoader() {
             return ClientConstants.LOADERS_HOLDER.model();
-        }
-
-        @Override
-        public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
-            return builder.setTexture(new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
-                    .setBackgroundTextureLocation(176, 0)
-                    .setIconRenderPos(0, 6)
-                    .setIconSize(22, 22)
-                    .setIconTextureLocation(304, 44);
         }
 
         @Override
