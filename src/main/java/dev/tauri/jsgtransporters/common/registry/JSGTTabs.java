@@ -10,9 +10,10 @@ import net.minecraft.world.item.CreativeModeTab;
 public class JSGTTabs {
     private static final DeferredRegisterWrapper<CreativeModeTab> REGISTER = JSGTransporters.REGISTRY_HELPER.tab();
 
-    public static final RegistryObjectWrapper<CreativeModeTab> TAB_RINGS = REGISTER.register("rings",
+    //TODO: MineDragon - DELETE THIS TAB
+    /*public static final RegistryObjectWrapper<CreativeModeTab> TAB_RINGS = REGISTER.register("rings",
             TabBuilder.create(JSGMapping.rl(JSGTransporters.MOD_ID, "rings"))
-                    .withIcon(() -> JSGTBlocks.RINGS_GOAULD).build());
+                    .withIcon(() -> JSGTBlocks.RINGS_GOAULD).build());*/
 
     public static void init() {
     }

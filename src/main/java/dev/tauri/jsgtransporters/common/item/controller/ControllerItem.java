@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters.common.item.controller;
 
 import dev.tauri.jsgcore.common.helper.ItemHelper;
 import dev.tauri.jsgcore.common.item.JSGBlockItem;
+import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 
 public abstract class ControllerItem extends JSGBlockItem {
     public ControllerItem(Block pBlock) {
-        super(pBlock, new Item.Properties(), List.of(() -> JSGTTabs.TAB_RINGS));
+        super(pBlock, new Item.Properties(), List.of(CoreTabs.TAB_TRANSPORTATION));
     }
 
     @Override
