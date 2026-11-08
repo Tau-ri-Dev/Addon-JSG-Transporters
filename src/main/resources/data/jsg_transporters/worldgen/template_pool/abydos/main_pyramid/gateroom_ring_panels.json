@@ -5,12 +5,6 @@
     {
       "weight": 1,
       "element": {
-        "element_type": "minecraft:empty_pool_element"
-      }
-    },
-    {
-      "weight": 1,
-      "element": {
         "location": "jsg_transporters:transport_rings/common/panels/goauld_panel",
         "processors": "minecraft:empty",
         "projection": "rigid",
