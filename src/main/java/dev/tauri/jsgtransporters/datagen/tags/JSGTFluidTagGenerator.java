@@ -20,6 +20,6 @@ public class JSGTFluidTagGenerator extends CoreFluidTagGenerator {
     @Override
     @ParametersAreNonnullByDefault
     protected void addTags(HolderLookup.Provider pProvider) {
-        tag(JSGTFluidTags.TRANSPORTER_FLUIDS).add(Fluids.LAVA);
+        tag(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS).add(Fluids.LAVA);
     }
 }
