@@ -1,0 +1,15 @@
+{
+  "name": "jsg_transporters:abydos/main_pyramid/treasure_room_rings",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "jsg_transporters:transport_rings/common/ring_blocks/goauld_rings",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}
