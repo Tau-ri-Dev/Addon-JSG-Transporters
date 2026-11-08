@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Block;
 
 public class JSGTBlockTags {
     public static final TagKey<Block> UNTRANSPORTABLE_BLOCK = tag("untransportable");
+    public static final TagKey<Block> UNPENETRABLE_BLOCK = tag("unpenetrable");
     public static final TagKey<Block> RINGS_BLOCK = tag("rings_block");
     public static final TagKey<Block> ATLANTIS_TRANSPORTER_BLOCK = tag("atlantis_transporter_block");
     public static final TagKey<Block> RINGS_CONTROLLER_BLOCK = tag("rings_controllers");

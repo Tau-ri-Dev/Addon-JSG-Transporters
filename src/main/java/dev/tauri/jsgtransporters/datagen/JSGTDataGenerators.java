@@ -1,9 +1,9 @@
 package dev.tauri.jsgtransporters.datagen;
 
 import dev.tauri.jsgcore.datagen.*;
-import dev.tauri.jsgcore.datagen.loot.CoreLootTableProvider;
 import dev.tauri.jsgcore.datagen.tag.*;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.datagen.loot.JSGTLootTableProvider;
 import dev.tauri.jsgtransporters.datagen.tags.JSGTBlockTagGenerator;
 import dev.tauri.jsgtransporters.datagen.tags.JSGTFluidTagGenerator;
 import dev.tauri.jsgtransporters.datagen.tags.JSGTItemTagGenerator;
@@ -22,8 +22,8 @@ public class JSGTDataGenerators {
 
 
         generator.addProvider(event.includeServer(), new JSGTRecipeProvider(output));
-        //generator.addProvider(event.includeServer(), CoreLootTableProvider.create(output));
-        //generator.addProvider(event.includeServer(), new CoreWorldgenProvider(output, lookupProvider));
+        //generator.addProvider(event.includeServer(), JSGTLootTableProvider.create(output));
+        //generator.addProvider(event.includeServer(), new JSGTWorldgenProvider(output, lookupProvider));
 
         generator.addProvider(event.includeClient(), new JSGTBlockStateProvider(output, exFileHelper));
         generator.addProvider(event.includeClient(), new JSGTItemModelProvider(output, exFileHelper));
@@ -31,12 +31,7 @@ public class JSGTDataGenerators {
         var blockTagGenerator = generator.addProvider(event.includeServer(), new JSGTBlockTagGenerator(output, lookupProvider, exFileHelper));
         generator.addProvider(event.includeServer(), new JSGTItemTagGenerator(output, lookupProvider, blockTagGenerator.contentsGetter(), exFileHelper));
 
-        //generator.addProvider(event.includeServer(), new CoreBiomeTagGenerator(output, lookupProvider, exFileHelper));
         generator.addProvider(event.includeServer(), new JSGTFluidTagGenerator(output, lookupProvider, exFileHelper));
-        //generator.addProvider(event.includeServer(), new CoreStructureTagGenerator(output, lookupProvider, exFileHelper));
-        //generator.addProvider(event.includeServer(), new CorePlacedFeatureTagGenerator(output, lookupProvider, exFileHelper));
-
-        //generator.addProvider(event.includeServer(), CoreAdvancementProvider.create(output, lookupProvider, exFileHelper));
 
         generator.addProvider(event.includeClient(), new JSGTLanguageProvider(output, "en_us"));
 
