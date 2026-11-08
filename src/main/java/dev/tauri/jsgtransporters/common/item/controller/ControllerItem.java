@@ -27,6 +27,7 @@ public abstract class ControllerItem extends JSGBlockItem {
     @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(getItemBEWLR());
     }
 
     @OnlyIn(Dist.CLIENT)
