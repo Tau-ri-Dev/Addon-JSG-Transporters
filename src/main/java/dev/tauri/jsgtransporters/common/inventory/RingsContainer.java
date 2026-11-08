@@ -1,19 +1,19 @@
 package dev.tauri.jsgtransporters.common.inventory;
 
-import dev.tauri.jsg.api.client.screen.util.ContainerHelper;
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.state.StateType;
-import dev.tauri.jsg.forgeutil.SlotHandler;
-import dev.tauri.jsg.item.energy.CapacitorItemBlock;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.screen.inventory.JSGContainer;
-import dev.tauri.jsg.screen.inventory.OpenTabHolderInterface;
-import dev.tauri.jsg.util.CreativeItemsChecker;
+import dev.tauri.jsgcore.client.screen.tab.OpenTabHolderInterface;
+import dev.tauri.jsgcore.client.screen.util.ContainerHelper;
+import dev.tauri.jsgcore.common.forgeutil.SlotHandler;
+import dev.tauri.jsgcore.common.menu.JSGContainer;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsgcore.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsgcore.common.registry.CoreStateTypes;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.util.CreativeItemsChecker;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.registry.MenuTypeRegistry;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTMenuTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -40,15 +40,14 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
     private final BlockPos pos;
     public final Inventory playerInventory;
     public boolean hasCreative;
-    private int lastEnergyStored;
-    private int energyTransferedLastTick;
-    private float lastEnergySecondsToClose;
+    private long lastEnergyStored;
+    private long energyTransferedLastTick;
     private int lastProgress;
     protected final List<Integer> openedTabsSlotsIds = new ArrayList<>();
 
     // Server
     public RingsContainer(int containerID, Inventory playerInventory, BlockEntity baseTile) {
-        super(MenuTypeRegistry.RINGS_MENU_TYPE.get(), containerID);
+        super(JSGTMenuTypes.RINGS_MENU_TYPE.get(), containerID);
         this.playerInventory = playerInventory;
         if (!(baseTile instanceof RingsAbstractBE rings)) throw new ClassCastException();
         this.ringsTile = rings;
@@ -73,7 +72,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         }
 
         // Page slots (index 7-9)
-        for (int i = 0; i < AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length; i++) {
+        for (int i = 0; i < SymbolType.values(JSGTSymbolUsages.RINGS.get()).size(); i++) {
             addSlot(new SlotHandler(itemHandler, i + 7, -22, 89 + 22 * i));
         }
 
@@ -96,6 +95,11 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
     }
 
     @Override
+    public boolean stillValid(@NotNull Player pPlayer) {
+        return true;
+    }
+
+    @Override
     public @Nonnull ItemStack quickMoveStack(@Nonnull Player player, int index) {
         ItemStack stack = getSlot(index).getItem();
 
@@ -113,14 +117,14 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         // Transfering from player's inventory to Stargate
         else {
             var openedSlots = getOpenTabsSlotsIds();
-            var biomeSlotId = 7 + AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length;
+            var biomeSlotId = 7 + SymbolType.values(JSGTSymbolUsages.RINGS.get()).size();
             var addressSlots = openedSlots.stream().filter(slot -> (
-                    slot >= 7 && slot <= (6 + AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS).length)
+                    slot >= 7 && slot <= (6 + SymbolType.values(JSGTSymbolUsages.RINGS.get()).size())
                             && ringsTile.getItemHandler().isItemValid(slot, stack) && !getSlot(slot).hasItem()
             )).toList();
 
             // Capacitors
-            if (stack.getItem() instanceof CapacitorItemBlock) {
+            if (stack.is(JSGTItemTags.RINGS_ENERGY_CRYSTALS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
                 for (int i = 4; i < 7; i++) {
                     if (!getSlot(i).hasItem() && getSlot(i).mayPlace(stack)) {
                         ItemStack stack1 = stack.copy();
@@ -196,15 +200,15 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
 
         LargeEnergyStorage energyStorage = (LargeEnergyStorage) ringsTile.getCapability(ForgeCapabilities.ENERGY, null).resolve().orElseThrow();
 
-        if (lastEnergyStored != Objects.requireNonNull(energyStorage).getEnergyStoredInternally()
+        if (lastEnergyStored != Objects.requireNonNull(energyStorage).getTrueEnergyStored()
                 || energyTransferedLastTick != ringsTile.getEnergyTransferredLastTick()
                 || lastProgress != ringsTile.getPageProgress()
 
         ) {
             if (playerInventory.player instanceof ServerPlayer sp)
-                JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateType.GUI_UPDATE, ringsTile.getState(StateType.GUI_UPDATE)), sp);
+                JSGCorePacketHandler.sendTo(new StateUpdatePacketToClient(pos, CoreStateTypes.GUI_UPDATE, ringsTile.getState(CoreStateTypes.GUI_UPDATE.get())), sp);
 
-            lastEnergyStored = energyStorage.getEnergyStoredInternally();
+            lastEnergyStored = energyStorage.getTrueEnergyStored();
             energyTransferedLastTick = ringsTile.getEnergyTransferredLastTick();
             lastProgress = ringsTile.getPageProgress();
         }
@@ -215,7 +219,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
         super.addSlotListener(listener);
 
         if (listener instanceof ServerPlayer)
-            JSGPacketHandler.sendTo(new StateUpdatePacketToClient(pos, StateType.GUI_STATE, ringsTile.getState(StateType.GUI_STATE)), (ServerPlayer) listener);
+            JSGCorePacketHandler.sendTo(new StateUpdatePacketToClient(pos, CoreStateTypes.GUI_STATE, ringsTile.getState(CoreStateTypes.GUI_STATE.get())), (ServerPlayer) listener);
     }
 
     @Override

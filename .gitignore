@@ -37,3 +37,6 @@ builds
 # Common working directory
 run/
 run-data/
+
+# Generated data
+**/src/generated/**

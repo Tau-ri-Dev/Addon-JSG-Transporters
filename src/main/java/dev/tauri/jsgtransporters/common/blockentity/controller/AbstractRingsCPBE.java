@@ -1,23 +1,20 @@
 package dev.tauri.jsgtransporters.common.blockentity.controller;
 
-import dev.tauri.jsg.api.registry.ScheduledTaskType;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.state.State;
-import dev.tauri.jsg.api.state.StateType;
-import dev.tauri.jsg.api.util.ScheduledTask;
-import dev.tauri.jsg.api.util.blockentity.IPreparable;
-import dev.tauri.jsg.api.util.blockentity.ITickable;
-import dev.tauri.jsg.api.util.blockentity.ScheduledTaskExecutorInterface;
-import dev.tauri.jsg.blockentity.util.ILinkable;
-import dev.tauri.jsg.helpers.LinkingHelper;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.StateUpdatePacketToClient;
-import dev.tauri.jsg.sound.JSGSoundHelper;
-import dev.tauri.jsg.state.StateProviderInterface;
+import dev.tauri.jsgcore.common.blockentity.*;
+import dev.tauri.jsgcore.common.entity.ScheduledTask;
+import dev.tauri.jsgcore.common.entity.ScheduledTaskType;
+import dev.tauri.jsgcore.common.entity.State;
+import dev.tauri.jsgcore.common.entity.StateType;
+import dev.tauri.jsgcore.common.helper.LinkingHelper;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.StateUpdatePacketToClient;
+import dev.tauri.jsgcore.common.registry.CoreStateTypes;
+import dev.tauri.jsgcore.common.sound.JSGSoundHelper;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
-import dev.tauri.jsgtransporters.common.registry.RingsScheduledTaskType;
-import dev.tauri.jsgtransporters.common.registry.SoundRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTScheduledTaskTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSoundEvents;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsCPButtonPushedState;
 import dev.tauri.jsgtransporters.common.state.renderer.RingsControlPanelRendererState;
 import net.minecraft.core.BlockPos;
@@ -30,15 +27,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.PacketDistributor;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable<RingsAbstractBE>, ITickable, ScheduledTaskExecutorInterface, StateProviderInterface, IPreparable {
+public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable<RingsAbstractBE>, ITickable, ScheduledTaskExecutorInterface, BEStateProvider, IPreparable {
     public AbstractRingsCPBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
     }
@@ -85,16 +82,16 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
 
     @Override
     public void executeTask(ScheduledTaskType enumScheduledTask, @Nullable CompoundTag compoundTag) {
-        if (Objects.requireNonNull(enumScheduledTask) == RingsScheduledTaskType.RINGS_SYMBOL_DEACTIVATE) {
+        if (Objects.requireNonNull(enumScheduledTask) == JSGTScheduledTaskTypes.RINGS_SYMBOL_DEACTIVATE.get()) {
             busy = false;
             setChanged();
-            sendState(StateType.RENDERER_UPDATE, new RingsCPButtonPushedState(true));
+            sendState(CoreStateTypes.RENDERER_UPDATE.get(), new RingsCPButtonPushedState(true));
         }
     }
 
     @Override
     public State getState(StateType stateTypeEnum) {
-        if (stateTypeEnum == StateType.RENDERER_UPDATE) {
+        if (stateTypeEnum == CoreStateTypes.RENDERER_UPDATE.get()) {
             return new RingsCPButtonPushedState();
         }
         return null;
@@ -102,7 +99,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
 
     @Override
     public State createState(StateType stateTypeEnum) {
-        if (stateTypeEnum == StateType.RENDERER_UPDATE) {
+        if (stateTypeEnum == CoreStateTypes.RENDERER_UPDATE.get()) {
             return new RingsCPButtonPushedState();
         }
         return null;
@@ -111,7 +108,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     @Override
     public void setState(StateType stateTypeEnum, State state) {
         if (level == null) return;
-        if (stateTypeEnum == StateType.RENDERER_UPDATE) {
+        if (stateTypeEnum == CoreStateTypes.RENDERER_UPDATE.get()) {
             var pushState = (RingsCPButtonPushedState) state;
             if (pushState.dim)
                 getRendererStateClient().clearSymbols(level.getGameTime());
@@ -121,12 +118,17 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     }
 
     @Override
+    public PacketDistributor.TargetPoint getTargetPoint() {
+        return targetPoint;
+    }
+
+    @Override
     public void sendState(StateType type, State state) {
         if (Objects.requireNonNull(getLevel()).isClientSide) {
             return;
         }
         if (targetPoint != null) {
-            JSGPacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
+            JSGCorePacketHandler.sendToClient(new StateUpdatePacketToClient(getBlockPos(), type, state), targetPoint);
         } else {
             JSGTransporters.logger.debug("targetPoint as null trying to send {} from {}", this, this.getClass().getCanonicalName());
         }
@@ -179,12 +181,12 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
         var result = getLinkedDevice().addSymbolToAddress(symbol);
         if (result != null && !result.ok() && player != null)
             player.displayClientMessage(result.component(), true);
-        addTask(new ScheduledTask(RingsScheduledTaskType.RINGS_SYMBOL_DEACTIVATE, 10));
+        addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SYMBOL_DEACTIVATE, 10));
         if (symbol.origin())
-            JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_GOAULD_BUTTON_DIAL);
+            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_GOAULD_BUTTON_DIAL);
         else
-            JSGSoundHelper.playSoundEvent(level, getBlockPos(), SoundRegistry.RINGS_GOAULD_BUTTON);
-        sendState(StateType.RENDERER_UPDATE, new RingsCPButtonPushedState(symbol));
+            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_GOAULD_BUTTON);
+        sendState(CoreStateTypes.RENDERER_UPDATE.get(), new RingsCPButtonPushedState(symbol));
     }
 
     private BlockPos linkedPos;
@@ -220,7 +222,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
         var pos = getBlockPos();
         var block = getRingsBlocks();
         if (block == null) return;
-        BlockPos closesRings = LinkingHelper.findClosestUnlinked(level, pos, LinkingHelper.getDhdRange(), block);
+        BlockPos closesRings = LinkingHelper.findClosestUnlinked(level, pos, new BlockPos(25, 15, 25), block);
 
         if (closesRings != null && level.getBlockEntity(closesRings) instanceof RingsAbstractBE be) {
             be.setLinkedDevice(pos);

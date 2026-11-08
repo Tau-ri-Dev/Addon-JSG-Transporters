@@ -1,24 +1,26 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
-import dev.tauri.jsg.api.client.model.IModelLoader;
-import dev.tauri.jsg.api.client.screen.ITab;
-import dev.tauri.jsg.api.client.screen.ITabAddress;
-import dev.tauri.jsg.api.client.texture.ITextureLoader;
-import dev.tauri.jsg.api.pointoforigins.IPointOfOriginType;
-import dev.tauri.jsg.api.pointoforigins.PointOfOrigin;
-import dev.tauri.jsg.api.stargate.network.address.IAddress;
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.util.I18n;
+import dev.tauri.jsgcore.client.model.IModelLoader;
+import dev.tauri.jsgcore.client.screen.tab.ITabAddress;
+import dev.tauri.jsgcore.client.texture.ITextureLoader;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.symbol.SymbolUsage;
+import dev.tauri.jsgcore.common.symbol.address.IAddress;
+import dev.tauri.jsgcore.common.symbol.pointoforigin.IPointOfOriginType;
+import dev.tauri.jsgcore.common.symbol.pointoforigin.PointOfOrigin;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.ClientConstants;
-import dev.tauri.jsgtransporters.common.registry.BlockRegistry;
-import dev.tauri.jsgtransporters.common.registry.ItemRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
+import dev.tauri.jsgtransporters.common.registry.JSGTItems;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import javax.annotation.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -58,8 +60,8 @@ public enum SymbolOriEnum implements SymbolInterface {
 
         this.englishName = englishName;
         this.translationKey = "glyph.jsg_transporters.transportrings.ori." + englishName.toLowerCase().replace(" ", "_");
-        this.iconResource = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
-        this.modelResource = new ResourceLocation(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/button_" + (id + 1) + ".obj");
+        this.iconResource = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/symbol/rings/ori/" + englishName.toLowerCase() + ".png");
+        this.modelResource = JSGMapping.rl(JSGTransporters.MOD_ID, "models/tesr/rings/controller/ori/button_" + (id + 1) + ".obj");
     }
 
     @Override
@@ -103,13 +105,8 @@ public enum SymbolOriEnum implements SymbolInterface {
     }
 
     @Override
-    public String localize() {
-        return I18n.format(translationKey);
-    }
-
-    @Override
-    public AbstractSymbolType<?> getSymbolType() {
-        return SymbolTypeRegistry.ORI;
+    public SymbolType<?> getSymbolType() {
+        return JSGTSymbolTypes.ORI.get();
     }
 
     @Override
@@ -124,7 +121,7 @@ public enum SymbolOriEnum implements SymbolInterface {
             id += (previous ? -1 : 1);
             if (id < 0) id = 15;
             id = id % 16;
-            var symbol = SymbolTypeRegistry.ORI.valueOf(id);
+            var symbol = getSymbolType().valueOf(id);
             if (symbol != null && symbol.isValidForAddress()) return symbol;
         }
     }
@@ -138,7 +135,7 @@ public enum SymbolOriEnum implements SymbolInterface {
     // ------------------------------------------------------------
     // Static
 
-    public static class Provider extends AbstractSymbolType<SymbolOriEnum> {
+    public static class Provider extends SymbolType<SymbolOriEnum> {
         @Override
         public ITextureLoader getTextureLoader() {
             return ClientConstants.LOADERS_HOLDER.texture();
@@ -149,25 +146,15 @@ public enum SymbolOriEnum implements SymbolInterface {
             return ClientConstants.LOADERS_HOLDER.model();
         }
 
-        // used for rings gui - the title (u, v of the texture)
-        @Override
-        public int[] getAncientTitlePos() {
-            return new int[]{330, 18};
-        }
-
-        @Override
-        public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
-            return builder.setTexture(new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
-                    .setBackgroundTextureLocation(176, 0)
-                    .setIconRenderPos(0, 6)
-                    .setIconSize(22, 22)
-                    .setIconTextureLocation(304, 44);
-        }
-
         @Override
         public ITabAddress.SymbolCoords getSymbolCoords(int symbol) {
             // todo: this is copy from mw symbols... make it work when GUI is there
             return new ITabAddress.SymbolCoords(29 + 31 * (symbol % 3), 20 + 28 * (symbol / 3));
+        }
+
+        @Override
+        public SymbolUsage getSymbolUsage() {
+            return JSGTSymbolUsages.RINGS.get();
         }
 
         @Override
@@ -177,22 +164,17 @@ public enum SymbolOriEnum implements SymbolInterface {
 
         @Override
         public Block getBaseBlock() {
-            return BlockRegistry.RINGS_ORI.get();
+            return JSGTBlocks.RINGS_ORI.get();
         }
 
         @Override
         public Item getGlyphUpgrade() {
-            return ItemRegistry.CRYSTAL_GLYPH_ORI.get();
+            return JSGTItems.CRYSTAL_GLYPH_ORI.get();
         }
 
         @Override
         public Block getDHDBlock() {
             return null;
-        }
-
-        @Override
-        public String getId() {
-            return "ori";
         }
 
         @Override
@@ -231,7 +213,7 @@ public enum SymbolOriEnum implements SymbolInterface {
         }
 
         @Override
-        public int getMinimalSymbolCountTo(AbstractSymbolType<?> symbolType, boolean localDial) {
+        public int getMinimalSymbolCountTo(SymbolType<?> symbolType, boolean localDial) {
             return 4;
         }
 

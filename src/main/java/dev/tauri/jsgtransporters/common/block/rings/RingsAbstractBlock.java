@@ -1,12 +1,18 @@
 package dev.tauri.jsgtransporters.common.block.rings;
 
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.item.ITabbedItem;
-import dev.tauri.jsg.block.TickableBEBlock;
-import dev.tauri.jsg.helpers.BlockPosHelper;
-import dev.tauri.jsg.registry.TabRegistry;
+import dev.tauri.jsgcore.common.block.TickableBEBlock;
+import dev.tauri.jsgcore.common.block.util.IItemBlock;
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
+import dev.tauri.jsgcore.common.helper.BlockPosHelper;
+import dev.tauri.jsgcore.common.helper.ItemHandlerHelper;
+import dev.tauri.jsgcore.common.item.ITabbedItem;
+import dev.tauri.jsgcore.common.item.JSGBlockItem;
+import dev.tauri.jsgcore.common.registry.CoreTabs;
+import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
+import dev.tauri.jsgtransporters.common.item.AbstractRingsItem;
+import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -17,6 +23,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -31,14 +38,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.RegistryObject;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
+import java.util.function.Supplier;
 
-public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem {
+public abstract class RingsAbstractBlock extends TickableBEBlock implements ITabbedItem, IItemBlock {
 
     public static final Properties RINGS_BASE_PROPS = Properties.of()
             .strength(2.5f, 30f)
@@ -63,6 +70,10 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if (blockEntity instanceof RingsAbstractBE rings) {
+                if (player.isCreative()) {
+                    var drop = rings.getDropBaseBlock((ServerPlayer) player);
+                    ItemHandlerHelper.spawnItemStack(level, pos, drop);
+                }
                 rings.onBroken();
             }
         }
@@ -115,8 +126,8 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
     }
 
     @Override
-    public List<RegistryObject<CreativeModeTab>> getTabs() {
-        return List.of(dev.tauri.jsgtransporters.common.registry.TabRegistry.TAB_RINGS, TabRegistry.TAB_TRANSPORTATION);
+    public List<Supplier<RegistryObjectWrapper<CreativeModeTab>>> getTabs() {
+        return List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override
@@ -140,6 +151,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         if (level.isClientSide) return;
         BlockEntity e = level.getBlockEntity(blockPos);
         if (e instanceof RingsAbstractBE be) {
+            be.updateContainerItemsByItemStack(itemStack);
             be.updateLinkStatus();
         }
     }
@@ -153,5 +165,10 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
                 rings.updateRedstonePower(pLevel.hasNeighborSignal(pPos));
             }
         }
+    }
+
+    @Override
+    public JSGBlockItem getItemBlock() {
+        return new AbstractRingsItem(this, new Item.Properties(), getTabs());
     }
 }

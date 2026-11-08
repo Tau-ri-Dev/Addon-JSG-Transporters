@@ -1,13 +1,14 @@
 package dev.tauri.jsgtransporters.common.state.renderer;
 
-import dev.tauri.jsg.api.stargate.network.address.symbol.SymbolInterface;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.state.State;
+import dev.tauri.jsgcore.common.entity.State;
+import dev.tauri.jsgcore.common.symbol.SymbolInterface;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class RingsCPButtonPushedState extends State {
     public int symbolId;
-    public int symbolType;
+    public SymbolType<?> symbolType;
     public boolean dim = false;
 
     public RingsCPButtonPushedState() {
@@ -19,24 +20,32 @@ public class RingsCPButtonPushedState extends State {
 
     public RingsCPButtonPushedState(SymbolInterface symbol) {
         symbolId = symbol.getId();
-        symbolType = AbstractSymbolType.getId(symbol.getSymbolType());
+        symbolType = symbol.getSymbolType();
     }
 
     public SymbolInterface getSymbol() {
-        return AbstractSymbolType.byId(symbolType).valueOf(symbolId);
+        return symbolType.valueOf(symbolId);
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
         buf.writeInt(symbolId);
-        buf.writeInt(symbolType);
         buf.writeBoolean(dim);
+        if (symbolType == null)
+            buf.writeBoolean(false);
+        else {
+            buf.writeBoolean(true);
+            buf.writeResourceLocation(symbolType.getId());
+        }
     }
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void fromBytes(ByteBuf buff) {
+        var buf = new FriendlyByteBuf(buff);
         symbolId = buf.readInt();
-        symbolType = buf.readInt();
         dim = buf.readBoolean();
+        if (buf.readBoolean())
+            symbolType = SymbolType.byId(buf.readResourceLocation());
     }
 }

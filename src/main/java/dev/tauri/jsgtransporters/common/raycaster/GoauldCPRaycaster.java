@@ -1,27 +1,26 @@
 package dev.tauri.jsgtransporters.common.raycaster;
 
-import dev.tauri.jsg.api.blockstates.JSGProperties;
-import dev.tauri.jsg.api.raycaster.Raycaster;
-import dev.tauri.jsg.api.raycaster.util.RayCastedButton;
-import dev.tauri.jsg.api.util.vectors.Vector3f;
-import dev.tauri.jsgtransporters.common.block.controller.RingsGoauldCPBlock;
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
+import dev.tauri.jsgcore.common.raycaster.util.RayCastedButton;
+import dev.tauri.jsgcore.common.util.vectors.Vector3f;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
-import dev.tauri.jsgtransporters.common.rings.network.SymbolTypeRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
 
 public class GoauldCPRaycaster extends AbstractCPRaycaster {
-
     public static final GoauldCPRaycaster INSTANCE = new GoauldCPRaycaster();
     public static final List<RayCastedButton> BUTTONS = List.of(
-            new RayCastedButton(0, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(0, JSGTSymbolTypes.GOAULD, List.of(
                     //Amun
                     new Vector3f(0.682055f, -0.974233f, 0.405662f),
                     new Vector3f(0.682092f, -0.974233f, 0.46714f),
@@ -29,7 +28,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.56775f, -0.974233f, 0.405732f)
             )),
 
-            new RayCastedButton(1, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(1, JSGTSymbolTypes.GOAULD, List.of(
                     //Serket
                     new Vector3f(0.429686f, -0.974233f, 0.405662f),
                     new Vector3f(0.429723f, -0.974233f, 0.46714f),
@@ -37,7 +36,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.315381f, -0.974233f, 0.405732f)
             )),
 
-            new RayCastedButton(2, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(2, JSGTSymbolTypes.GOAULD, List.of(
                     //Khepri
                     new Vector3f(0.429686f, -0.974233f, 0.30636f),
                     new Vector3f(0.429723f, -0.974233f, 0.367837f),
@@ -45,7 +44,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.315381f, -0.974233f, 0.30643f)
             )),
 
-            new RayCastedButton(3, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(3, JSGTSymbolTypes.GOAULD, List.of(
                     //Ra
                     new Vector3f(0.682055f, -0.974233f, 0.30636f),
                     new Vector3f(0.682092f, -0.974233f, 0.367837f),
@@ -53,7 +52,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.56775f, -0.974233f, 0.30643f)
             )),
 
-            new RayCastedButton(4, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(4, JSGTSymbolTypes.GOAULD, List.of(
                     //Felluca
                     new Vector3f(0.682055f, -0.974233f, 0.202036f),
                     new Vector3f(0.682092f, -0.974233f, 0.263514f),
@@ -61,7 +60,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
                     new Vector3f(0.56775f, -0.974233f, 0.202106f)
             )),
 
-            new RayCastedButton(5, SymbolTypeRegistry.GOAULD, List.of(
+            new RayCastedButton(5, JSGTSymbolTypes.GOAULD, List.of(
                     //Cobra - Activation Button
                     new Vector3f(0.429686f, -0.974233f, 0.202036f),
                     new Vector3f(0.429723f, -0.974233f, 0.263514f),
@@ -70,10 +69,10 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
             ))
     );
 
-    public static void register() {
-        Raycaster.register(RingsGoauldCPBlock.class, INSTANCE);
+    @Override
+    public boolean testBlockState(BlockState blockState) {
+        return blockState.is(JSGTBlocks.RINGS_CP_GOAULD.get());
     }
-
 
     @Override
     protected List<RayCastedButton> getButtons() {
@@ -112,7 +111,7 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
     @Override
     protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
         player.swing(interactionHand, true);
-        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, SymbolTypeRegistry.GOAULD.valueOf(button), false));
+        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, JSGTSymbolTypes.GOAULD.get().valueOf(button), false));
         return true;
     }
 

@@ -1,28 +1,29 @@
 package dev.tauri.jsgtransporters.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.tauri.jsg.api.client.screen.ITab;
-import dev.tauri.jsg.api.client.screen.TabSideEnum;
-import dev.tauri.jsg.api.client.screen.util.GuiHelper;
-import dev.tauri.jsg.api.config.JSGConfig;
-import dev.tauri.jsg.api.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.api.stargate.network.address.symbol.types.AbstractSymbolType;
-import dev.tauri.jsg.api.util.I18n;
-import dev.tauri.jsg.forgeutil.SlotHandler;
-import dev.tauri.jsg.loader.texture.Texture;
-import dev.tauri.jsg.packet.JSGPacketHandler;
-import dev.tauri.jsg.packet.packets.stargate.SaveConfigToServer;
-import dev.tauri.jsg.screen.element.tabs.Tab;
-import dev.tauri.jsg.screen.element.tabs.TabAddress;
-import dev.tauri.jsg.screen.element.tabs.TabBiomeOverlay;
-import dev.tauri.jsg.screen.element.tabs.TabConfig;
-import dev.tauri.jsg.screen.inventory.TabbedContainerScreen;
+import dev.tauri.jsgcore.client.loader.texture.Texture;
+import dev.tauri.jsgcore.client.screen.tab.ITab;
+import dev.tauri.jsgcore.client.screen.tab.TabSideEnum;
+import dev.tauri.jsgcore.client.screen.tab.TabbedContainerScreen;
+import dev.tauri.jsgcore.client.screen.tab.tabs.Tab;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabAddress;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabBiomeOverlay;
+import dev.tauri.jsgcore.client.screen.tab.tabs.TabConfig;
+import dev.tauri.jsgcore.client.screen.util.GuiHelper;
+import dev.tauri.jsgcore.common.forgeutil.SlotHandler;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.SaveConfigToServer;
+import dev.tauri.jsgcore.common.power.JSGEnergyStorage;
+import dev.tauri.jsgcore.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgcore.common.util.I18n;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.tab.TabTRSettings;
 import dev.tauri.jsgtransporters.common.inventory.RingsContainer;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
 import dev.tauri.jsgtransporters.common.packet.packets.SaveRingsSettingsToServer;
-import dev.tauri.jsgtransporters.common.rings.network.AddressTypeRegistry;
+import dev.tauri.jsgtransporters.common.registry.JSGTSymbolUsages;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -32,23 +33,24 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
-import static dev.tauri.jsg.api.client.screen.util.GuiHelper.*;
+import static dev.tauri.jsgcore.client.screen.util.GuiHelper.*;
 
 public class RingsGui extends TabbedContainerScreen<RingsContainer> {
-    public static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
-    private final Map<AbstractSymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
+    public static final ResourceLocation BACKGROUND_TEXTURE = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container/transport_rings/gui.png");
+    private final Map<SymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;
     private TabConfig configTab;
     private TabBiomeOverlay overlayTab;
     private TabTRSettings ringsSettings;
 
-    private int energyStored;
-    private int maxEnergyStored;
+    private long energyStored;
+    private long energyStoredInternally;
+    private long maxEnergyStored;
 
     public RingsGui(RingsContainer container, Inventory pPlayerInventory, Component pTitle) {
         super(container, pPlayerInventory, pTitle, 176, 173);
@@ -71,7 +73,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     @Override
     protected void initTabs(List<Tab> tabs) {
         int i = 0;
-        for (AbstractSymbolType<?> type : AbstractSymbolType.values(AddressTypeRegistry.RINGS_SYMBOLS)) {
+        for (SymbolType<?> type : SymbolType.values(JSGTSymbolUsages.RINGS.get())) {
             ITab.ITabBuilder tab = TabAddress.builder()
                     .setAddressProvider(menu.ringsTile)
                     .setSymbolType(type)
@@ -82,7 +84,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
                     .setOpenX(-128)
                     .setHiddenX(-6)
                     .setTabSize(128, 113)
-                    .setTabTitle(I18n.format("gui.stargate." + type.getId() + "_address"))
+                    .setTabTitle(I18n.format("gui.transportrings." + type.getId().toString().replace(":", ".") + "_address"))
                     .setTabSide(TabSideEnum.LEFT);
             tab = type.finalizeAddressTab(tab);
             addressTabs.put(type, (TabAddress) ((TabAddress) tab.build()).setMenu(menu));
@@ -107,7 +109,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
                 .setIconTextureLocation(304, 0).build();
 
 
-        overlayTab = createOverlayTab(menu.ringsTile.getSupportedOverlays(), imageWidth, imageHeight, leftPos, topPos);
+        overlayTab = createOverlayTab(imageWidth, imageHeight, leftPos, topPos);
         overlayTab.setMenu(menu);
         configTab.setOnTabClose(this::saveConfig);
 
@@ -138,15 +140,24 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
             drawModalRectWithCustomSizedTexture(leftPos + 151 - 18 * i, topPos + 27, 24, 180, 16, 16, 512, 512);
         }
 
-        for (int i = menu.ringsTile.getPowerTier(); i < 4; i++)
-            drawModalRectWithCustomSizedTexture(leftPos + 10 + 39 * i, topPos + 69, 0, 173, 39, 6, 512, 512);
+        int energyBarMaxWidth = 156;
+        int currentIndex = 3;
+        for (int i = 4; i < 7; i++) {
+            Optional<IEnergyStorage> energyStorage = menu.getSlot(i).getItem().getCapability(ForgeCapabilities.ENERGY, null).resolve();
+            if (energyStorage.isPresent())
+                continue;
+            energyBarMaxWidth -= 39;
+            drawModalRectWithCustomSizedTexture(leftPos + 10 + 39 * currentIndex--, topPos + 69, 0, 173, 39, 6, 512, 512);
+        }
 
-        int width = Math.round((energyStored / (float) JSGConfig.Stargate.stargateEnergyStorage.get() * 156));
+        int width = maxEnergyStored == 0 ? 0 : Math.round((JSGEnergyStorage.getEnergyPercent(energyStored, maxEnergyStored) * energyBarMaxWidth));
+        int widthInternal = maxEnergyStored == 0 ? 0 : Math.round((JSGEnergyStorage.getEnergyPercent(energyStoredInternally, maxEnergyStored) * energyBarMaxWidth));
         drawGradientRect(graphics.pose(), leftPos + 10, topPos + 69, leftPos + 10 + width, topPos + 69 + 6, 0xffcc2828, 0xff731616);
+        drawGradientRect(graphics.pose(), leftPos + 10, topPos + 69 + 3, leftPos + 10 + widthInternal, topPos + 69 + 6, 0xffCDBC29, 0xff707316);
 
         // Draw ancient title
-        int[] pos = menu.ringsTile.getSymbolType().getAncientTitlePos();
-        drawModalRectWithCustomSizedTexture(leftPos + 137, topPos + 4, pos[0], pos[1], 35, 8, 512, 512);
+        /*int[] pos = menu.ringsTile.getSymbolType().getAncientTitlePos();
+        drawModalRectWithCustomSizedTexture(leftPos + 137, topPos + 4, pos[0], pos[1], 35, 8, 512, 512);*/
 
         boolean drawICFirstCable = false;
 
@@ -223,18 +234,19 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         configTab.setVisible(menu.hasCreative);
 
         LargeEnergyStorage energyStorageInternal = (LargeEnergyStorage) menu.ringsTile.getCapability(ForgeCapabilities.ENERGY, null).resolve().orElseThrow();
-        energyStored = energyStorageInternal.getEnergyStoredInternally();
-        maxEnergyStored = energyStorageInternal.getMaxEnergyStoredInternally();
+        energyStorageInternal.clearStorages();
+        energyStoredInternally = energyStorageInternal.getTrueEnergyStored();
 
         for (int i = 4; i < 7; i++) {
             Optional<IEnergyStorage> energyStorage = menu.getSlot(i).getItem().getCapability(ForgeCapabilities.ENERGY, null).resolve();
 
             if (energyStorage.isEmpty())
                 continue;
-
-            energyStored += energyStorage.get().getEnergyStored();
-            maxEnergyStored += energyStorage.get().getMaxEnergyStored();
+            energyStorageInternal.addStorage(energyStorage.get());
         }
+
+        energyStored = energyStorageInternal.getTrueEnergyStored();
+        maxEnergyStored = energyStorageInternal.getTrueMaxEnergyStored();
 
         for (int i = 7; i < 11; i++) {
             Tab.SlotTab slot = ((Tab.SlotTab) menu.getSlot(i)).updatePos();
@@ -252,7 +264,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     @Override
     protected void renderLabels(@Nonnull GuiGraphics graphics, int mouseX, int mouseY) {
         RenderSystem.disableDepthTest();
-        String caps = I18n.format("gui.stargate.capacitors");
+        String caps = I18n.format("gui.transportrings.energy_crystals");
         graphics.drawString(font, caps, this.imageWidth - 8 - font.width(caps), 16, 4210752, false);
 
         String energyPercent = String.format("%.2f", energyStored / (float) maxEnergyStored * 100) + " %";
@@ -263,7 +275,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
 
         renderTabsFg(graphics, mouseX, mouseY);
 
-        int transferred = menu.ringsTile.getEnergyTransferredLastTick();
+        long transferred = menu.ringsTile.getEnergyTransferredLastTick();
         ChatFormatting transferredFormatting = ChatFormatting.GRAY;
         String transferredSign = "";
 
@@ -275,10 +287,10 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
         }
 
         if (isPointInRegion(10, 69, 156, 6, mouseX - getGuiLeft(), mouseY - getGuiTop())) {
-            List<String> power = Arrays.asList(
-                    I18n.format("gui.stargate.energyBuffer"),
-                    ChatFormatting.GRAY + String.format("%,d / %,d RF", energyStored, maxEnergyStored),
-                    transferredFormatting + transferredSign + String.format("%,d RF/t", transferred));
+            List<String> power = new ArrayList<>();
+            power.add(I18n.format("gui.energyBuffer"));
+            power.add(ChatFormatting.GRAY + JSGEnergyStorage.energyToString(energyStored, maxEnergyStored));
+            power.add(transferredFormatting + transferredSign + String.format("%,d FE/t", transferred));
             drawHoveringText(graphics, font, power, mouseX - leftPos, mouseY - topPos);
         }
     }
@@ -291,7 +303,7 @@ public class RingsGui extends TabbedContainerScreen<RingsContainer> {
     }
 
     private void saveConfig() {
-        JSGPacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
+        JSGCorePacketHandler.sendToServer(new SaveConfigToServer(pos, configTab.config));
         menu.ringsTile.setConfig(configTab.getConfig());
     }
 

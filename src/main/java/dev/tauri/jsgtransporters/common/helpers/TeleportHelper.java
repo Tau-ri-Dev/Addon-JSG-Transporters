@@ -1,10 +1,10 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
-import dev.tauri.jsg.helpers.FluidHelper;
+import dev.tauri.jsgcore.common.registry.helper.FluidHelper;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
-import dev.tauri.jsgtransporters.common.registry.TagsRegistry;
+import dev.tauri.jsgtransporters.common.registry.tags.JSGTFluidTags;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,9 +25,9 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import javax.annotation.Nonnull;
 import org.joml.Vector3d;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -163,13 +163,13 @@ public class TeleportHelper {
         FluidState fluidState = oldState.getFluidState();
         if (oldState.getBlock() instanceof LiquidBlock && fluidState.isSource()) {
             // temp
-            JSGTransporters.logger.info("{} {}", fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS), fluidState.getFluidType()); // temp
+            JSGTransporters.logger.info("{} {}", fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS), fluidState.getFluidType()); // temp
             Fluid fluid = fluidState.getType();
             if (fluid instanceof FlowingFluid flowFluid && switch (JSGTConfig.General.ringsFluidTreatmentMode.get()) {
                 case Always -> true;
                 case Never -> false;
-                case ByTag -> fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS);
-                case ExcludeTag -> !fluidState.is(TagsRegistry.TRANSPORTER_FLUIDS);
+                case ByTag -> fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
+                case ExcludeTag -> !fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
             }) {
                 FluidState newState = flowFluid.getFlowing().defaultFluidState().setValue(FlowingFluid.LEVEL, 7);
                 return newState.createLegacyBlock();
@@ -179,8 +179,8 @@ public class TeleportHelper {
                 switch (JSGTConfig.General.ringsFluidTreatmentMode.get()) {
                     case Always -> true;
                     case Never -> false;
-                    case ByTag -> waterState.is(TagsRegistry.TRANSPORTER_FLUIDS);
-                    case ExcludeTag -> !waterState.is(TagsRegistry.TRANSPORTER_FLUIDS);
+                    case ByTag -> waterState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
+                    case ExcludeTag -> !waterState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
                 }) {
             oldState = oldState.setValue(BlockStateProperties.WATERLOGGED, false);
         }
@@ -189,12 +189,14 @@ public class TeleportHelper {
 
     public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, RingsAbstractBE sourceRings, RingsAbstractBE targetRings, ArrayList<BlockToTeleport> pistonHeads) {
         var toPlace = poses.map(pp -> {
-            var localLevel = sourceRings.getLevelNonnull();
-            var remoteLevel = targetRings.getLevelNonnull();
+            var localLevel = sourceRings.getLevel();
+            var remoteLevel = targetRings.getLevel();
+            if (localLevel == null || remoteLevel == null)
+                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
             var local = pp.getKey();
             var remote = pp.getValue();
             var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
-            var remoteBlock = TeleportHelper.applyStateChanges(targetRings.getLevelNonnull().getBlockState(remote));
+            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel.getBlockState(remote));
 
             // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
