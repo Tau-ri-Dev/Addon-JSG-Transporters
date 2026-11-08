@@ -10,7 +10,8 @@ import java.util.Set;
 public class JSGTLootTableProvider {
     public static LootTableProvider create(PackOutput output) {
         return new LootTableProvider(output, Set.of(), List.of(
-                new LootTableProvider.SubProviderEntry(JSGTBlockLootTables::new, LootContextParamSets.BLOCK)
+                new LootTableProvider.SubProviderEntry(JSGTBlockLootTables::new, LootContextParamSets.BLOCK),
+                new LootTableProvider.SubProviderEntry(JSGTChestLootTableProvider::new, LootContextParamSets.CHEST)
         ));
     }
 }
