@@ -18,7 +18,7 @@ public class JSGTDataGenerators {
         var lookupProvider = event.getLookupProvider();
 
 
-        //generator.addProvider(event.includeServer(), new CoreRecipeProvider(output));
+        generator.addProvider(event.includeServer(), new JSGTRecipeProvider(output));
         //generator.addProvider(event.includeServer(), CoreLootTableProvider.create(output));
         //generator.addProvider(event.includeServer(), new CoreWorldgenProvider(output, lookupProvider));
 
