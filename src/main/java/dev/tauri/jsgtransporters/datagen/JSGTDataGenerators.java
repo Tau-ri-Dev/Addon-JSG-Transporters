@@ -23,7 +23,7 @@ public class JSGTDataGenerators {
 
         generator.addProvider(event.includeServer(), new JSGTRecipeProvider(output));
         generator.addProvider(event.includeServer(), JSGTLootTableProvider.create(output));
-        //generator.addProvider(event.includeServer(), new JSGTWorldgenProvider(output, lookupProvider));
+        generator.addProvider(event.includeServer(), new JSGTWorldgenProvider(output, lookupProvider));
 
         generator.addProvider(event.includeClient(), new JSGTBlockStateProvider(output, exFileHelper));
         generator.addProvider(event.includeClient(), new JSGTItemModelProvider(output, exFileHelper));
