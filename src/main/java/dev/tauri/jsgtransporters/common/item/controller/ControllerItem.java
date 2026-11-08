@@ -3,7 +3,6 @@ package dev.tauri.jsgtransporters.common.item.controller;
 import dev.tauri.jsgcore.common.helper.ItemHelper;
 import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgcore.common.registry.CoreTabs;
-import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
