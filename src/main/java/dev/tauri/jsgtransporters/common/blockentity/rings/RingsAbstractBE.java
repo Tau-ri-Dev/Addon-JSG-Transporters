@@ -93,7 +93,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             Item item = stack.getItem();
-            boolean isItemCapacitor = stack.is(JSGTItemTags.RINGS_CAPACITORS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
+            boolean isItemCapacitor = stack.is(JSGTItemTags.RINGS_ENERGY_CRYSTALS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
             return switch (slot) {
                 case 0, 1, 2, 3 ->
                         RingsUpgradeEnum.contains(item) && !hasUpgrade(item) && RingsUpgradeEnum.valueOf(item).slot == slot;
