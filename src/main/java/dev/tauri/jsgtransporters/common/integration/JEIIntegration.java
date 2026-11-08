@@ -2,6 +2,7 @@ package dev.tauri.jsgtransporters.common.integration;
 
 
 import dev.tauri.jsgcore.common.integration.jei.JEIAdvancedGuiHandler;
+import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.client.screen.RingsGui;
 import mezz.jei.api.IModPlugin;
@@ -16,7 +17,7 @@ public final class JEIIntegration implements IModPlugin {
 
     @Override
     public @Nonnull ResourceLocation getPluginUid() {
-        return new ResourceLocation(JSGTransporters.MOD_ID, "jei_plugin");
+        return JSGMapping.rl(JSGTransporters.MOD_ID, "jei_plugin");
     }
 
     @Override
