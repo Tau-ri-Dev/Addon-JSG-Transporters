@@ -41,12 +41,12 @@ public class JSGTLanguageProvider extends CoreLanguageProvider {
         //GUI
         add("gui." + JSGTransporters.MOD_ID + ".rings_name", "Name");
         add("gui." + JSGTransporters.MOD_ID + ".rings_distance", "Distance");
-        add("gui." + JSGTransporters.MOD_ID + ".parameters", "Parameters");
-        add("gui." + JSGTransporters.MOD_ID + ".energy_crystals", "Energy Crystals");
+        add("gui.transportrings.parameters", "Parameters");
+        add("gui.transportrings.energy_crystals", "Energy Crystals");
 
-        add("gui." + JSGTransporters.MOD_ID + "jsgtransporters.goauld_address", "Goa'uld Address");
-        add("gui." + JSGTransporters.MOD_ID + "jsgtransporters.ori_address", "Ori Address");
-        add("gui." + JSGTransporters.MOD_ID + "jsgtransporters.ancient_address", "Ancient Address");
+        add("gui.transportrings." + JSGTransporters.MOD_ID + ".goauld_address", "Goa'uld Address");
+        add("gui.transportrings." + JSGTransporters.MOD_ID + ".ori_address", "Ori Address");
+        add("gui.transportrings." + JSGTransporters.MOD_ID + ".ancient_address", "Ancient Address");
 
         //ACTION BAR MESSAGES
         add("block." + JSGTransporters.MOD_ID + ".rings.message.address_malformed", "Address malformed");
