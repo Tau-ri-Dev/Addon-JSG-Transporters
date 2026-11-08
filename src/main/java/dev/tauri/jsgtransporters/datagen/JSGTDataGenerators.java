@@ -4,6 +4,9 @@ import dev.tauri.jsgcore.datagen.*;
 import dev.tauri.jsgcore.datagen.loot.CoreLootTableProvider;
 import dev.tauri.jsgcore.datagen.tag.*;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.datagen.tags.JSGTBlockTagGenerator;
+import dev.tauri.jsgtransporters.datagen.tags.JSGTFluidTagGenerator;
+import dev.tauri.jsgtransporters.datagen.tags.JSGTItemTagGenerator;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -25,11 +28,11 @@ public class JSGTDataGenerators {
         generator.addProvider(event.includeClient(), new JSGTBlockStateProvider(output, exFileHelper));
         generator.addProvider(event.includeClient(), new JSGTItemModelProvider(output, exFileHelper));
 
-        //var blockTagGenerator = generator.addProvider(event.includeServer(), new CoreBlockTagGenerator(output, lookupProvider, exFileHelper));
-        //generator.addProvider(event.includeServer(), new CoreItemTagGenerator(output, lookupProvider, blockTagGenerator.contentsGetter(), exFileHelper));
+        var blockTagGenerator = generator.addProvider(event.includeServer(), new JSGTBlockTagGenerator(output, lookupProvider, exFileHelper));
+        generator.addProvider(event.includeServer(), new JSGTItemTagGenerator(output, lookupProvider, blockTagGenerator.contentsGetter(), exFileHelper));
 
         //generator.addProvider(event.includeServer(), new CoreBiomeTagGenerator(output, lookupProvider, exFileHelper));
-        //generator.addProvider(event.includeServer(), new CoreFluidTagGenerator(output, lookupProvider, exFileHelper));
+        generator.addProvider(event.includeServer(), new JSGTFluidTagGenerator(output, lookupProvider, exFileHelper));
         //generator.addProvider(event.includeServer(), new CoreStructureTagGenerator(output, lookupProvider, exFileHelper));
         //generator.addProvider(event.includeServer(), new CorePlacedFeatureTagGenerator(output, lookupProvider, exFileHelper));
 
