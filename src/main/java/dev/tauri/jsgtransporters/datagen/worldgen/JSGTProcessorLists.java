@@ -1,8 +1,10 @@
 package dev.tauri.jsgtransporters.datagen.worldgen;
 
 import com.google.common.collect.ImmutableList;
+import dev.tauri.jsgcore.common.definition.material.MaterialType;
 import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
+import dev.tauri.jsgtransporters.common.registry.worldgen.JSGTProcessorList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
@@ -15,13 +17,36 @@ public class JSGTProcessorLists {
     }
 
     public static void bootstrap(BootstapContext<StructureProcessorList> context) {
-        context.register(registerKey("add_cobweb"), new StructureProcessorList(ImmutableList.of(
+        context.register(JSGTProcessorList.PHYSICAL_TREASURE, new StructureProcessorList(ImmutableList.of(
                 new RuleProcessor(ImmutableList.of(
                         new ProcessorRule(
-                                new RandomBlockMatchTest(Blocks.AIR, 0.3f),
+                                new RandomBlockMatchTest(Blocks.RAW_GOLD_BLOCK, 0.5F),
                                 AlwaysTrueTest.INSTANCE,
-                                PosAlwaysTrueTest.INSTANCE,
-                                Blocks.COBWEB.defaultBlockState()
+                                MaterialType.NAQUADAH.getRaw().get().defaultBlockState()
+                        ),
+
+                        new ProcessorRule(
+                                new RandomBlockMatchTest(Blocks.RAW_GOLD_BLOCK, 0.2F),
+                                AlwaysTrueTest.INSTANCE,
+                                MaterialType.NAQUADAH.getStorage().get().defaultBlockState()
+                        ),
+
+                        new ProcessorRule(
+                                new RandomBlockMatchTest(Blocks.RAW_GOLD_BLOCK, 0.1F),
+                                AlwaysTrueTest.INSTANCE,
+                                MaterialType.NAQUADAH_ALLOY.getStorage().get().defaultBlockState()
+                        ),
+
+                        new ProcessorRule(
+                                new RandomBlockMatchTest(Blocks.GOLD_BLOCK, 0.5F),
+                                AlwaysTrueTest.INSTANCE,
+                                MaterialType.NAQUADAH.getStorage().get().defaultBlockState()
+                        ),
+
+                        new ProcessorRule(
+                                new RandomBlockMatchTest(Blocks.GOLD_BLOCK, 0.1F),
+                                AlwaysTrueTest.INSTANCE,
+                                MaterialType.NAQUADAH_ALLOY.getStorage().get().defaultBlockState()
                         )
                 ))
         )));
