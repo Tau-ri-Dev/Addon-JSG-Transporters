@@ -2,19 +2,12 @@ package dev.tauri.jsgtransporters.datagen.worldgen;
 
 import com.google.common.collect.ImmutableList;
 import dev.tauri.jsgcore.common.definition.material.MaterialType;
-import dev.tauri.jsgcore.mapping.JSGMapping;
-import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.registry.worldgen.JSGTProcessorList;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstapContext;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.templatesystem.*;
 
 public class JSGTProcessorLists {
-    public static ResourceKey<StructureProcessorList> registerKey(String name) {
-        return ResourceKey.create(Registries.PROCESSOR_LIST, JSGMapping.rl(JSGTransporters.MOD_ID, name));
-    }
 
     public static void bootstrap(BootstapContext<StructureProcessorList> context) {
         context.register(JSGTProcessorList.PHYSICAL_TREASURE, new StructureProcessorList(ImmutableList.of(
