@@ -913,7 +913,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
                 markIgnoredRecursive(targetRings, teleportedEntity);
             }
 
-            getEnergyStorage().extractEnergy(energyToTransport, false);
+            getEnergyStorage().extractLongEnergy(energyToTransport, false);
         }
 
         if (!outbound || targetRings.level == null) return;
