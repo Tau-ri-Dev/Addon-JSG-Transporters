@@ -427,6 +427,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
     }
 
     public void generateAddresses(boolean reset) {
+        initRingsPos();
         if (reset && ringsPos != null)
             RingsNetwork.INSTANCE.removeRings(ringsPos);
         var level = getLevel();
@@ -506,6 +507,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         if (task == JSGTScheduledTaskTypes.RINGS_START_ANIMATION.get()) {
             if (level == null) return;
             if (level.isClientSide()) return;
+            // TODO: Refactor to use multiple ScheduledTask types
             if (!context.contains("start") && !context.contains("end") && !context.contains("index") && !context.contains("tp") && !context.contains("playEnd")) {
                 context = new CompoundTag();
                 context.putBoolean("start", true);
