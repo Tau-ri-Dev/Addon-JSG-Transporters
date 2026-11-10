@@ -19,7 +19,6 @@ public class JSGTRegistriesInit {
         JSGTRaycasters.init();
         JSGTBlocks.init();
         JSGTItems.init();
-        JSGTTabs.init();
         JSGTBlockEntities.init();
         JSGTMenuTypes.init();
     }

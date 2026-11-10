@@ -151,6 +151,7 @@ public abstract class RingsAbstractBlock extends TickableBEBlock implements ITab
         BlockEntity e = level.getBlockEntity(blockPos);
         if (e instanceof RingsAbstractBE be) {
             be.updateContainerItemsByItemStack(itemStack);
+            be.generateAddresses(false);
             be.updateLinkStatus();
         }
     }
