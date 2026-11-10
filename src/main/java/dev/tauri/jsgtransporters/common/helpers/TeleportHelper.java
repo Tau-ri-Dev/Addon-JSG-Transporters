@@ -34,24 +34,121 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+
 public class TeleportHelper {
-    public static void teleportEntity(Entity entity, RingsPos sourceRings, RingsPos targetRings) {
+    public static Entity teleportEntity(Entity entity, RingsPos sourceRings, RingsPos targetRings) {
         Level world = entity.level();
         ResourceKey<Level> sourceDim = world.dimension();
 
         var offset = entity.position()
                 .subtract(sourceRings.ringsPos.getCenter().add(0, sourceRings.getBlockEntity().getVerticalOffset(), 0));
-        var tPos = targetRings.ringsPos.getCenter().add(0, targetRings.getBlockEntity().getVerticalOffset(), 0).add(offset);
+        var targetPos = targetRings.ringsPos.getCenter()
+                .add(0, targetRings.getBlockEntity().getVerticalOffset(), 0)
+                .add(offset);
 
         if (sourceDim == targetRings.dimension) {
-            setRotationAndPosition(entity, entity.getYHeadRot(), new Vector3d(tPos.x, tPos.y, tPos.z));
+            setRotationAndPosition(entity, entity.getYHeadRot(), new Vector3d(targetPos.x, targetPos.y, targetPos.z));
+            return entity;
         } else {
-            //if (!fireTravelToDimEvent(entity, targetRings.dimension))
-            //    return;
+            // Keep players on the default dimension change path.
+            if (entity instanceof ServerPlayer player) {
+                return player.changeDimension(
+                        Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)),
+                        new RingsTeleporter(new Vector3d(targetPos.x, targetPos.y, targetPos.z), entity.getYRot()));
+            }
 
-            entity.changeDimension(
-                    Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetRings.dimension)),
-                    new RingsTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), entity.getYRot(), null));
+            // Rebuild non-player entity trees manually to preserve mounted passengers across dimensions.
+            return manualTeleportEntityTree(entity, targetRings, new Vector3d(targetPos.x, targetPos.y, targetPos.z));
+        }
+    }
+
+    private static Entity manualTeleportEntityTree(Entity entity, RingsPos targetRings, Vector3d targetPos) {
+        var server = entity.getServer();
+        if (server == null) return null;
+
+        ServerLevel targetLevel = server.getLevel(targetRings.dimension);
+        if (targetLevel == null) return null;
+
+        // Detach passengers before recreating the root entity in the target dimension.
+        var passengers = new ArrayList<>(entity.getPassengers());
+        for (Entity passenger : passengers) {
+            passenger.stopRiding();
+        }
+
+        Entity teleportedRoot = manualTeleportSingle(entity, targetLevel, targetPos);
+        if (teleportedRoot == null) return null;
+
+        // Recreate passengers recursively and attach them back to the teleported root.
+        for (Entity passenger : passengers) {
+            Entity teleportedPassenger = teleportPassenger(passenger, targetRings, targetPos);
+            if (teleportedPassenger != null) {
+                teleportedPassenger.startRiding(teleportedRoot, true);
+            }
+        }
+
+        return teleportedRoot;
+    }
+
+    private static Entity teleportPassenger(Entity passenger, RingsPos targetRings, Vector3d targetPos) {
+        if (passenger instanceof ServerPlayer player) {
+            var server = player.getServer();
+            if (server == null) return null;
+
+            ServerLevel targetLevel = server.getLevel(targetRings.dimension);
+            if (targetLevel == null) return null;
+
+            return player.changeDimension(
+                    targetLevel,
+                    new RingsTeleporter(targetPos, player.getYRot()));
+        }
+
+        return manualTeleportEntityTree(passenger, targetRings, targetPos);
+    }
+
+    private static Entity manualTeleportSingle(Entity entity, ServerLevel targetLevel, Vector3d targetPos) {
+        CompoundTag tag = new CompoundTag();
+        if (!entity.save(tag)) return null;
+
+        // Passengers are rebuilt manually to avoid duplicating nested entity trees.
+        tag.remove("Passengers");
+
+        // Remove UUID data before spawning a new entity instance.
+        stripUuidsRecursive(tag);
+
+        Entity spawnedEntity = EntityType.loadEntityRecursive(tag, targetLevel, loaded -> {
+            loaded.moveTo(targetPos.x, targetPos.y, targetPos.z, entity.getYRot(), entity.getXRot());
+            loaded.setDeltaMovement(entity.getDeltaMovement());
+            loaded.setYHeadRot(entity.getYHeadRot());
+            loaded.fallDistance = 0;
+            return loaded;
+        });
+
+        if (spawnedEntity == null) return null;
+
+        targetLevel.addDuringTeleport(spawnedEntity);
+
+        // Remove only the current source entity. Passengers are handled separately.
+        entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
+
+        return spawnedEntity;
+    }
+
+    private static void stripUuidsRecursive(CompoundTag tag) {
+        tag.remove("UUID");
+        tag.remove("UUIDMost");
+        tag.remove("UUIDLeast");
+
+        if (tag.contains("Passengers", Tag.TAG_LIST)) {
+            ListTag passengers = tag.getList("Passengers", Tag.TAG_COMPOUND);
+            for (int i = 0; i < passengers.size(); i++) {
+                stripUuidsRecursive(passengers.getCompound(i));
+            }
         }
     }
 
