@@ -10,8 +10,11 @@ import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgcore.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -25,6 +28,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -50,6 +54,14 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
                 defaultBlockState().setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.NORTH)
                         .setValue(BlockStateProperties.WATERLOGGED, false)
         );
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    @ParametersAreNonnullByDefault
+    @MethodsReturnNonnullByDefault
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
+        return InteractionResult.CONSUME;
     }
 
     @Override
@@ -166,6 +178,12 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     public @NotNull BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
                                            LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
+            if (!level.isClientSide()) {
+                BlockEntity blockEntity = level.getBlockEntity(currentPos);
+                if (blockEntity instanceof AbstractRingsCPBE cp) {
+                    cp.onBroken();
+                }
+            }
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(currState, updatedFrom, neighborState, level, currentPos, neighborPos);
