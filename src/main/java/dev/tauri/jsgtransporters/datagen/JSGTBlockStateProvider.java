@@ -1,20 +1,18 @@
 package dev.tauri.jsgtransporters.datagen;
 
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgcore.datagen.CoreBlockStateProvider;
 import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
-import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.List;
-import java.util.Map;
 
 public class JSGTBlockStateProvider extends CoreBlockStateProvider {
     public JSGTBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -55,18 +53,20 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
 
         var builder = getVariantBuilder(block);
 
-        Map<Direction, Integer> yRotations = Map.of(
-                Direction.NORTH, 0,
-                Direction.EAST, 90,
-                Direction.SOUTH, 180,
-                Direction.WEST, 270
-        );
+        for (var facing : JSGProperties.FACING_HORIZONTAL_PROPERTY.getPossibleValues()) {
+            var rotationY = switch (facing) {
+                case EAST -> 90;
+                case SOUTH -> 180;
+                case WEST -> 270;
+                default -> 0;
+            };
 
-        yRotations.forEach((direction, yRot) -> builder.partialState()
-                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
-                .setModels(new ConfiguredModel(model, 0, yRot, false)));
+            builder.partialState()
+                    .with(JSGProperties.FACING_HORIZONTAL_PROPERTY, facing)
+                    .addModels(ConfiguredModel.builder().modelFile(model).rotationY(rotationY).build());
 
-        itemModels().withExistingParent(blockName, JSGMapping.rl(modID, "block/" + blockName));
+            itemModels().withExistingParent(blockName, JSGMapping.rl(modID, "block/" + blockName));
+        }
     }
 
     protected void buildCPBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation particlePath) {
@@ -74,16 +74,18 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
 
         var builder = getVariantBuilder(blockObj.get());
 
-        Map<Direction, Integer> yRotations = Map.of(
-                Direction.NORTH, 0,
-                Direction.EAST, 90,
-                Direction.SOUTH, 180,
-                Direction.WEST, 270
-        );
+        for (var facing : JSGProperties.FACING_HORIZONTAL_PROPERTY.getPossibleValues()) {
+            var rotationY = switch (facing) {
+                case EAST -> 90;
+                case SOUTH -> 180;
+                case WEST -> 270;
+                default -> 0;
+            };
 
-        yRotations.forEach((direction, yRot) -> builder.partialState()
-                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
-                .setModels(new ConfiguredModel(model, 0, yRot, false)));
+            builder.partialState()
+                    .with(JSGProperties.FACING_HORIZONTAL_PROPERTY, facing)
+                    .addModels(ConfiguredModel.builder().modelFile(model).rotationY(rotationY).build());
+        }
 
     }
 }
