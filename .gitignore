@@ -40,3 +40,4 @@ run-data/
 
 # Generated data
 **/src/generated/**
+/src/main/resources/META-INF/faststats/**
