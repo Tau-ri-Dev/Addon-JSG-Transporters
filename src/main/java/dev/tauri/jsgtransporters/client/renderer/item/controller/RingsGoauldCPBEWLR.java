@@ -21,11 +21,14 @@ public class RingsGoauldCPBEWLR extends AbstractItemBEWLR {
     public void renderItem(ItemStack itemStack, ItemDisplayContext itemDisplayContext, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay, float partialTick) {
         if (itemDisplayContext == ItemDisplayContext.GUI) {
             stack.mulPose(Axis.ZP.rotationDegrees(-45));
-            stack.translate(-0.7, -0.25, 0);
+            stack.translate(-0.75, -0.25, 0);
         } else if (itemDisplayContext.firstPerson()) {
             stack.translate(-0.5, -0.8, -0.2);
         } else if (itemDisplayContext == ItemDisplayContext.GROUND) {
             stack.translate(-0.5, 0, -1);
+        } else if (itemDisplayContext == ItemDisplayContext.FIXED) {
+            stack.mulPose(Axis.YP.rotationDegrees(180));
+            stack.translate(-1, 0, -1.5);
         } else {
             stack.translate(-0.5, -0.9, -0.2);
         }
