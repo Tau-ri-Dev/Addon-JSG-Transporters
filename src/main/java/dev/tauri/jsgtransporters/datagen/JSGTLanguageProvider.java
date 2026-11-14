@@ -48,6 +48,12 @@ public class JSGTLanguageProvider extends CoreLanguageProvider {
         add("gui.transportrings." + JSGTransporters.MOD_ID + ".ori_address", "Ori Address");
         add("gui.transportrings." + JSGTransporters.MOD_ID + ".ancient_address", "Ancient Address");
 
+        //CONFIG
+        add(JSGTransporters.MOD_ID + ".configuration.section.general", "General");
+        add(JSGTransporters.MOD_ID + ".configuration.section.general.title", "General");
+        add(JSGTransporters.MOD_ID + ".configuration.section.energy", "Energy");
+        add(JSGTransporters.MOD_ID + ".configuration.section.energy.title", "Energy");
+
         //ACTION BAR MESSAGES
         add("block." + JSGTransporters.MOD_ID + ".rings.message.address_malformed", "Address malformed");
         add("block." + JSGTransporters.MOD_ID + ".rings.message.out_of_range", "Target Rings are out of range");
