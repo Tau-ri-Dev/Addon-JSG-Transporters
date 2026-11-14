@@ -58,6 +58,10 @@ public class JSGTLanguageProvider extends CoreLanguageProvider {
         add("block." + JSGTransporters.MOD_ID + ".rings.message.obstructed", "Rings are obstructed");
         add("block." + JSGTransporters.MOD_ID + ".rings.message.obstructed_target", "Target rings are obstructed");
 
+        //Config
+        add("gui." +  JSGTransporters.MOD_ID + ".config", "JSG Transporters Configuration");
+        add("gui." + JSGTransporters.MOD_ID + ".config_child.general", "General");
+        add("gui." + JSGTransporters.MOD_ID + ".config_child.energy", "Energy");
 
         //Subtitles
         addAllSubtitles(JSGTSoundEvents.class);
