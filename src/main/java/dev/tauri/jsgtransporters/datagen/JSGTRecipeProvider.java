@@ -13,9 +13,11 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.concurrent.CompletableFuture;
@@ -135,11 +137,11 @@ public class JSGTRecipeProvider extends CoreRecipeProvider {
                 .pattern("WPW")
                 .pattern("GGG")
                 .pattern("WPW")
-                .define('W', Tags.Items.GLASS_PANES_WHITE)
-                .define('P', Tags.Items.GLASS_PANES_PURPLE)
+                .define('W', IntersectionIngredient.of(Ingredient.of(Tags.Items.GLASS_PANES), Ingredient.of(Tags.Items.DYED_WHITE)))
+                .define('P', IntersectionIngredient.of(Ingredient.of(Tags.Items.GLASS_PANES), Ingredient.of(Tags.Items.DYED_PURPLE)))
                 .define('G', CrystalType.WHITE.forgeTags().gemsSmall())
-                .unlockedBy("has_white_pane", has(Tags.Items.GLASS_PANES_WHITE))
-                .unlockedBy("has_purple_pane", has(Tags.Items.GLASS_PANES_PURPLE))
+                .unlockedBy("has_white_pane", has(Items.WHITE_STAINED_GLASS_PANE))
+                .unlockedBy("has_purple_pane", has(Items.PURPLE_STAINED_GLASS_PANE))
                 .unlockedBy("has_white_small_crystal", has(CrystalType.WHITE.forgeTags().gemsSmall()))
                 .save(pWriter);
 
@@ -148,11 +150,11 @@ public class JSGTRecipeProvider extends CoreRecipeProvider {
                 .pattern("W W")
                 .pattern("GWG")
                 .pattern("WBW")
-                .define('W', Tags.Items.GLASS_PANES_WHITE)
-                .define('B', Tags.Items.GLASS_PANES_LIGHT_BLUE)
+                .define('W', IntersectionIngredient.of(Ingredient.of(Tags.Items.GLASS_PANES), Ingredient.of(Tags.Items.DYED_WHITE)))
+                .define('B', IntersectionIngredient.of(Ingredient.of(Tags.Items.GLASS_PANES), Ingredient.of(Tags.Items.DYED_LIGHT_BLUE)))
                 .define('G', CrystalType.BLUE.forgeTags().gemsSmall())
-                .unlockedBy("has_white_pane", has(Tags.Items.GLASS_PANES_WHITE))
-                .unlockedBy("has_light_blue_pane", has(Tags.Items.GLASS_PANES_LIGHT_BLUE))
+                .unlockedBy("has_white_pane", has(Items.WHITE_STAINED_GLASS_PANE))
+                .unlockedBy("has_light_blue_pane", has(Items.LIGHT_BLUE_STAINED_GLASS_PANE))
                 .unlockedBy("has_blue_small_crystal", has(CrystalType.BLUE.forgeTags().gemsSmall()))
                 .save(pWriter);
 
@@ -262,12 +264,12 @@ public class JSGTRecipeProvider extends CoreRecipeProvider {
                 .pattern("SSS")
                 .pattern("SBS")
                 .pattern("NGC")
-                .define('S', Tags.Items.STONE)
+                .define('S', Tags.Items.STONES)
                 .define('B', JSGTItems.ANCIENT_BUTTONS.get())
                 .define('N', CoreItems.CIRCUIT_CONTROL_NAQUADAH.get())
                 .define('G', CrystalType.WHITE.forgeTags().gemsSmall())
                 .define('C', CoreItems.CIRCUIT_CONTROL_CRYSTAL.get())
-                .unlockedBy("has_stone", has(Tags.Items.STONE))
+                .unlockedBy("has_stone", has(Tags.Items.STONES))
                 .unlockedBy("has_buttons", has(JSGTItems.ANCIENT_BUTTONS.get()))
                 .unlockedBy("has_control_naquadah", has(CoreItems.CIRCUIT_CONTROL_NAQUADAH.get()))
                 .unlockedBy("has_small_white_crystal", has(CrystalType.WHITE.forgeTags().gemsSmall()))
