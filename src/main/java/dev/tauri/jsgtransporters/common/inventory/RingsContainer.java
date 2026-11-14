@@ -123,7 +123,7 @@ public class RingsContainer extends JSGContainer implements OpenTabHolderInterfa
             )).toList();
 
             // Capacitors
-            if (stack.is(JSGTItemTags.RINGS_CAPACITORS) && stack.getCapability(Capabilities.EnergyStorage.ITEM) != null) {
+            if (stack.is(JSGTItemTags.RINGS_ENERGY_CRYSTALS) && stack.getCapability(Capabilities.EnergyStorage.ITEM) != null) {
                 for (int i = 4; i < 7; i++) {
                     if (!getSlot(i).hasItem() && getSlot(i).mayPlace(stack)) {
                         ItemStack stack1 = stack.copy();

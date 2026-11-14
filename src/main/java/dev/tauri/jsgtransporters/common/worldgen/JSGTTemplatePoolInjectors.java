@@ -1,15 +1,32 @@
 package dev.tauri.jsgtransporters.common.worldgen;
 
+import dev.tauri.jsgcore.common.worldgen.TemplatePoolInjector;
+import dev.tauri.jsgcore.mapping.JSGMapping;
+
 public class JSGTTemplatePoolInjectors {
     public static void register() {
-        /*TemplatePoolInjector.Builder.forTargets(JSGMapping.rl("jsg", "abydos/main_pyramid/gateroom_ring_sections"))
-                .add(new TemplatePoolInjector.ElementAddition(JSGMapping.rl(JSGTransporters.MOD_ID, "abydos/main_pyramid/gateroom_rings_section"), 1, false))
+        TemplatePoolInjector.Builder
+                .forTargets(JSGMapping.rl("jsg:abydos/main_pyramid/gateroom_ring_panels"))
                 .clearPoolFirst()
+                .add(new TemplatePoolInjector.PoolAddition(JSGMapping.rl("jsg_transporters:abydos/main_pyramid/gateroom_ring_panels")))
                 .submit();
 
-        TemplatePoolInjector.Builder.forTargets(JSGMapping.rl("jsg", "abydos/main_pyramid/tops"))
-                .add(new TemplatePoolInjector.ElementAddition(JSGMapping.rl(JSGTransporters.MOD_ID, "abydos/main_pyramid/top"), 1, false))
+        TemplatePoolInjector.Builder
+                .forTargets(JSGMapping.rl("jsg:abydos/main_pyramid/gateroom_rings"))
                 .clearPoolFirst()
-                .submit();*/
+                .add(new TemplatePoolInjector.PoolAddition(JSGMapping.rl("jsg_transporters:abydos/main_pyramid/gateroom_rings")))
+                .submit();
+
+        TemplatePoolInjector.Builder
+                .forTargets(JSGMapping.rl("jsg:abydos/main_pyramid/ring_ceiling_covers"))
+                .clearPoolFirst()
+                .add(new TemplatePoolInjector.PoolAddition(JSGMapping.rl("jsg_transporters:abydos/main_pyramid/ring_ceiling_covers")))
+                .submit();
+
+        TemplatePoolInjector.Builder
+                .forTargets(JSGMapping.rl("jsg:abydos/main_pyramid/tops"))
+                .clearPoolFirst()
+                .add(new TemplatePoolInjector.PoolAddition(JSGMapping.rl("jsg_transporters:abydos/main_pyramid/tops")))
+                .submit();
     }
 }

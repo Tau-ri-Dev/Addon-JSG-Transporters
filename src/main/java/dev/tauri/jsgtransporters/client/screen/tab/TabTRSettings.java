@@ -75,11 +75,13 @@ public class TabTRSettings extends Tab {
 
     @Override
     public boolean keyTyped(char typedChar, int keyCode) {
-        if (nameTextField.keyPressed(typedChar, keyCode, 0)) {
+        if (nameTextField.isFocused()) {
+            nameTextField.keyPressed(typedChar, keyCode, 0);
             keyTyped = true;
             return true;
         }
-        if (distanceTextField.keyPressed(typedChar, keyCode, 0)) {
+        if (distanceTextField.isFocused()) {
+            distanceTextField.keyPressed(typedChar, keyCode, 0);
             keyTyped = true;
             return true;
         }

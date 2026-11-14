@@ -16,12 +16,26 @@ import net.minecraft.world.item.ItemStack;
 public class RingsOriCPBEWLR extends AbstractItemBEWLR {
     public static final ResourceLocation SYMBOLS_TEX = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/tesr/rings/controller/ori/button_0.png");
 
-    // TODO(Mine): Fix transforms
     @Override
     public void renderItem(ItemStack itemStack, ItemDisplayContext itemDisplayContext, PoseStack stack, MultiBufferSource bufferSource, int light, int overlay, float partialTick) {
-        stack.translate(0, 0.5, 0);
-        stack.scale(3, 3, 3);
         stack.mulPose(Axis.YP.rotationDegrees(180));
+        if (itemDisplayContext == ItemDisplayContext.GUI) {
+            stack.translate(0.03, 0.5, 0);
+            stack.scale(1.7f, 1.7f, 1.7f);
+        } else if (itemDisplayContext.firstPerson()) {
+            stack.translate(0, -0.2, -0.6);
+        } else if (itemDisplayContext == ItemDisplayContext.GROUND) {
+            //stack.translate(-0.5, 0, -1);
+            stack.scale(1.7f, 1.7f, 1.7f);
+        } else if (itemDisplayContext == ItemDisplayContext.FIXED) {
+            stack.mulPose(Axis.YP.rotationDegrees(180));
+            stack.translate(0.5, 0.6, 0.5);
+            stack.scale(1.7f, 1.7f, 1.7f);
+        } else {
+            stack.translate(0, -0.6, -0.7);
+            stack.scale(1.7f, 1.7f, 1.7f);
+        }
+
         ModelsHolder.RINGS_CONTROLLER_ORI_BASE.bindTexture().render(stack, bufferSource, light);
 
         for (var symbol : SymbolOriEnum.values()) {

@@ -10,9 +10,11 @@ import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgcore.common.util.JSGAxisAlignedBB;
 import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE;
-import dev.tauri.jsgtransporters.common.registry.JSGTTabs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -26,6 +28,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -55,6 +58,20 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     @ParametersAreNonnullByDefault
+    @Nonnull
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    @Nonnull
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
     public @Nonnull BlockState rotate(BlockState blockState, Rotation rotation) {
         return blockState.setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, BlockPosHelper.rotateDir(blockState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY), rotation));
     }
@@ -67,7 +84,7 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
 
     @Override
     public List<Supplier<RegistryObjectWrapper<CreativeModeTab>>> getTabs() {
-        return List.of(() -> JSGTTabs.TAB_RINGS, CoreTabs.TAB_TRANSPORTATION);
+        return List.of(CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override
@@ -163,6 +180,12 @@ public abstract class AbstractRingsCPBlock extends TickableBEBlock implements IT
     public @NotNull BlockState updateShape(BlockState currState, Direction updatedFrom, BlockState neighborState,
                                            LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
         if (updatedFrom == currState.getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY).getOpposite() && !canSurvive(currState, level, currentPos)) {
+            if (!level.isClientSide()) {
+                BlockEntity blockEntity = level.getBlockEntity(currentPos);
+                if (blockEntity instanceof AbstractRingsCPBE cp) {
+                    cp.onBroken();
+                }
+            }
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(currState, updatedFrom, neighborState, level, currentPos, neighborPos);

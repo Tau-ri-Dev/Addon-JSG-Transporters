@@ -65,13 +65,13 @@ public class TeleportHelper {
         FluidState fluidState = oldState.getFluidState();
         if (oldState.getBlock() instanceof LiquidBlock && fluidState.isSource()) {
             // temp
-            JSGTransporters.logger.info("{} {}", fluidState.is(JSGTFluidTags.TRANSPORTER_FLUIDS), fluidState.getFluidType()); // temp
+            JSGTransporters.logger.info("{} {}", fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS), fluidState.getFluidType()); // temp
             Fluid fluid = fluidState.getType();
             if (fluid instanceof FlowingFluid flowFluid && switch (JSGTConfig.General.ringsFluidTreatmentMode.get()) {
                 case Always -> true;
                 case Never -> false;
-                case ByTag -> fluidState.is(JSGTFluidTags.TRANSPORTER_FLUIDS);
-                case ExcludeTag -> !fluidState.is(JSGTFluidTags.TRANSPORTER_FLUIDS);
+                case ByTag -> fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
+                case ExcludeTag -> !fluidState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
             }) {
                 FluidState newState = flowFluid.getFlowing().defaultFluidState().setValue(FlowingFluid.LEVEL, 7);
                 return newState.createLegacyBlock();
@@ -81,8 +81,8 @@ public class TeleportHelper {
                 switch (JSGTConfig.General.ringsFluidTreatmentMode.get()) {
                     case Always -> true;
                     case Never -> false;
-                    case ByTag -> waterState.is(JSGTFluidTags.TRANSPORTER_FLUIDS);
-                    case ExcludeTag -> !waterState.is(JSGTFluidTags.TRANSPORTER_FLUIDS);
+                    case ByTag -> waterState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
+                    case ExcludeTag -> !waterState.is(JSGTFluidTags.PERMANENT_TRANSPORT_FLUIDS);
                 }) {
             oldState = oldState.setValue(BlockStateProperties.WATERLOGGED, false);
         }

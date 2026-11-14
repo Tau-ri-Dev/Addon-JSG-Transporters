@@ -139,15 +139,6 @@ public enum SymbolAncientEnum implements SymbolInterface {
         }
 
         @Override
-        public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
-            return builder.setTexture(JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
-                    .setBackgroundTextureLocation(176, 0)
-                    .setIconRenderPos(0, 6)
-                    .setIconSize(22, 22)
-                    .setIconTextureLocation(304, 66);
-        }
-
-        @Override
         public TabAddress.SymbolCoords getSymbolCoords(int symbol) {
             // todo: this is copy from mw symbols... make it work when GUI is there
             return new TabAddress.SymbolCoords(29 + 31 * (symbol % 3), 20 + 28 * (symbol / 3));

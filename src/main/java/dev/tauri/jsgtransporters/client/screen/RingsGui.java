@@ -43,7 +43,7 @@ import java.util.Map;
 import static dev.tauri.jsgcore.client.screen.util.GuiHelper.*;
 
 public class RingsGui extends TabbedContainerScreen<RingsContainer> {
-    public static final ResourceLocation BACKGROUND_TEXTURE = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png");
+    public static final ResourceLocation BACKGROUND_TEXTURE = JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container/transport_rings/gui.png");
     private final Map<SymbolType<?>, TabAddress> addressTabs = new LinkedHashMap<>();
 
     private final BlockPos pos;

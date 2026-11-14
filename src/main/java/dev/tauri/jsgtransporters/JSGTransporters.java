@@ -63,6 +63,7 @@ public class JSGTransporters implements JSGAddon {
         Integrations.CCT.addOnLoad(CCDevicesRegistry::load);
 
         JSGAddons.registerAddon(this);
+        JSGTMetrics.load();
     }
 
     @SubscribeEvent

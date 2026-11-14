@@ -1,7 +1,6 @@
 package dev.tauri.jsgtransporters.common.rings.network;
 
 import dev.tauri.jsgcore.client.model.IModelLoader;
-import dev.tauri.jsgcore.client.screen.tab.ITab;
 import dev.tauri.jsgcore.client.screen.tab.ITabAddress;
 import dev.tauri.jsgcore.client.texture.ITextureLoader;
 import dev.tauri.jsgcore.common.symbol.SymbolInterface;
@@ -145,15 +144,6 @@ public enum SymbolOriEnum implements SymbolInterface {
         @Override
         public IModelLoader getModelLoader() {
             return ClientConstants.LOADERS_HOLDER.model();
-        }
-
-        @Override
-        public ITab.ITabBuilder finalizeAddressTab(ITab.ITabBuilder builder) {
-            return builder.setTexture(JSGMapping.rl(JSGTransporters.MOD_ID, "textures/gui/container_transportrings.png"), 512)
-                    .setBackgroundTextureLocation(176, 0)
-                    .setIconRenderPos(0, 6)
-                    .setIconSize(22, 22)
-                    .setIconTextureLocation(304, 44);
         }
 
         @Override
