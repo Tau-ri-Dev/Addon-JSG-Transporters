@@ -262,7 +262,7 @@ public class TeleportHelper {
         }
 
         BlockPos getShape() {
-            return frontRightBottom.subtract(backLeftTop);
+            return backLeftTop.subtract(frontRightBottom);
         }
     }
 
