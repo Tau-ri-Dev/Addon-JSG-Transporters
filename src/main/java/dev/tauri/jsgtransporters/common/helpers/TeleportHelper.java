@@ -199,7 +199,7 @@ public class TeleportHelper {
         });
     }
 
-    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, Level localLevel, Level remoteLevel, Quaternionf abRotOffset, Quaternionf baRotOffset, ArrayList<BlockToTeleport> pistonHeads) {
+    public static void teleportBlocks(@Nonnull Stream<Map.Entry<BlockPos, BlockPos>> poses,@Nonnull Level localLevel,@Nonnull  Level remoteLevel, @Nonnull Quaternionf abRotOffset, @Nonnull Quaternionf baRotOffset, @Nonnull ArrayList<BlockToTeleport> pistonHeads) {
         var toPlace = poses.map(pp -> {
             if (localLevel == null || remoteLevel == null)
                 return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
@@ -256,6 +256,7 @@ public class TeleportHelper {
             pp.getKey().placeOrAdd(pistonHeads);
             pp.getValue().placeOrAdd(pistonHeads);
         });
+        pistonHeads.forEach(p -> p.placeOrAdd(null));
     }
 
     public static void rotateAndSwapVolumes(Volume a, Volume b) {
@@ -311,7 +312,7 @@ public class TeleportHelper {
         }
     }
 
-    public record Volume(Level level, BlockPos backLeftTop, BlockPos frontRightBottom, Direction facing) {
+    public record Volume(@Nonnull Level level, @Nonnull BlockPos backLeftTop, @Nonnull BlockPos frontRightBottom,@Nonnull Direction facing) {
 
         public Volume {
             if (facing.getAxis() == Axis.Y)
@@ -338,19 +339,24 @@ public class TeleportHelper {
                         "Volume corners do not match facing direction: back-left-top must be behind and left of front-right-bottom");
         }
 
+        @SuppressWarnings("null")
+        @Nonnull 
         Quaternionf getRotOffset(Volume other) {
             return new Quaternionf().rotateY(Mth.wrapDegrees(facing().toYRot()- other.facing().toYRot())*Mth.DEG_TO_RAD);
         }
 
+        @SuppressWarnings("null")
+        @Nonnull
         BlockPos getShape() {
             return backLeftTop.subtract(frontRightBottom);
         }
 
+        @Nonnull 
         BlockPos getShapeSize() {
             final BlockPos size = new BlockPos(Math.abs(getShape().getX()), Math.abs(getShape().getY()), Math.abs(getShape().getZ()));
             return size;
         }
-
+        @Nonnull
         BlockPos getRotatedShapeSize(Quaternionf rotOffset) {
             return new BlockPos(Math.abs(RotationUtil.rotate(getShape(), rotOffset).getX()), Math.abs(RotationUtil.rotate(getShape(), rotOffset).getY()), Math.abs(RotationUtil.rotate(getShape(), rotOffset).getZ()));
         }
