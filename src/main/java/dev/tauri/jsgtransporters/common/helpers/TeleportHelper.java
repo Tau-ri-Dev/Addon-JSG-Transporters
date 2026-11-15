@@ -6,7 +6,6 @@ import dev.tauri.jsg.core.common.util.RotationUtil;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
-import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.BlockToTeleport;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTBlockTags;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTFluidTags;
 import dev.tauri.jsgtransporters.common.rings.network.RingsPos;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirectionalBlock;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.piston.PistonBaseBlock;
 import net.minecraft.world.level.block.piston.PistonHeadBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,8 +31,6 @@ import net.minecraft.world.level.block.state.properties.PistonType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import org.joml.Quaternionf;
@@ -87,8 +85,29 @@ public class TeleportHelper {
         return Mth.wrapDegrees(yaw - rotationDegrees);
     }
 
+    private static Rotation toBlockRotation(Quaternionf rotOffset) {
+        float rotationDegrees = Mth.wrapDegrees(
+                (float) Math.toDegrees(2.0 * Math.atan2(rotOffset.y(), rotOffset.w())));
+        int quarterTurns = Math.round(rotationDegrees / 90.0f);
+        if (Math.abs(rotationDegrees - quarterTurns * 90.0f) > 0.001f)
+            throw new IllegalArgumentException("Block rotation must be a multiple of 90 degrees: " + rotationDegrees);
+
+        return switch (quarterTurns) {
+            case -2, 2 -> Rotation.CLOCKWISE_180;
+            case -1 -> Rotation.CLOCKWISE_90;
+            case 0 -> Rotation.NONE;
+            case 1 -> Rotation.COUNTERCLOCKWISE_90;
+            default -> throw new IllegalArgumentException("Unsupported block rotation: " + rotationDegrees);
+        };
+    }
+
     @Nonnull
-    public static BlockState applyStateChanges(BlockState oldState) {
+    public static BlockState applyStateChanges(Level level, BlockPos pos, BlockState oldState) {
+        return applyStateChanges(level, pos, oldState, new Quaternionf());
+    }
+
+    @Nonnull
+    public static BlockState applyStateChanges(Level level, BlockPos pos, BlockState oldState, Quaternionf rotOffset) {
         final FluidState waterState = Blocks.WATER.defaultBlockState().getFluidState();
         FluidState fluidState = oldState.getFluidState();
         if (oldState.getBlock() instanceof LiquidBlock && fluidState.isSource()) {
@@ -114,7 +133,7 @@ public class TeleportHelper {
                 }) {
             oldState = oldState.setValue(BlockStateProperties.WATERLOGGED, false);
         }
-        return oldState;
+        return oldState.rotate(level, pos, toBlockRotation(rotOffset));
     }
 
     public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, RingsAbstractBE sourceRings,
@@ -126,8 +145,8 @@ public class TeleportHelper {
                 return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
             var local = pp.getKey();
             var remote = pp.getValue();
-            var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
-            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel.getBlockState(remote));
+            var localBlock = TeleportHelper.applyStateChanges(localLevel, local, localLevel.getBlockState(local));
+            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel, remote, remoteLevel.getBlockState(remote));
 
             // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
@@ -180,14 +199,14 @@ public class TeleportHelper {
         });
     }
 
-    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, Level localLevel, Level remoteLevel, ArrayList<BlockToTeleport> pistonHeads) {
+    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, Level localLevel, Level remoteLevel, Quaternionf abRotOffset, Quaternionf baRotOffset, ArrayList<BlockToTeleport> pistonHeads) {
         var toPlace = poses.map(pp -> {
             if (localLevel == null || remoteLevel == null)
                 return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
             var local = pp.getKey();
             var remote = pp.getValue();
-            var localBlock = TeleportHelper.applyStateChanges(localLevel.getBlockState(local));
-            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel.getBlockState(remote));
+            var localBlock = TeleportHelper.applyStateChanges(localLevel, local, localLevel.getBlockState(local), abRotOffset);
+            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel, remote, remoteLevel.getBlockState(remote), baRotOffset);
 
             // map blocks
             var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
@@ -240,33 +259,34 @@ public class TeleportHelper {
     }
 
     public static void rotateAndSwapVolumes(Volume a, Volume b) {
-        Quaternionf rotOffset = a.getRotOffset(b);
-        if (!a.getShapeSize().equals(b.getRotatedShapeSize(rotOffset))) {
-            throw new IllegalArgumentException("Volumes shapes do not match after rotation A: %s, B: %s, Rotated B by %s: %s".formatted(a.getShapeSize(), b.getShapeSize(), rotOffset, b.getRotatedShapeSize(rotOffset)));
+        Quaternionf abRotOffset = a.getRotOffset(b);
+        Quaternionf baRotOffset = b.getRotOffset(a);
+        if (!a.getShapeSize().equals(b.getRotatedShapeSize(abRotOffset))) {
+            throw new IllegalArgumentException("Volumes shapes do not match after rotation A: %s, B: %s, Rotated B by %s: %s".formatted(a.getShapeSize(), b.getShapeSize(), abRotOffset, b.getRotatedShapeSize(abRotOffset)));
         }
         //TODO implement block rotation on teleport
         Stream<BlockPos> poses = StreamSupport.stream(BlockPos.betweenClosed(new BlockPos(0, 0, 0), a.getShape()).spliterator(), false);
 
         Stream<Map.Entry<BlockPos, BlockPos>> filteredPoses = poses.map(BlockPos::immutable)
-                .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, rotOffset))))
+                .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, abRotOffset))))
                 .filter(pp -> !a.level().getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !b.level().getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
-        TeleportHelper.teleportBlocks(filteredPoses, a.level(), b.level(), new ArrayList<>());
-        rotateAndSwapVolumeEntities(a, b);
+        TeleportHelper.teleportBlocks(filteredPoses, a.level(), b.level(), abRotOffset, baRotOffset, new ArrayList<>());
+        rotateAndSwapVolumeEntities(a, b, abRotOffset, baRotOffset);
     }
 
-    public static void rotateAndSwapVolumeEntities(Volume a, Volume b) {
+    public static void rotateAndSwapVolumeEntities(Volume a, Volume b, Quaternionf abRotOffset, Quaternionf baRotOffset) {
         var entitiesInA = a.level().getEntities(null, new JSGAxisAlignedBB(a.backLeftTop().getCenter(), a.frontRightBottom().getCenter()).grow(0.5, 0.5, 0.5));
         var entitiesInB = b.level().getEntities(null, new JSGAxisAlignedBB(b.backLeftTop().getCenter(), b.frontRightBottom().getCenter()).grow(0.5, 0.5, 0.5));
         for (var e : entitiesInA) {
             // var energyToTransport = energyToOperate.getEnergyForTransport(e);
             // if (getEnergyStored() < energyToTransport) continue;
-            TeleportHelper.teleportEntityByVolume(e, a, b, a.getRotOffset(b));
+            TeleportHelper.teleportEntityByVolume(e, a, b, abRotOffset);
             // getEnergyStorage().extractLongEnergy(energyToTransport, false);
         }
         for (var e : entitiesInB) {
             // var energyToTransport = energyToOperate.getEnergyForTransport(e);
             // if (getEnergyStored() < energyToTransport) continue;
-            TeleportHelper.teleportEntityByVolume(e, b, a, b.getRotOffset(a));
+            TeleportHelper.teleportEntityByVolume(e, b, a, baRotOffset);
             // getEnergyStorage().extractLongEnergy(energyToTransport, false);
         }
     }
