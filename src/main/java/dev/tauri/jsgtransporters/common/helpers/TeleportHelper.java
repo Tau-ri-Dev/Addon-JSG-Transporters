@@ -1,8 +1,8 @@
 package dev.tauri.jsgtransporters.common.helpers;
 
-import dev.tauri.jsg.core.common.registry.helper.FluidHelper;
-import dev.tauri.jsg.core.common.util.JSGAxisAlignedBB;
-import dev.tauri.jsg.core.common.util.RotationUtil;
+import dev.tauri.jsgcore.common.registry.helper.FluidHelper;
+import dev.tauri.jsgcore.common.util.JSGAxisAlignedBB;
+import dev.tauri.jsgcore.common.util.RotationUtil;
 import dev.tauri.jsgtransporters.JSGTransporters;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAbstractBE;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
