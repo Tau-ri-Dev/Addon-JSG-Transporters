@@ -37,8 +37,8 @@ body:
       description: >
         Does the bug still occur when only JSGCore and the JSG transporters module are present
       options:
-        - Yes
-        - No
+        - 'Yes'
+        - 'No'
         - Unknown
     validations:
       required: true
