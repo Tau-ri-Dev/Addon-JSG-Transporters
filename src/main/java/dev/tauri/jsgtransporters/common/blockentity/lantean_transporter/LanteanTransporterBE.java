@@ -8,17 +8,17 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import dev.tauri.jsg.core.common.power.general.LargeEnergyStorage;
-import dev.tauri.jsg.core.common.registry.CoreStateTypes;
-import dev.tauri.jsg.core.common.entity.State;
-import dev.tauri.jsg.core.common.entity.StateType;
-import dev.tauri.jsg.core.common.packet.JSGCorePacketHandler;
-import dev.tauri.jsg.core.common.packet.packets.StateUpdateRequestToServer;
-import dev.tauri.jsg.core.common.util.JSGItemStackHandler;
+import dev.tauri.jsgcore.common.power.general.LargeEnergyStorage;
+import dev.tauri.jsgcore.common.registry.CoreStateTypes;
+import dev.tauri.jsgcore.common.entity.State;
+import dev.tauri.jsgcore.common.entity.StateType;
+import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
+import dev.tauri.jsgcore.common.packet.packets.StateUpdateRequestToServer;
+import dev.tauri.jsgcore.common.util.JSGItemStackHandler;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
-import dev.tauri.jsg.core.common.blockentity.IPreparable;
-import dev.tauri.jsg.core.common.blockentity.ITickable;
-import dev.tauri.jsg.core.common.blockentity.StateProviderInterface;
+import dev.tauri.jsgcore.common.blockentity.IPreparable;
+import dev.tauri.jsgcore.common.blockentity.ITickable;
+import dev.tauri.jsgcore.common.blockentity.StateProviderInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -68,11 +68,11 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
     protected final JSGItemStackHandler inventory = new JSGItemStackHandler(6) {
         public boolean isItemValid(int slot, net.minecraft.world.item.ItemStack stack) {
             Item item = stack.getItem();
-            boolean isItemCapacitor = stack.is(JSGTItemTags.LANTEAN_TRANSPORTER_CAPACITORS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
+            boolean isItemEnergyCrystal = stack.is(JSGTItemTags.LANTEAN_TRANSPORTER_ENERGY_CRYSTALS) && stack.getCapability(ForgeCapabilities.ENERGY).isPresent();
             return switch (slot) {
                 case 0, 1 -> false; // TODO Network filter/link items
                 case 2 -> false; // TODO identity crystal
-                case 3, 4, 5 -> isItemCapacitor;
+                case 3, 4, 5 -> isItemEnergyCrystal;
                 default -> false;
             };
         }

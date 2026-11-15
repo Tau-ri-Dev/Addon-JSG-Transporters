@@ -8,6 +8,7 @@ import dev.tauri.jsgcore.common.registry.helper.RegistryHelper;
 import dev.tauri.jsgcore.mapping.JSGMapping;
 import dev.tauri.jsgtransporters.client.ClientConstants;
 import dev.tauri.jsgtransporters.common.config.JSGTConfig;
+import dev.tauri.jsgtransporters.common.command.JSGTCommands;
 import dev.tauri.jsgtransporters.common.integration.cctweaked.CCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.integration.oc.OCDevicesRegistry;
 import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
@@ -17,6 +18,7 @@ import dev.tauri.jsgtransporters.common.worldgen.JSGTTemplatePoolInjectors;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
@@ -71,6 +73,11 @@ public class JSGTransporters implements JSGAddon {
     public void onServerStarting(ServerStartingEvent event) {
         var currentServer = event.getServer();
         new RingsNetwork().register(currentServer.overworld().getDataStorage());
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        JSGTCommands.register(event.getDispatcher());
     }
 
     @Override

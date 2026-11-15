@@ -111,6 +111,9 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 dependencies {

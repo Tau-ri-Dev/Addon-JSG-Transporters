@@ -1,6 +1,6 @@
 package dev.tauri.jsgtransporters.common.block.lantean_transporter;
 
-import dev.tauri.jsg.core.common.block.JSGTabbedBlock;
+import dev.tauri.jsgcore.common.block.JSGTabbedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
