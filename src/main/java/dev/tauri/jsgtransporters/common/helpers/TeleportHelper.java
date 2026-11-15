@@ -15,6 +15,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
@@ -68,8 +69,22 @@ public class TeleportHelper {
     }
 
     public static void setRotationAndPosition(Entity entity, float yawRotated, Vector3d pos) {
-        entity.teleportTo(pos.x, pos.y, pos.z);
-        entity.setYHeadRot(yawRotated);
+        setRotationAndPosition(entity, yawRotated, yawRotated, pos);
+    }
+
+    public static void setRotationAndPosition(Entity entity, float headYaw, float bodyYaw, Vector3d pos) {
+        if (entity instanceof ServerPlayer player) {
+            player.connection.teleport(pos.x, pos.y, pos.z, bodyYaw, entity.getXRot());
+        } else {
+            entity.teleportTo(pos.x, pos.y, pos.z);
+        }
+        entity.setYRot(bodyYaw);
+        entity.setYHeadRot(headYaw);
+    }
+
+    private static float rotateYaw(float yaw, Quaternionf rotOffset) {
+        float rotationDegrees = (float) Math.toDegrees(2.0 * Math.atan2(rotOffset.y(), rotOffset.w()));
+        return Mth.wrapDegrees(yaw - rotationDegrees);
     }
 
     @Nonnull
@@ -232,21 +247,48 @@ public class TeleportHelper {
         //TODO implement block rotation on teleport
         Stream<BlockPos> poses = StreamSupport.stream(BlockPos.betweenClosed(new BlockPos(0, 0, 0), a.getShape()).spliterator(), false);
 
-        // var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
-        // for (var e : entities) {
-        //     if (ignoredEntities.contains(e)) continue;
-        //     var energyToTransport = energyToOperate.getEnergyForTransport(e);
-        //     if (getEnergyStored() < energyToTransport) continue;
-        //     targetRings.ignoredEntities.add(e);
-        //     TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
-        //     getEnergyStorage().extractLongEnergy(energyToTransport, false);
-        // }
-
-        // if (!outbound || targetRings.level == null) return;
         Stream<Map.Entry<BlockPos, BlockPos>> filteredPoses = poses.map(BlockPos::immutable)
                 .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, rotOffset))))
                 .filter(pp -> !a.level().getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !b.level().getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
         TeleportHelper.teleportBlocks(filteredPoses, a.level(), b.level(), new ArrayList<>());
+        rotateAndSwapVolumeEntities(a, b);
+    }
+
+    public static void rotateAndSwapVolumeEntities(Volume a, Volume b) {
+        var entitiesInA = a.level().getEntities(null, new JSGAxisAlignedBB(a.backLeftTop().getCenter(), a.frontRightBottom().getCenter()).grow(0.5, 0.5, 0.5));
+        var entitiesInB = b.level().getEntities(null, new JSGAxisAlignedBB(b.backLeftTop().getCenter(), b.frontRightBottom().getCenter()).grow(0.5, 0.5, 0.5));
+        for (var e : entitiesInA) {
+            // var energyToTransport = energyToOperate.getEnergyForTransport(e);
+            // if (getEnergyStored() < energyToTransport) continue;
+            TeleportHelper.teleportEntityByVolume(e, a, b, a.getRotOffset(b));
+            // getEnergyStorage().extractLongEnergy(energyToTransport, false);
+        }
+        for (var e : entitiesInB) {
+            // var energyToTransport = energyToOperate.getEnergyForTransport(e);
+            // if (getEnergyStored() < energyToTransport) continue;
+            TeleportHelper.teleportEntityByVolume(e, b, a, b.getRotOffset(a));
+            // getEnergyStorage().extractLongEnergy(energyToTransport, false);
+        }
+    }
+
+    public static void teleportEntityByVolume(Entity entity, Volume sourceVolume, Volume targetVolume, Quaternionf rotOffset) {
+        ResourceKey<Level> sourceDim = sourceVolume.level().dimension();
+
+        var offset = entity.position()
+                .subtract(sourceVolume.frontRightBottom().getCenter());
+        var tPos = targetVolume.frontRightBottom().getCenter()
+                .add(RotationUtil.rotate(offset, rotOffset));
+
+        if (sourceDim == targetVolume.level().dimension()) {
+            setRotationAndPosition(entity, rotateYaw(entity.getYHeadRot(), rotOffset), rotateYaw(entity.getYRot(), rotOffset), new Vector3d(tPos.x, tPos.y, tPos.z));
+        } else {
+            // if (!fireTravelToDimEvent(entity, targetRings.dimension))
+            // return;
+
+            entity.changeDimension(
+                    Objects.requireNonNull(Objects.requireNonNull(entity.getServer()).getLevel(targetVolume.level().dimension())),
+                    new RingsTeleporter(new Vector3d(tPos.x, tPos.y, tPos.z), rotateYaw(entity.getYRot(), rotOffset), null));
+        }
     }
 
     public record Volume(Level level, BlockPos backLeftTop, BlockPos frontRightBottom, Direction facing) {
