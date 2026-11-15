@@ -15,6 +15,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -225,8 +226,8 @@ public class TeleportHelper {
 
     public static void rotateAndSwapVolumes(Volume a, Volume b) {
         Quaternionf rotOffset = a.getRotOffset(b);
-        if (!a.getShape().equals(RotationUtil.rotate(b.getShape(), rotOffset))) {
-            throw new IllegalArgumentException("Volumes shapes do not match after rotation");
+        if (!a.getShapeSize().equals(b.getRotatedShapeSize(rotOffset))) {
+            throw new IllegalArgumentException("Volumes shapes do not match after rotation A: %s, B: %s, Rotated B by %s: %s".formatted(a.getShapeSize(), b.getShapeSize(), rotOffset, b.getRotatedShapeSize(rotOffset)));
         }
         //TODO implement block rotation on teleport
         Stream<BlockPos> poses = StreamSupport.stream(BlockPos.betweenClosed(new BlockPos(0, 0, 0), a.getShape()).spliterator(), false);
@@ -242,7 +243,6 @@ public class TeleportHelper {
         // }
 
         // if (!outbound || targetRings.level == null) return;
-
         Stream<Map.Entry<BlockPos, BlockPos>> filteredPoses = poses.map(BlockPos::immutable)
                 .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, rotOffset))))
                 .filter(pp -> !a.level().getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !b.level().getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
@@ -257,12 +257,20 @@ public class TeleportHelper {
         }
 
         Quaternionf getRotOffset(Volume other) {
-            final Quaternionf offset = facing.getRotation().difference(other.facing.getRotation());
-            return offset;
+            return new Quaternionf().rotateY(Mth.wrapDegrees(facing().toYRot()- other.facing().toYRot())*Mth.DEG_TO_RAD);
         }
 
         BlockPos getShape() {
             return backLeftTop.subtract(frontRightBottom);
+        }
+
+        BlockPos getShapeSize() {
+            final BlockPos size = new BlockPos(Math.abs(getShape().getX()), Math.abs(getShape().getY()), Math.abs(getShape().getZ()));
+            return size;
+        }
+
+        BlockPos getRotatedShapeSize(Quaternionf rotOffset) {
+            return new BlockPos(Math.abs(RotationUtil.rotate(getShape(), rotOffset).getX()), Math.abs(RotationUtil.rotate(getShape(), rotOffset).getY()), Math.abs(RotationUtil.rotate(getShape(), rotOffset).getZ()));
         }
     }
 
