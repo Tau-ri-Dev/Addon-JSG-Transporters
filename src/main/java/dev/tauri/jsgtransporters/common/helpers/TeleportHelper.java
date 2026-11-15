@@ -254,6 +254,26 @@ public class TeleportHelper {
         public Volume {
             if (facing.getAxis() == Axis.Y)
                 throw new IllegalArgumentException("Facing direction cannot be vertical");
+            if (backLeftTop.getY() < frontRightBottom.getY())
+                throw new IllegalArgumentException("Back-left-top must be at or above front-right-bottom");
+
+            boolean backIsLeft = switch (facing) {
+                case NORTH -> backLeftTop.getX() <= frontRightBottom.getX();
+                case EAST -> backLeftTop.getZ() <= frontRightBottom.getZ();
+                case SOUTH -> backLeftTop.getX() >= frontRightBottom.getX();
+                case WEST -> backLeftTop.getZ() >= frontRightBottom.getZ();
+                default -> false;
+            };
+            boolean frontIsForward = switch (facing) {
+                case NORTH -> frontRightBottom.getZ() < backLeftTop.getZ();
+                case EAST -> frontRightBottom.getX() > backLeftTop.getX();
+                case SOUTH -> frontRightBottom.getZ() > backLeftTop.getZ();
+                case WEST -> frontRightBottom.getX() < backLeftTop.getX();
+                default -> false;
+            };
+            if (!backIsLeft || !frontIsForward)
+                throw new IllegalArgumentException(
+                        "Volume corners do not match facing direction: back-left-top must be behind and left of front-right-bottom");
         }
 
         Quaternionf getRotOffset(Volume other) {
