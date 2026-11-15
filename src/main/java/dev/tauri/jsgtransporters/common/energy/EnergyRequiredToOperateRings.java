@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public class EnergyRequiredToOperateRings extends EnergyRequiredToOperate {
-    public EnergyRequiredToOperateRings(int energyToOpen, int keepAlive) {
+    public EnergyRequiredToOperateRings(long energyToOpen, long keepAlive) {
         super(energyToOpen, keepAlive);
     }
 
@@ -23,9 +23,9 @@ public class EnergyRequiredToOperateRings extends EnergyRequiredToOperate {
         if (object instanceof LivingEntity)
             return keepAlive;
         if (object instanceof Entity)
-            return (int) (keepAlive * 0.3);
+            return (long) (keepAlive * 0.3);
         if (object instanceof TeleportHelper.BlockToTeleport btt)
-            return (int) (keepAlive * btt.getEnergyCoefficient());
+            return (long) (keepAlive * btt.getEnergyCoefficient());
         return keepAlive;
     }
 
