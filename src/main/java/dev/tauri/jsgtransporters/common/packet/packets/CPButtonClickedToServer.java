@@ -9,6 +9,7 @@ import dev.tauri.jsgtransporters.common.blockentity.controller.AbstractRingsCPBE
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 
 public class CPButtonClickedToServer extends PositionedPacket {
@@ -62,6 +63,7 @@ public class CPButtonClickedToServer extends PositionedPacket {
         ctx.enqueueWork(() -> {
             AbstractRingsCPBE be = (AbstractRingsCPBE) world.getBlockEntity(pos);
             if (be == null) return;
+            player.swing(InteractionHand.MAIN_HAND);
             be.pushSymbolButton(symbol, player);
         });
     }

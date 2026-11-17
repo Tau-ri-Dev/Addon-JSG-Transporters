@@ -2,6 +2,9 @@ package dev.tauri.jsgtransporters.common.raycaster;
 
 import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.raycaster.Raycaster;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
+import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
+import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -29,4 +32,12 @@ public abstract class AbstractCPRaycaster extends Raycaster {
         if (interactionHand != InteractionHand.MAIN_HAND) return false;
         return super.onActivated(level, blockPos, player, interactionHand);
     }
+
+    @Override
+    protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
+        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, getSymbolType().valueOf(button), false));
+        return true;
+    }
+
+    public abstract SymbolType<?> getSymbolType();
 }

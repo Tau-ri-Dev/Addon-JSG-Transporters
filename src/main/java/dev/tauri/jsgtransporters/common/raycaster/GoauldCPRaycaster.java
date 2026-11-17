@@ -2,14 +2,12 @@ package dev.tauri.jsgtransporters.common.raycaster;
 
 import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.raycaster.util.RayCastedButton;
+import dev.tauri.jsgcore.common.symbol.SymbolType;
 import dev.tauri.jsgcore.common.util.vectors.Vector3f;
-import dev.tauri.jsgtransporters.common.packet.JSGTPacketHandler;
-import dev.tauri.jsgtransporters.common.packet.packets.CPButtonClickedToServer;
 import dev.tauri.jsgtransporters.common.registry.JSGTBlocks;
 import dev.tauri.jsgtransporters.common.registry.JSGTSymbolTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -109,15 +107,13 @@ public class GoauldCPRaycaster extends AbstractCPRaycaster {
     }
 
     @Override
-    protected boolean buttonClicked(Level level, Player player, int button, BlockPos pos, InteractionHand interactionHand) {
-        player.swing(interactionHand, true);
-        JSGTPacketHandler.sendToServer(new CPButtonClickedToServer(pos, JSGTSymbolTypes.GOAULD.get().valueOf(button), false));
-        return true;
-    }
-
-    @Override
     public float getRotation(Level level, BlockPos blockPos, Player player) {
         var direction = level.getBlockState(blockPos).getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
         return getIntRotation(direction);
+    }
+
+    @Override
+    public SymbolType<?> getSymbolType() {
+        return JSGTSymbolTypes.GOAULD.get();
     }
 }

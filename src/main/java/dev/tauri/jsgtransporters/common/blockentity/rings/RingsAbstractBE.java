@@ -701,6 +701,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
 
         compound.put("config", getConfig().serializeNBT());
         compound.put("itemHandler", inventory.serializeNBT(registries));
+        compound.put("energyStorage", energyStorage.serializeNBT(registries));
         compound.putInt("verticalOffset", verticalOffset);
 
         if (energyToOperate != null) {
@@ -733,6 +734,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
 
         getConfig().deserializeNBT(compound.getCompound("config"));
         inventory.deserializeNBT(registries, compound.getCompound("itemHandler"));
+        energyStorage.deserializeNBT(registries, compound.getCompound("energyStorage"));
         verticalOffset = compound.getInt("verticalOffset");
 
         if (compound.contains("energyToOperate_start")) {
