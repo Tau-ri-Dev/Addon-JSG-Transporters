@@ -1,6 +1,7 @@
 package dev.tauri.jsgtransporters.common.blockentity.rings;
 
 import dev.tauri.jsgcore.common.blockentity.*;
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.chunkloader.ChunkManager;
 import dev.tauri.jsgcore.common.config.JSGCoreConfig;
 import dev.tauri.jsgcore.common.config.ingame.BEConfig;
@@ -79,6 +80,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -602,7 +604,17 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
     }
 
     protected Volume getTransportVolume() {
-        return new Volume(getLevel(), new BlockPos(-1, getVerticalOffset()+2, 1).offset(getBlockPos()), new BlockPos(1, getVerticalOffset(), -1).offset(getBlockPos()), Direction.NORTH);
+        var facing = getBlockState().getValue(JSGProperties.FACING_HORIZONTAL_PROPERTY);
+        return new Volume(
+            getLevel(),
+            new BlockPos(0, getVerticalOffset()+2, 0)
+                .offset(facing.getOpposite().getNormal())
+                .offset(facing.getCounterClockWise().getNormal())
+                .offset(getBlockPos()),
+            new BlockPos(0, getVerticalOffset(), 0)
+                .offset(facing.getNormal())
+                .offset(facing.getClockWise().getNormal())
+                .offset(getBlockPos()), facing);
     }
 
     public ItemStack getAddressPage(SymbolType<?> symbolType, int[] symbolsToDisplay) {
