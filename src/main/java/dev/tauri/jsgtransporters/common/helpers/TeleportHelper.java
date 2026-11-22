@@ -140,65 +140,6 @@ public class TeleportHelper {
         return oldState.rotate(level, pos, toBlockRotation(rotOffset));
     }
 
-    public static void teleportBlocks(Stream<Map.Entry<BlockPos, BlockPos>> poses, RingsAbstractBE sourceRings,
-            RingsAbstractBE targetRings, ArrayList<BlockToTeleport> pistonHeads) {
-        var toPlace = poses.map(pp -> {
-            var localLevel = sourceRings.getLevel();
-            var remoteLevel = targetRings.getLevel();
-            if (localLevel == null || remoteLevel == null)
-                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
-            var local = pp.getKey();
-            var remote = pp.getValue();
-            var localBlock = TeleportHelper.applyStateChanges(localLevel, local, localLevel.getBlockState(local));
-            var remoteBlock = TeleportHelper.applyStateChanges(remoteLevel, remote, remoteLevel.getBlockState(remote));
-
-            // map blocks
-            var bttLocal = Optional.ofNullable(localLevel.getBlockEntity(local))
-                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
-                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
-                    .orElseGet(() -> {
-                        if (localBlock.getBlock() == Blocks.PISTON_HEAD)
-                            return new BlockToTeleport.Void();
-                        return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
-                    });
-            var bttRemote = Optional.ofNullable(remoteLevel.getBlockEntity(remote))
-                    .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
-                    .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
-                    .orElseGet(() -> {
-                        if (remoteBlock.getBlock() == Blocks.PISTON_HEAD)
-                            return new BlockToTeleport.Void();
-                        return new BlockToTeleport.Block(remoteBlock, local, localLevel);
-                    });
-
-            // check energy
-            var energyLocal = sourceRings.getEnergyStored();
-            if (sourceRings.energyToOperate == null)
-                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
-            var energyNeededLocal = sourceRings.energyToOperate.getEnergyForTransport(bttLocal);
-            if (energyLocal < energyNeededLocal)
-                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
-
-            var energyRemote = targetRings.getEnergyStored();
-            if (targetRings.energyToOperate == null)
-                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
-            var energyNeededRemote = targetRings.energyToOperate.getEnergyForTransport(bttRemote);
-            if (energyRemote < energyNeededRemote)
-                return Map.entry(new BlockToTeleport.Void(), new BlockToTeleport.Void());
-
-            // remove blocks
-            if (localBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
-                bttLocal.removeLocal(local, localLevel);
-            if (remoteBlock.getBlock() != Blocks.PISTON_HEAD || pistonHeads == null)
-                bttRemote.removeLocal(remote, remoteLevel);
-            return Map.entry(bttLocal, bttRemote);
-        });
-        // teleport blocks
-        toPlace.forEach(pp -> {
-            pp.getKey().placeOrAdd(pistonHeads);
-            pp.getValue().placeOrAdd(pistonHeads);
-        });
-    }
-
     public static void teleportBlocks(@Nonnull Stream<Map.Entry<BlockPos, BlockPos>> poses,@Nonnull Level localLevel,@Nonnull  Level remoteLevel, @Nonnull Quaternionf abRotOffset, @Nonnull Quaternionf baRotOffset, @Nonnull ArrayList<BlockToTeleport> pistonHeads) {
         var toPlace = poses.map(pp -> {
             if (localLevel == null || remoteLevel == null)

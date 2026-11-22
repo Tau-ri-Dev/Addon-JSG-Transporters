@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.StreamSupport;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,6 +44,7 @@ import dev.tauri.jsgtransporters.common.config.ingame.RingsConfigOptions;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
+import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.Volume;
 import dev.tauri.jsgtransporters.common.registry.JSGTItems;
 import dev.tauri.jsgtransporters.common.registry.JSGTNotebookPageTypes;
 import dev.tauri.jsgtransporters.common.registry.JSGTScheduledTaskTypes;
@@ -518,15 +518,18 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         if (task == JSGTScheduledTaskTypes.RINGS_START_ANIMATION.get()) {
             if (level == null) return;
             if (level.isClientSide()) return;
+            boolean slave = context.getBoolean("slave");
             // TODO: Refactor to use multiple ScheduledTask types
             if (!context.contains("start") && !context.contains("end") && !context.contains("index") && !context.contains("tp") && !context.contains("playEnd")) {
                 context = new CompoundTag();
                 context.putBoolean("start", true);
+                context.putBoolean("slave", slave);
                 addTask(new ScheduledTask(task, (int) (1.67f * 20), context));
                 JSGSoundHelper.playSoundEvent(level, getCenterTransportPos(), JSGTSoundEvents.RINGS_TRANSPORT_START);
 
                 context = new CompoundTag();
                 context.putBoolean("playEnd", true);
+                context.putBoolean("slave", slave);
                 addTask(new ScheduledTask(task, (int) (4.37 * 20), context));
             } else {
                 if (context.getBoolean("playEnd")) {
@@ -537,29 +540,27 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
                     getAndSendState(CoreStateTypes.RENDERER_STATE.get());
                     context = new CompoundTag();
                     context.putBoolean("end", true);
+                    context.putBoolean("slave", slave);
                     addTask(new ScheduledTask(task, RING_ANIMATION_LENGTH, context));
                     addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS, 10));
                     var c = new CompoundTag();
                     c.putBoolean("clear", true);
                     addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SOLID_BLOCKS, RING_ANIMATION_LENGTH, c));
 
-                    var offset = getVerticalOffset();
-                    for (int i = 0; i < 3; i++) {
-                        context = new CompoundTag();
-                        context.putBoolean("tp", true);
-                        context.putInt("index", i);
-                        context.putBoolean("isLast", i == (offset > 0 ? 0 : 2));
-                        addTask(new ScheduledTask(task, 45 + ((offset > 0 ? (2 - i) : i) * 8), context));
-                    }
+                    context = new CompoundTag();
+                    context.putBoolean("slave", slave);
+                    context.putBoolean("tp", true);
+                    addTask(new ScheduledTask(task, 45, context));
                     return;
                 } else if (context.getBoolean("end")) {
                     ChunkManager.unforceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
                     busy = false;
                     targetRings = null;
                     return;
-                } else if (context.getBoolean("tp") && context.contains("index")) {
+                } else if (context.getBoolean("tp") && context.getBoolean("slave")) {
                     if (targetRings == null) return;
-                    teleportVolumes(context.getInt("index"), context.getBoolean("isLast"));
+                        TeleportHelper.rotateAndSwapVolumes(getTransportVolume(), targetRings.getBlockEntity().getTransportVolume());
+                        JSGTransporters.logger.info("TRANSPORTED");
                     return;
                 }
             }
@@ -579,6 +580,10 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
             }
         }
         setChanged();
+    }
+
+    protected Volume getTransportVolume() {
+        return new Volume(getLevel(), new BlockPos(-1, getVerticalOffset()+2, 1).offset(getBlockPos()), new BlockPos(1, getVerticalOffset(), -1).offset(getBlockPos()), Direction.NORTH);
     }
 
     public ItemStack getAddressPage(SymbolType<?> symbolType, int[] symbolsToDisplay) {
@@ -865,14 +870,14 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         getEnergyStorage().extractLongEnergy(energyNeeded.energyToOpen, false);
         energyToOperate = energyNeeded;
         setChanged();
-        startTeleportAnimation();
+        startTeleportAnimation(false);
 
         ringsBe.outbound = false;
         ringsBe.busy = true;
         ringsBe.targetRings = ringsPos;
         ringsBe.energyToOperate = energyNeeded;
         ringsBe.setChanged();
-        ringsBe.startTeleportAnimation();
+        ringsBe.startTeleportAnimation(true);
         return RingsConnectResult.OK;
     }
 
@@ -888,50 +893,12 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
         getAndSendState(CoreStateTypes.RENDERER_STATE.get());
     }
 
-    protected void startTeleportAnimation() {
+    protected void startTeleportAnimation(boolean slave) {
         if (level == null || level.isClientSide()) return;
-        ignoredEntities.clear();
-        pistonHeads.clear();
         ChunkManager.forceChunk((ServerLevel) level, new ChunkPos(getBlockPos()));
-        addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_START_ANIMATION, 40));
-    }
-
-    public final List<Entity> ignoredEntities = new ArrayList<>();
-    public final ArrayList<TeleportHelper.BlockToTeleport> pistonHeads = new ArrayList<>();
-
-    protected void teleportVolumes(int index, boolean isLast) {
-        if (targetRings == null) return;
-        if (level == null) return;
-        if (index < 0) return;
-        var targetRings = this.targetRings.getBlockEntity();
-        if (energyToOperate == null) return;
-
-        var minPos = new BlockPos(-1, getVerticalOffset() + index, -1).offset(getBlockPos());
-        var maxPos = new BlockPos(1, getVerticalOffset() + index, 1).offset(getBlockPos());
-        var poses = StreamSupport.stream(BlockPos.betweenClosed(minPos, maxPos).spliterator(), false);
-        var entities = level.getEntities(null, new JSGAxisAlignedBB(minPos.getCenter(), maxPos.getCenter()).grow(0.5, 0.5, 0.5));
-        for (var e : entities) {
-            if (ignoredEntities.contains(e)) continue;
-            var energyToTransport = energyToOperate.getEnergyForTransport(e);
-            if (getEnergyStored() < energyToTransport) continue;
-            targetRings.ignoredEntities.add(e);
-            TeleportHelper.teleportEntity(e, ringsPos, this.targetRings);
-            getEnergyStorage().extractLongEnergy(energyToTransport, false);
-        }
-
-        if (!outbound || targetRings.level == null) return;
-
-        var filteredPoses = poses.map(BlockPos::immutable)
-                .filter(imPos -> imPos != this.getBlockPos() && imPos != this.getLinkedPos())
-                .map(p -> {
-                    var relPos = p.subtract(getBlockPos().above(getVerticalOffset()));
-                    return Map.entry(p, targetRings.getBlockPos().above(targetRings.getVerticalOffset()).offset(relPos));
-                })
-                .filter(pp -> !level.getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !targetRings.level.getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
-        TeleportHelper.teleportBlocks(filteredPoses, this, targetRings, pistonHeads);
-        if (isLast) {
-            pistonHeads.forEach(pp -> pp.placeOrAdd(null));
-        }
+        var ctx = new CompoundTag();
+        ctx.putBoolean("slave", slave);
+        addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_START_ANIMATION, 40, ctx));
     }
 
     private ConfigOptionsHolder getConfigType() {
