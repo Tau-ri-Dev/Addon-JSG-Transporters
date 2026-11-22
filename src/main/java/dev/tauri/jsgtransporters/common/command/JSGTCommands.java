@@ -41,7 +41,7 @@ public class JSGTCommands {
                             context.getSource().getLevel(),
                             getBlockPos(context, "target_back_left_top"),
                             getBlockPos(context, "target_front_right_bottom"),
-                            getDirection(context, "target_facing")));
+                            getDirection(context, "target_facing")), (o) -> 0L, (o) -> 0L, (energySumLocal, energySumRemote) -> {});
         } catch (IllegalArgumentException exception) {
             context.getSource().sendFailure(Component.literal(exception.getMessage()));
             return 0;

@@ -44,6 +44,7 @@ import dev.tauri.jsgtransporters.common.config.ingame.RingsConfigOptions;
 import dev.tauri.jsgtransporters.common.energy.EnergyRequiredToOperateRings;
 import dev.tauri.jsgtransporters.common.entity.RingsAddressData;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper;
+import dev.tauri.jsgtransporters.common.helpers.UntransportableBlockException;
 import dev.tauri.jsgtransporters.common.helpers.TeleportHelper.Volume;
 import dev.tauri.jsgtransporters.common.registry.JSGTItems;
 import dev.tauri.jsgtransporters.common.registry.JSGTNotebookPageTypes;
@@ -559,8 +560,26 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
                     return;
                 } else if (context.getBoolean("tp") && context.getBoolean("slave")) {
                     if (targetRings == null) return;
-                        TeleportHelper.rotateAndSwapVolumes(getTransportVolume(), targetRings.getBlockEntity().getTransportVolume());
-                        JSGTransporters.logger.info("TRANSPORTED");
+                    JSGTransporters.logger.debug("Transporter power draw: {} and {}", energyToOperate.keepAlive, targetRings.getBlockEntity().energyToOperate.keepAlive);
+                        try{
+                        boolean sucess = TeleportHelper.rotateAndSwapVolumes(
+                            getTransportVolume(),
+                            targetRings.getBlockEntity().getTransportVolume(),
+                            energyToOperate::getEnergyForTransport,
+                            targetRings.getBlockEntity().energyToOperate::getEnergyForTransport,
+                            (l, r) -> {
+                                if (energyStorage.canFullyExtract(l) && targetRings.getBlockEntity().energyStorage.canFullyExtract(r)) {
+                                    energyStorage.extractLongEnergy(l, false);
+                                    targetRings.getBlockEntity().energyStorage.extractLongEnergy(r, false);
+                                } else throw new IllegalStateException("Not enough energy to transport");
+                            }
+                        );
+
+                    } catch (IllegalArgumentException e) {
+                        JSGTransporters.logger.error("Error while transporting", e);
+                    } catch (UntransportableBlockException e) {
+                        JSGTransporters.logger.info("Transport failed due to untransportable block", e);
+                    }
                     return;
                 }
             }
