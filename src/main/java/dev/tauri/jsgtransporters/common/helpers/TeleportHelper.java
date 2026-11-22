@@ -205,10 +205,19 @@ public class TeleportHelper {
         //TODO implement block rotation on teleport
         Stream<BlockPos> poses = StreamSupport.stream(BlockPos.betweenClosed(new BlockPos(0, 0, 0), a.getShape()).spliterator(), false);
 
-        Stream<Map.Entry<BlockPos, BlockPos>> filteredPoses = poses.map(BlockPos::immutable)
+        Stream<Map.Entry<BlockPos, BlockPos>> posesToTeleport = poses.map(BlockPos::immutable)
                 .map(p -> Map.entry(a.frontRightBottom().offset(p), b.frontRightBottom().offset(RotationUtil.rotate(p, abRotOffset))))
-                .filter(pp -> !a.level().getBlockState(pp.getKey()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK) && !b.level().getBlockState(pp.getValue()).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK));
-        TeleportHelper.teleportBlocks(filteredPoses, a.level(), b.level(), abRotOffset, baRotOffset, new ArrayList<>());
+                .peek(pp -> {
+                    BlockPos sourcePos = pp.getKey();
+                    BlockPos targetPos = pp.getValue();
+                    if (a.level().getBlockState(sourcePos).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK)
+                            || b.level().getBlockState(targetPos).is(JSGTBlockTags.UNTRANSPORTABLE_BLOCK)) {
+                        throw new UntransportableBlockException(
+                                "Cannot teleport untransportable block between %s and %s"
+                                        .formatted(sourcePos, targetPos));
+                    }
+                });
+        TeleportHelper.teleportBlocks(posesToTeleport, a.level(), b.level(), abRotOffset, baRotOffset, new ArrayList<>());
         rotateAndSwapVolumeEntities(a, b, abRotOffset, baRotOffset);
     }
 
