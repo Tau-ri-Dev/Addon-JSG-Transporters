@@ -183,9 +183,9 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
             player.displayClientMessage(result.component(), true);
         addTask(new ScheduledTask(JSGTScheduledTaskTypes.RINGS_SYMBOL_DEACTIVATE, 10));
         if (symbol.origin())
-            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_GOAULD_BUTTON_DIAL);
+            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_CONTROL_PANEL_BUTTON_DIAL);
         else
-            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_GOAULD_BUTTON);
+            JSGSoundHelper.playSoundEvent(level, getBlockPos(), JSGTSoundEvents.RINGS_CONTROL_PANEL_BUTTON);
         sendState(CoreStateTypes.RENDERER_UPDATE.get(), new RingsCPButtonPushedState(symbol));
     }
 

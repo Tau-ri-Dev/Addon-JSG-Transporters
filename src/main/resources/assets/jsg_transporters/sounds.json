@@ -13,20 +13,20 @@
       "jsg_transporters:rings/rings_transport_end"
     ]
   },
-  "block.rings.goauld.button": {
+  "block.rings.control_panel.button": {
     "category": "ambient",
-    "subtitle": "jsg_transporters.subtitle.block.rings.goauld.button",
+    "subtitle": "jsg_transporters.subtitle.block.rings.control_panel.button",
     "sounds": [
-      "jsg_transporters:rings/goauld/button1",
-      "jsg_transporters:rings/goauld/button2",
-      "jsg_transporters:rings/goauld/button3"
+      "jsg_transporters:rings/control_panel/button1",
+      "jsg_transporters:rings/control_panel/button2",
+      "jsg_transporters:rings/control_panel/button3"
     ]
   },
-  "block.rings.goauld.dial": {
+  "block.rings.control_panel.dial": {
     "category": "ambient",
-    "subtitle": "jsg_transporters.subtitle.block.rings.goauld.dial",
+    "subtitle": "jsg_transporters.subtitle.block.rings.control_panel.dial",
     "sounds": [
-      "jsg_transporters:rings/goauld/button_final"
+      "jsg_transporters:rings/control_panel/button_final"
     ]
   }
 }
