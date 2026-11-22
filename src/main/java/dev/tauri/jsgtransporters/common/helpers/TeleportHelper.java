@@ -213,8 +213,6 @@ public class TeleportHelper {
                     .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
                     .orElseGet(() -> {
-                        if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
-                            return new BlockToTeleport.Piston(localBlock, remote, remoteLevel);
                         if (localBlock.getBlock() == Blocks.PISTON_HEAD)
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
@@ -223,8 +221,6 @@ public class TeleportHelper {
                     .map(net.minecraft.world.level.block.entity.BlockEntity::serializeNBT)
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
                     .orElseGet(() -> {
-                        if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
-                            return new BlockToTeleport.Piston(remoteBlock, local, localLevel);
                         if (remoteBlock.getBlock() == Blocks.PISTON_HEAD)
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(remoteBlock, local, localLevel);
