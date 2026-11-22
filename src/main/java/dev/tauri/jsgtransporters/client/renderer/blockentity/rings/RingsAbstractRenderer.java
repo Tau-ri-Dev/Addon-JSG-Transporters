@@ -86,7 +86,7 @@ public abstract class RingsAbstractRenderer<S extends RingsRendererState, T exte
 
     /**
      * Rings animation function <br>
-     * float x- current progress <0,1> <br>
+     * float x- current progress 0 - 1 <br>
      * int index - index of the ring to handle animation for
      */
     public final BiFunction<Float, Integer, Float> RING_ANIMATION = (x, index) -> {

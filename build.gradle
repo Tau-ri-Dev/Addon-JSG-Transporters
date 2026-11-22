@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
     id 'net.neoforged.moddev' version '2.0.141'
+    id "com.vanniktech.maven.publish" version "0.36.0"
 }
 
 group = mod_group_id
@@ -70,6 +71,10 @@ repositories {
         }
     }
     maven {
+        name = 'JitPack'
+        url = 'https://jitpack.io'
+    }
+    maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
         content {
@@ -100,6 +105,11 @@ dependencies {
 
     implementation("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }
 
+    if (building_release == "true") {
+        implementation("com.github.Tau-ri-Dev:Mod-JSGCore-public:${minecraft_version}-${core_version}")
+    } else {
+        implementation("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }
+    }
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"

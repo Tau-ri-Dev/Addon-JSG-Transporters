@@ -86,6 +86,10 @@ public class TeleportHelper {
                 }) {
             oldState = oldState.setValue(BlockStateProperties.WATERLOGGED, false);
         }
+        if (oldState.hasProperty(BlockStateProperties.EXTENDED) && oldState.getValue(BlockStateProperties.EXTENDED)) {
+            oldState = oldState.setValue(BlockStateProperties.EXTENDED, false);
+        }
+        
         return oldState;
     }
 
@@ -105,8 +109,6 @@ public class TeleportHelper {
                     .map(be -> be.saveCustomAndMetadata(localLevel.registryAccess()))
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(localBlock, nbt, remote, remoteLevel))
                     .orElseGet(() -> {
-                        if (localBlock.getBlock() == Blocks.PISTON || localBlock.getBlock() == Blocks.STICKY_PISTON)
-                            return new BlockToTeleport.Piston(localBlock, remote, remoteLevel);
                         if (localBlock.getBlock() == Blocks.PISTON_HEAD)
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(localBlock, remote, remoteLevel);
@@ -115,8 +117,6 @@ public class TeleportHelper {
                     .map(be -> be.saveCustomAndMetadata(remoteLevel.registryAccess()))
                     .<BlockToTeleport>map(nbt -> new BlockToTeleport.BlockEntity(remoteBlock, nbt, local, localLevel))
                     .orElseGet(() -> {
-                        if (remoteBlock.getBlock() == Blocks.PISTON || remoteBlock.getBlock() == Blocks.STICKY_PISTON)
-                            return new BlockToTeleport.Piston(remoteBlock, local, localLevel);
                         if (remoteBlock.getBlock() == Blocks.PISTON_HEAD)
                             return new BlockToTeleport.Void();
                         return new BlockToTeleport.Block(remoteBlock, local, localLevel);
@@ -191,39 +191,6 @@ public class TeleportHelper {
 
             @Override
             public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
-            }
-
-            @Override
-            public double getEnergyCoefficient() {
-                return 0;
-            }
-        }
-
-        record Piston(BlockState state, BlockPos pos, Level level) implements BlockToTeleport {
-
-            @Override
-            public void placeOrAdd(ArrayList<BlockToTeleport> pistonHeads) {
-                Direction direction = null;
-                BlockState headState = null;
-                if (state.hasProperty(PistonBaseBlock.EXTENDED) && state.getValue(PistonBaseBlock.EXTENDED)) {
-                    direction = state.getOptionalValue(DirectionalBlock.FACING).orElse(Direction.NORTH);
-                    headState = Blocks.PISTON_HEAD.defaultBlockState()
-                            .setValue(PistonHeadBlock.FACING, direction)
-                            .setValue(PistonHeadBlock.TYPE, state.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT);
-                }
-                if (pistonHeads != null) {
-                    if (level.getBlockState(pos).is(Blocks.PISTON_HEAD)) {
-                        pistonHeads.add(this);
-                        return;
-                    }
-                    if (direction != null && level.getBlockState(pos.offset(direction.getNormal())).is(Blocks.PISTON_HEAD)) {
-                        pistonHeads.add(this);
-                        return;
-                    }
-                }
-                level().setBlock(pos, state, PLACE_FLAGS);
-                if (direction != null)
-                    level().setBlock(pos.offset(direction.getNormal()), headState, PLACE_FLAGS);
             }
 
             @Override
