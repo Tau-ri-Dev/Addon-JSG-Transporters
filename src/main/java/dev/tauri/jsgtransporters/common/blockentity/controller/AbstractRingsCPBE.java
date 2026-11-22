@@ -68,7 +68,7 @@ public abstract class AbstractRingsCPBE extends BlockEntity implements ILinkable
     // Scheduled tasks
 
     /**
-     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)()}.
+     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)}.
      */
     protected List<ScheduledTask> scheduledTasks = new ArrayList<>();
 
