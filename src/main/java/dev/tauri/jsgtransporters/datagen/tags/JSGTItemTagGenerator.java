@@ -28,6 +28,12 @@ public class JSGTItemTagGenerator extends CoreItemTagGenerator {
                 .add(CoreItems.CRYSTAL_ENERGY_ADVANCED.get())
                 .add(CoreItems.CRYSTAL_ENERGY_ULTIMATE.get())
                 .add(CoreItems.CRYSTAL_ENERGY_CREATIVE.get());
+        
+        tag(JSGTItemTags.LANTEAN_TRANSPORTER_ENERGY_CRYSTALS)
+                .add(CoreItems.CRYSTAL_ENERGY_BASIC.get())
+                .add(CoreItems.CRYSTAL_ENERGY_ADVANCED.get())
+                .add(CoreItems.CRYSTAL_ENERGY_ULTIMATE.get())
+                .add(CoreItems.CRYSTAL_ENERGY_CREATIVE.get());
     }
 
 }
