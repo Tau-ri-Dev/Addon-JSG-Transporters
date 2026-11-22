@@ -103,13 +103,12 @@ configurations {
 dependencies {
     compileOnly "org.jspecify:jspecify:1.0.0"
 
-    implementation("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }
-
     if (building_release == "true") {
         implementation("com.github.Tau-ri-Dev:Mod-JSGCore-public:${minecraft_version}-${core_version}")
     } else {
         implementation("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false }
     }
+
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
