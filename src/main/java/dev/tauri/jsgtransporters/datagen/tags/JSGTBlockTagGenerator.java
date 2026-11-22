@@ -29,7 +29,7 @@ public class JSGTBlockTagGenerator extends CoreBlockTagGenerator {
         tag(JSGTBlockTags.UNTRANSPORTABLE_BLOCK)
                 .addTag(JSGTBlockTags.RINGS_BLOCK)
                 .addTag(JSGTBlockTags.RINGS_CONTROLLER_BLOCK)
-                //.addTag(JSGTBlockTags.ATLANTIS_TRANSPORTER_BLOCK)
+                .addTag(JSGTBlockTags.LANTEAN_TRANSPORTER_BLOCK)
                 //.addTag(JSGTBlockTags.OBELISK_BLOCK)
                 .addTag(BlockTags.PORTALS)
                 .add(
@@ -81,6 +81,15 @@ public class JSGTBlockTagGenerator extends CoreBlockTagGenerator {
                 JSGTBlocks.RINGS_CP_GOAULD.get(),
                 JSGTBlocks.RINGS_CP_ORI.get(),
                 JSGTBlocks.RINGS_CP_ANCIENT.get()
+        );
+
+        //LANTEAN TRANSPORTER
+        tag(JSGTBlockTags.LANTEAN_TRANSPORTER_BLOCK).add(
+                JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL.get(),
+                JSGTBlocks.LANTEAN_TRANSPORTER_FRAME.get(),
+                JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM.get(),
+                JSGTBlocks.LANTEAN_TRANSPORTER_PYLON.get(),
+                JSGTBlocks.LANTEAN_TRANSPORTER_SCREEN.get()
         );
 
         //CORE TAGS
