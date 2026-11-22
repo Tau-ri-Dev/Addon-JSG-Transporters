@@ -3,14 +3,29 @@ package dev.tauri.jsgtransporters.common.block.lantean_transporter;
 import dev.tauri.jsgcore.common.block.JSGTabbedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class LanteanTransporterFrame extends JSGTabbedBlock implements SimpleWaterloggedBlock {
-    public LanteanTransporterFrame(Properties blockProperties) {
-        super(blockProperties);
-        // TODO Auto-generated constructor stub
+    public static final Properties FRAME_PROPS = Properties.of()
+            .explosionResistance(30f)
+            .destroyTime(3f)
+            .requiresCorrectToolForDrops()
+            .noOcclusion()
+            .sound(SoundType.METAL);
+    public LanteanTransporterFrame() {
+        super(FRAME_PROPS);
+        this.registerDefaultState(
+                defaultBlockState().setValue(BlockStateProperties.UP, true)
+                        .setValue(BlockStateProperties.DOWN, true)
+                        .setValue(BlockStateProperties.NORTH, true)
+                        .setValue(BlockStateProperties.SOUTH, true)
+                        .setValue(BlockStateProperties.EAST, true)
+                        .setValue(BlockStateProperties.WEST, true)
+                        .setValue(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @Override

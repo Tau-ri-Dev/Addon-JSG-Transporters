@@ -5,11 +5,13 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import dev.tauri.jsgcore.common.block.util.IItemBlock;
+import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgcore.common.block.TickableBEBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
@@ -17,8 +19,18 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class LanteanTransporterAccessPanel extends TickableBEBlock implements IItemBlock, SimpleWaterloggedBlock {
 
-    public LanteanTransporterAccessPanel(Properties properties) {
-        super(properties);
+    public static final Properties PANEL_PROPS = Properties.of()
+            .explosionResistance(30f)
+            .destroyTime(3f)
+            .requiresCorrectToolForDrops()
+            .noOcclusion()
+            .sound(SoundType.METAL);
+
+    public LanteanTransporterAccessPanel() {
+        super(PANEL_PROPS);
+        this.registerDefaultState(
+                defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false)
+        );
     }
 
     @Override
@@ -37,7 +49,7 @@ public class LanteanTransporterAccessPanel extends TickableBEBlock implements II
 
     @Override
     protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> blockStateBuilder) {
-        blockStateBuilder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.WATERLOGGED);
+        blockStateBuilder.add(JSGProperties.FACING_HORIZONTAL_PROPERTY).add(BlockStateProperties.WATERLOGGED);
         super.createBlockStateDefinition(blockStateBuilder);
     }
 }
