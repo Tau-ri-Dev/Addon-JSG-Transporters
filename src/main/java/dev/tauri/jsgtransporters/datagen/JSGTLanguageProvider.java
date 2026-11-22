@@ -38,6 +38,12 @@ public class JSGTLanguageProvider extends CoreLanguageProvider {
         addBlockWithTooltip(JSGTBlocks.RINGS_CP_ORI,"Control panel for Ori transport rings",null);
         addBlockWithTooltip(JSGTBlocks.RINGS_CP_ANCIENT,"Control panel for Ancient transport rings",null);
 
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL);
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_FRAME);
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM);
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_PYLON);
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_SCREEN);
+
         //GUI
         add("gui." + JSGTransporters.MOD_ID + ".rings_name", "Name");
         add("gui." + JSGTransporters.MOD_ID + ".rings_distance", "Distance");

@@ -8,7 +8,12 @@ import dev.tauri.jsgcore.common.block.util.IItemBlock;
 import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgcore.common.block.TickableBEBlock;
+import dev.tauri.jsgcore.common.registry.CoreTabs;
+import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
+import dev.tauri.jsgtransporters.common.item.lantean_transporter.LanteanTransporterAccessPanelItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -16,6 +21,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 public class LanteanTransporterAccessPanel extends TickableBEBlock implements IItemBlock, SimpleWaterloggedBlock {
 
@@ -43,8 +51,11 @@ public class LanteanTransporterAccessPanel extends TickableBEBlock implements II
 
     @Override
     public JSGBlockItem getItemBlock() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getItemBlock'");
+        return new LanteanTransporterAccessPanelItem(this, new Item.Properties(), getTabs());
+    }
+
+    public List<Supplier<RegistryObjectWrapper<CreativeModeTab>>> getTabs() {
+        return List.of(CoreTabs.TAB_TRANSPORTATION);
     }
 
     @Override
