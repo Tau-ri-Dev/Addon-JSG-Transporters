@@ -53,7 +53,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           # Target repository
-          repository: Tau-ri-Dev/Mod-JSG-Transporters
+          repository: Tau-ri-Dev/Addon-JSG-Transporters
           tag_name: ${{ github.ref_name }}
           name: jsg-transporters-${{ github.ref_name }}
           generate_release_notes: true
