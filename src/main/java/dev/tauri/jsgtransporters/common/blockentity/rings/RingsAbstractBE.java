@@ -500,7 +500,7 @@ public abstract class RingsAbstractBE extends JSGBlockEntity implements Rings, I
     // Scheduled tasks
 
     /**
-     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)()}.
+     * List of scheduled tasks to be performed on {@link ITickable#tick(Level)}.
      */
     protected List<ScheduledTask> scheduledTasks = new ArrayList<>();
 

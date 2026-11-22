@@ -4,6 +4,7 @@ plugins {
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id "com.vanniktech.maven.publish" version "0.36.0"
 }
 
 group = mod_group_id
@@ -22,6 +23,13 @@ base {
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    options.encoding = 'UTF-8'
+    classpath = files(sourceSets.main.compileClasspath)
+    destinationDir = file("${buildDir}/docs/javadoc")
 }
 
 minecraft {
@@ -105,6 +113,10 @@ repositories {
         }
     }
     maven {
+        name = 'JitPack'
+        url = 'https://jitpack.io'
+    }
+    maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
         content {
@@ -119,7 +131,11 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation(fg.deobf("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false })
+    if (building_release == "true") {
+        implementation(fg.deobf("com.github.Tau-ri-Dev:Mod-JSGCore-public:${minecraft_version}-${core_version}"))
+    } else {
+        implementation(fg.deobf("eu.tauridev:jsg-core-${minecraft_version}:${core_version}:") { transitive = false })
+    }
 
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
