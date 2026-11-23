@@ -41,7 +41,76 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
 
         // LANTEAN TRANSPORTER FRAME
         buildLanteanTransporterFrame();
+        buildLanteanTransporterPlatform();
         buildLanteanTransporterPylon();
+    }
+
+    protected void buildRingBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation topTexture, ResourceLocation bottomTexture, ResourceLocation sidesTexture) {
+        var modID = blockObj.getId().getNamespace();
+        var block = blockObj.get();
+        var blockName = blockObj.getId().getPath();
+
+        BlockModelBuilder model = models().withExistingParent(blockName, "block/cube")
+                .texture("particle", sidesTexture)
+                .texture("north", sidesTexture)
+                .texture("south", sidesTexture)
+                .texture("west", sidesTexture)
+                .texture("east", sidesTexture)
+                .texture("up", topTexture)
+                .texture("down", bottomTexture);
+
+        VariantBlockStateBuilder builder = getVariantBuilder(block);
+
+        Map<Direction, Integer> yRotations = Map.of(
+                Direction.NORTH, 0,
+                Direction.EAST, 90,
+                Direction.SOUTH, 180,
+                Direction.WEST, 270
+        );
+
+        yRotations.forEach((direction, yRot) -> builder.partialState()
+                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
+                .setModels(new ConfiguredModel(model, 0, yRot, false)));
+
+        itemModels().withExistingParent(blockName, JSGMapping.rl(modID, "block/" + blockName));
+    }
+    protected void buildCPBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation particlePath) {
+        var model = models().getBuilder(blockObj.getId().getPath()).texture("particle", particlePath);
+
+        VariantBlockStateBuilder builder = getVariantBuilder(blockObj.get());
+
+        Map<Direction, Integer> yRotations = Map.of(
+                Direction.NORTH, 0,
+                Direction.EAST, 90,
+                Direction.SOUTH, 180,
+                Direction.WEST, 270
+        );
+
+        yRotations.forEach((direction, yRot) -> builder.partialState()
+                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
+                .setModels(new ConfiguredModel(model, 0, yRot, false)));
+
+    }
+
+    public static final ResourceLocation platingTexture = JSGMapping.rl(JSGTransporters.MOD_ID, "block/lantean_transporter/frame"); //TODO: Change to plating texture when available
+    protected void buildLanteanTransporterPlatform() {
+        var blockName = JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM.getId().getPath();
+        ResourceLocation platformTexture = JSGMapping.rl(JSGTransporters.MOD_ID, "block/lantean_transporter/frame"); //TODO: Change to platform texture when available
+        BlockModelBuilder model = models().withExistingParent(blockName, "block/cube")
+                .texture("particle", platingTexture)
+                .texture("north", platingTexture)
+                .texture("south", platingTexture)
+                .texture("west", platingTexture)
+                .texture("east", platingTexture)
+                .texture("up", platformTexture)
+                .texture("down", platingTexture);
+
+        getVariantBuilder(JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM.get())
+                .partialState()
+                .setModels(new ConfiguredModel(model));
+
+        itemModels().withExistingParent(blockName,
+                JSGMapping.rl(JSGTransporters.MOD_ID, "block/" + blockName));
     }
 
     protected void buildLanteanTransporterPylon() {
@@ -96,52 +165,5 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
 
         itemModels().withExistingParent(blockName,
                 JSGMapping.rl(JSGTransporters.MOD_ID, "block/lantean_transporter/frame_hub"));
-    }
-
-    protected void buildRingBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation topTexture, ResourceLocation bottomTexture, ResourceLocation sidesTexture) {
-        var modID = blockObj.getId().getNamespace();
-        var block = blockObj.get();
-        var blockName = blockObj.getId().getPath();
-
-        BlockModelBuilder model = models().withExistingParent(blockName, "block/cube")
-                .texture("particle", sidesTexture)
-                .texture("north", sidesTexture)
-                .texture("south", sidesTexture)
-                .texture("west", sidesTexture)
-                .texture("east", sidesTexture)
-                .texture("up", topTexture)
-                .texture("down", bottomTexture);
-
-        VariantBlockStateBuilder builder = getVariantBuilder(block);
-
-        Map<Direction, Integer> yRotations = Map.of(
-                Direction.NORTH, 0,
-                Direction.EAST, 90,
-                Direction.SOUTH, 180,
-                Direction.WEST, 270
-        );
-
-        yRotations.forEach((direction, yRot) -> builder.partialState()
-                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
-                .setModels(new ConfiguredModel(model, 0, yRot, false)));
-
-        itemModels().withExistingParent(blockName, JSGMapping.rl(modID, "block/" + blockName));
-    }
-    protected void buildCPBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation particlePath) {
-        var model = models().getBuilder(blockObj.getId().getPath()).texture("particle", particlePath);
-
-        VariantBlockStateBuilder builder = getVariantBuilder(blockObj.get());
-
-        Map<Direction, Integer> yRotations = Map.of(
-                Direction.NORTH, 0,
-                Direction.EAST, 90,
-                Direction.SOUTH, 180,
-                Direction.WEST, 270
-        );
-
-        yRotations.forEach((direction, yRot) -> builder.partialState()
-                .with(BlockStateProperties.HORIZONTAL_FACING, direction)
-                .setModels(new ConfiguredModel(model, 0, yRot, false)));
-
     }
 }
