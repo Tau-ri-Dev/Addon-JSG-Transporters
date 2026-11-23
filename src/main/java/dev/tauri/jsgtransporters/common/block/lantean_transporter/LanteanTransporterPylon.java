@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -27,9 +28,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
 import java.util.List;
 import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.world.entity.player.Player;
+
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class LanteanTransporterPylon extends JSGTabbedBlock implements IItemBlock, SimpleWaterloggedBlock {
@@ -158,6 +167,17 @@ public class LanteanTransporterPylon extends JSGTabbedBlock implements IItemBloc
         return state.getValue(BlockStateProperties.WATERLOGGED)
                 ? Fluids.WATER.getSource(false)
                 : super.getFluidState(state);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 16.0D, 12.0D);
+        return SHAPE;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+        return getCollisionShape(pState, pLevel, pPos, pContext);
     }
 
     @Override
