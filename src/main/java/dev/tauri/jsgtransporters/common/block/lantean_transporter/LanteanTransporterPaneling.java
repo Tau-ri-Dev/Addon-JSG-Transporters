@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 public class LanteanTransporterPaneling extends JSGTabbedBlock implements IItemBlock, SimpleWaterloggedBlock {
 
-    public static final Properties PANEL_PROPS = Properties.of()
+    public static final Properties PANELING_PROPS = Properties.of()
             .explosionResistance(30f)
             .destroyTime(3f)
             .requiresCorrectToolForDrops()
@@ -32,7 +32,7 @@ public class LanteanTransporterPaneling extends JSGTabbedBlock implements IItemB
             .sound(SoundType.METAL);
 
     public LanteanTransporterPaneling() {
-        super(PANEL_PROPS);
+        super(PANELING_PROPS);
         this.registerDefaultState(
                 defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false)
         );
