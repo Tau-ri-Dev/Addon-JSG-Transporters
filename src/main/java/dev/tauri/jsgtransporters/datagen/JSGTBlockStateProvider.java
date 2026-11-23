@@ -41,6 +41,29 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
 
         // LANTEAN TRANSPORTER FRAME
         buildLanteanTransporterFrame();
+        buildLanteanTransporterPylon();
+    }
+
+    protected void buildLanteanTransporterPylon() {
+        var block = JSGTBlocks.LANTEAN_TRANSPORTER_PYLON.get();
+        var lower = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/pylon_lower"));
+        var middle = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/pylon_middle"));
+        var upper = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/pylon_upper"));
+        var multipart = getMultipartBuilder(block);
+
+        multipart.part().modelFile(lower).addModel()
+                .condition(dev.tauri.jsgtransporters.common.block.lantean_transporter.LanteanTransporterPylon.PYLON_PART, 0).end();
+        multipart.part().modelFile(middle).addModel()
+                .condition(dev.tauri.jsgtransporters.common.block.lantean_transporter.LanteanTransporterPylon.PYLON_PART, 1).end();
+        multipart.part().modelFile(upper).addModel()
+                .condition(dev.tauri.jsgtransporters.common.block.lantean_transporter.LanteanTransporterPylon.PYLON_PART, 2).end();
+
+        itemModels().withExistingParent(
+                JSGTBlocks.LANTEAN_TRANSPORTER_PYLON.getId().getPath(),
+                JSGMapping.rl(JSGTransporters.MOD_ID, "block/lantean_transporter/pylon_lower"));
     }
 
     protected void buildLanteanTransporterFrame() {
