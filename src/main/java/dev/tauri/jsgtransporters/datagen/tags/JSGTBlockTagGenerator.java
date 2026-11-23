@@ -88,6 +88,7 @@ public class JSGTBlockTagGenerator extends CoreBlockTagGenerator {
                 JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL.get(),
                 JSGTBlocks.LANTEAN_TRANSPORTER_FRAME.get(),
                 JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM.get(),
+                JSGTBlocks.LANTEAN_TRANSPORTER_PANELING.get(),
                 JSGTBlocks.LANTEAN_TRANSPORTER_PYLON.get(),
                 JSGTBlocks.LANTEAN_TRANSPORTER_SCREEN.get()
         );

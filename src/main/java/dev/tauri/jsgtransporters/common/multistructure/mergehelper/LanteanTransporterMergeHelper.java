@@ -14,28 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class LanteanTransporterMergeHelper implements IMergeHelper {
-    private static final int REAR_PYLON_OFFSET_X = 1;
-    private static final int REAR_PYLON_OFFSET_Z = 1;
-    private static final int FRONT_PYLON_OFFSET_X = 2;
-    private static final int FRONT_PYLON_OFFSET_Z = 2;
-    public static final List<BlockPos> PYLON_POSITIONS = List.of(
-            new BlockPos(REAR_PYLON_OFFSET_X, 0, REAR_PYLON_OFFSET_Z),
-            new BlockPos(FRONT_PYLON_OFFSET_X, 0, FRONT_PYLON_OFFSET_Z),
-            new BlockPos(-REAR_PYLON_OFFSET_X, 0, REAR_PYLON_OFFSET_Z),
-            new BlockPos(-FRONT_PYLON_OFFSET_X, 0, FRONT_PYLON_OFFSET_Z),
-            new BlockPos(REAR_PYLON_OFFSET_X, 1, REAR_PYLON_OFFSET_Z),
-            new BlockPos(FRONT_PYLON_OFFSET_X, 1, FRONT_PYLON_OFFSET_Z),
-            new BlockPos(-REAR_PYLON_OFFSET_X, 1, REAR_PYLON_OFFSET_Z),
-            new BlockPos(-FRONT_PYLON_OFFSET_X, 1, FRONT_PYLON_OFFSET_Z),
-            new BlockPos(REAR_PYLON_OFFSET_X, 2, REAR_PYLON_OFFSET_Z),
-            new BlockPos(FRONT_PYLON_OFFSET_X, 2, FRONT_PYLON_OFFSET_Z),
-            new BlockPos(-REAR_PYLON_OFFSET_X, 2, REAR_PYLON_OFFSET_Z),
-            new BlockPos(-FRONT_PYLON_OFFSET_X, 2, FRONT_PYLON_OFFSET_Z));
-    public static final List<BlockPos> PLATFORM_POSITIONS = IntStream
-            .rangeClosed(REAR_PYLON_OFFSET_X, -REAR_PYLON_OFFSET_X).boxed().flatMap(
-                    x -> IntStream.rangeClosed(REAR_PYLON_OFFSET_Z, FRONT_PYLON_OFFSET_Z).mapToObj(
-                            z -> new BlockPos(x, 0, z)))
-            .toList();
 
     public final LanteanTransporterBE transporter;
 
@@ -93,8 +71,7 @@ public class LanteanTransporterMergeHelper implements IMergeHelper {
 
     @Override
     public Direction getVerticalFacing() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getVerticalFacing'");
+        return null;
     }
 
     @Override

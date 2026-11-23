@@ -30,6 +30,7 @@ public class JSGTBlockLootTables extends CoreBlockLootTables {
         dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL.get());
         dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_FRAME.get());
         dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM.get());
+        dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_PANELING.get());
         dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_PYLON.get());
         dropSelf(JSGTBlocks.LANTEAN_TRANSPORTER_SCREEN.get());
     }

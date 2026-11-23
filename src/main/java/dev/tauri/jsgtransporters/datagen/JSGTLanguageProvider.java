@@ -41,6 +41,7 @@ public class JSGTLanguageProvider extends CoreLanguageProvider {
         addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL);
         addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_FRAME);
         addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_PLATFORM);
+        addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_PANELING);
         addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_PYLON);
         addBlock(JSGTBlocks.LANTEAN_TRANSPORTER_SCREEN);
 
