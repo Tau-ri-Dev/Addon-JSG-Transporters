@@ -206,7 +206,6 @@ public class LanteanTransporterBE extends JSGBlockEntity implements ITickable, I
             pTag.put("networks", networksTag);
         }
         pTag.putFloat("doorState", doorState);
-        // TODO Auto-generated method stub
         super.saveAdditional(pTag);
     }
 
