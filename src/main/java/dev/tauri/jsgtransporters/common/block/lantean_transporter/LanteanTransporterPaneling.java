@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import dev.tauri.jsgcore.common.block.util.IItemBlock;
-import dev.tauri.jsgcore.common.blockstate.JSGProperties;
 import dev.tauri.jsgcore.common.item.JSGBlockItem;
 import dev.tauri.jsgcore.common.block.JSGTabbedBlock;
 import dev.tauri.jsgcore.common.registry.CoreTabs;
@@ -50,7 +49,7 @@ public class LanteanTransporterPaneling extends JSGTabbedBlock implements IItemB
 
     @Override
     protected void createBlockStateDefinition(@Nonnull Builder<Block, BlockState> blockStateBuilder) {
-        blockStateBuilder.add(JSGProperties.FACING_HORIZONTAL_PROPERTY).add(BlockStateProperties.WATERLOGGED);
+        blockStateBuilder.add(BlockStateProperties.WATERLOGGED);
         super.createBlockStateDefinition(blockStateBuilder);
     }
 }

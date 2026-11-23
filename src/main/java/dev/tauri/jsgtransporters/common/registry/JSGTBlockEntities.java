@@ -15,6 +15,7 @@ import dev.tauri.jsgtransporters.common.blockentity.controller.RingsOriCPBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsAncientBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsGoauldBE;
 import dev.tauri.jsgtransporters.common.blockentity.rings.RingsOriBE;
+import dev.tauri.jsgtransporters.common.blockentity.lantean_transporter.LanteanTransporterBE;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.List;
@@ -30,6 +31,11 @@ public class JSGTBlockEntities {
     public static final RegistryObjectWrapper<BlockEntityType<RingsGoauldCPBE>> RINGS_CP_GOAULD_BE = JSGTransporters.REGISTRY_HELPER.be().register("rings_goauld_control_panel_block", RegistryHelper.beSupplier(RingsGoauldCPBE::new, JSGTBlocks.RINGS_CP_GOAULD));
     public static final RegistryObjectWrapper<BlockEntityType<RingsOriCPBE>> RINGS_CP_ORI_BE = JSGTransporters.REGISTRY_HELPER.be().register("rings_ori_control_panel_block", RegistryHelper.beSupplier(RingsOriCPBE::new, JSGTBlocks.RINGS_CP_ORI));
     public static final RegistryObjectWrapper<BlockEntityType<RingsAncientCPBE>> RINGS_CP_ANCIENT_BE = JSGTransporters.REGISTRY_HELPER.be().register("rings_ancient_control_panel_block", RegistryHelper.beSupplier(RingsAncientCPBE::new, JSGTBlocks.RINGS_CP_ANCIENT));
+
+    /**
+     * LANTEAN TRANSPORTER
+     */
+    public static final RegistryObjectWrapper<BlockEntityType<LanteanTransporterBE>> LANTEAN_TRANSPORTER_BE = JSGTransporters.REGISTRY_HELPER.be().register("lantean_transporter_block", RegistryHelper.beSupplier(LanteanTransporterBE::new, JSGTBlocks.LANTEAN_TRANSPORTER_ACCESS_PANEL));
 
     public static void init() {
         JSGTransporters.REGISTRY_HELPER.beRenderers(() -> List.of(

@@ -11,7 +11,9 @@ import dev.tauri.jsgcore.common.block.TickableBEBlock;
 import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgtransporters.common.item.lantean_transporter.LanteanTransporterAccessPanelItem;
+import dev.tauri.jsgtransporters.common.blockentity.lantean_transporter.LanteanTransporterBE;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -37,7 +39,9 @@ public class LanteanTransporterAccessPanel extends TickableBEBlock implements II
     public LanteanTransporterAccessPanel() {
         super(PANEL_PROPS);
         this.registerDefaultState(
-                defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false)
+                defaultBlockState()
+                        .setValue(JSGProperties.FACING_HORIZONTAL_PROPERTY, Direction.EAST)
+                        .setValue(BlockStateProperties.WATERLOGGED, false)
         );
     }
 
@@ -45,8 +49,7 @@ public class LanteanTransporterAccessPanel extends TickableBEBlock implements II
     @Nullable
     @ParametersAreNonnullByDefault
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'newBlockEntity'");
+        return new LanteanTransporterBE(pPos, pState);
     }
 
     @Override

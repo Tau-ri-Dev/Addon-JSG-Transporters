@@ -16,9 +16,12 @@ import dev.tauri.jsgcore.common.packet.JSGCorePacketHandler;
 import dev.tauri.jsgcore.common.packet.packets.StateUpdateRequestToServer;
 import dev.tauri.jsgcore.common.util.JSGItemStackHandler;
 import dev.tauri.jsgtransporters.common.registry.tags.JSGTItemTags;
+import dev.tauri.jsgtransporters.common.registry.JSGTBlockEntities;
 import dev.tauri.jsgcore.common.blockentity.IPreparable;
 import dev.tauri.jsgcore.common.blockentity.ITickable;
 import dev.tauri.jsgcore.common.blockentity.StateProviderInterface;
+import dev.tauri.jsgcore.common.multistructure.IMultiStructureBE;
+import dev.tauri.jsgtransporters.common.multistructure.mergehelper.LanteanTransporterMergeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -32,32 +35,30 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor.TargetPoint;
 
-public class LanteanTransporterBE extends BlockEntity implements ITickable, IPreparable, StateProviderInterface/*
-                                                                                                                * ,
-                                                                                                                * IMultiStructureBE
-                                                                                                                * <
-                                                                                                                * LanteanTransporterMergeHelper>
-                                                                                                                */ {
+public class LanteanTransporterBE extends BlockEntity implements ITickable, IPreparable, StateProviderInterface, IMultiStructureBE<LanteanTransporterMergeHelper> {
 
-    protected final UUID[] networks = new UUID[2];
+    protected final UUID[] networks = new UUID[3];
     private float doorState = 0f;
+    private LanteanTransporterMergeHelper mergeHelper;
 
     public LanteanTransporterBE(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
-        // TODO Auto-generated constructor stub
+        this.mergeHelper = new LanteanTransporterMergeHelper(this);
+    }
+
+    public LanteanTransporterBE(BlockPos pPos, BlockState pBlockState) {
+        this(JSGTBlockEntities.LANTEAN_TRANSPORTER_BE.get(), pPos, pBlockState);
     }
 
     @Override
     public void tick(@NotNull Level arg0) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'tick'");
+        getMergeHelper().tick(arg0);
     }
-    /*
-     * @Override
-     * public LanteanTransporterMergeHelper getMergeHelper() {
-     * return new LanteanTransporterMergeHelper(this);
-     * }
-     */
+    @Override
+    public LanteanTransporterMergeHelper getMergeHelper() {
+        if (mergeHelper == null) mergeHelper = new LanteanTransporterMergeHelper(this);
+        return mergeHelper;
+    }
 
     @Override
     public boolean prepareBE() {
@@ -122,7 +123,7 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
 
     public void updatePowerTier() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updatePowerTier'");
+        // throw new UnsupportedOperationException("Unimplemented method 'updatePowerTier'");
     }
 
     @Override
@@ -135,12 +136,12 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
 
     public void updateIdentity() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateIdentity'");
+        // throw new UnsupportedOperationException("Unimplemented method 'updateIdentity'");
     }
 
     public void updateNetworkLinks() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateNetworkLinks'");
+        // throw new UnsupportedOperationException("Unimplemented method 'updateNetworkLinks'");
     }
 
     @Override
@@ -149,9 +150,11 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
             CompoundTag networksTag = pTag.getCompound("networks");
             networks[0] = networksTag.contains("A") ? networksTag.getUUID("A") : null;
             networks[1] = networksTag.contains("B") ? networksTag.getUUID("B") : null;
+            networks[2] = networksTag.contains("C") ? networksTag.getUUID("C") : null;
         } else {
             networks[0] = null;
             networks[1] = null;
+            networks[2] = null;
         }
         this.doorState = pTag.getFloat("doorState");
         super.load(pTag);
@@ -165,6 +168,9 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
         }
         if (networks[1] != null) {
             networksTag.putUUID("B", networks[1]);
+        }
+        if (networks[2] != null) {
+            networksTag.putUUID("C", networks[2]);
         }
         if (!networksTag.isEmpty()) {
             pTag.put("networks", networksTag);
@@ -196,11 +202,6 @@ public class LanteanTransporterBE extends BlockEntity implements ITickable, IPre
     public void setState(StateType arg0, State arg1) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setState'");
-    }
-
-    protected void teleportVolume() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'teleportVolume'");
     }
 
     protected TargetPoint targetPoint;
