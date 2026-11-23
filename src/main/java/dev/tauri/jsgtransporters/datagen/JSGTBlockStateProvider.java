@@ -14,7 +14,6 @@ import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
-
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +38,41 @@ public class JSGTBlockStateProvider extends CoreBlockStateProvider {
         buildCPBlock(JSGTBlocks.RINGS_CP_GOAULD, JSGMapping.rl("minecraft", "block/gold_block"));
         buildCPBlock(JSGTBlocks.RINGS_CP_ORI, JSGMapping.rl("minecraft", "block/stripped_acacia_log"));
         buildCPBlock(JSGTBlocks.RINGS_CP_ANCIENT, JSGMapping.rl("minecraft", "block/stone"));
+
+        // LANTEAN TRANSPORTER FRAME
+        buildLanteanTransporterFrame();
+    }
+
+    protected void buildLanteanTransporterFrame() {
+        var block = JSGTBlocks.LANTEAN_TRANSPORTER_FRAME.get();
+        var blockName = JSGTBlocks.LANTEAN_TRANSPORTER_FRAME.getId().getPath();
+
+        var hub = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_hub"));
+        var up = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_up"));
+        var down = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_down"));
+        var north = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_north"));
+        var south = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_south"));
+        var east = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_east"));
+        var west = models().getExistingFile(JSGMapping.rl(JSGTransporters.MOD_ID,
+                "block/lantean_transporter/frame_west"));
+
+        var multipart = getMultipartBuilder(block);
+        multipart.part().modelFile(hub).addModel().end();
+        multipart.part().modelFile(up).addModel().condition(BlockStateProperties.UP, true).end();
+        multipart.part().modelFile(down).addModel().condition(BlockStateProperties.DOWN, true).end();
+        multipart.part().modelFile(north).addModel().condition(BlockStateProperties.NORTH, true).end();
+        multipart.part().modelFile(south).addModel().condition(BlockStateProperties.SOUTH, true).end();
+        multipart.part().modelFile(east).addModel().condition(BlockStateProperties.EAST, true).end();
+        multipart.part().modelFile(west).addModel().condition(BlockStateProperties.WEST, true).end();
+
+        itemModels().withExistingParent(blockName,
+                JSGMapping.rl(JSGTransporters.MOD_ID, "block/lantean_transporter/frame_hub"));
     }
 
     protected void buildRingBlock(RegistryObjectWrapper<? extends Block> blockObj, ResourceLocation topTexture, ResourceLocation bottomTexture, ResourceLocation sidesTexture) {
