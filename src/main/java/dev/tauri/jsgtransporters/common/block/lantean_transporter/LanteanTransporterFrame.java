@@ -7,25 +7,23 @@ import dev.tauri.jsgcore.common.registry.CoreTabs;
 import dev.tauri.jsgcore.common.registry.helper.RegistryObjectWrapper;
 import dev.tauri.jsgtransporters.common.item.lantean_transporter.LanteanTransporterFrameItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,6 +31,14 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class LanteanTransporterFrame extends JSGTabbedBlock implements IItemBlock, SimpleWaterloggedBlock {
+    private static final VoxelShape HUB_SHAPE = Block.box(5.0, 5.0, 5.0, 11.0, 11.0, 11.0);
+    private static final VoxelShape UP_SHAPE = Block.box(5.0, 11.0, 5.0, 11.0, 16.0, 11.0);
+    private static final VoxelShape DOWN_SHAPE = Block.box(5.0, 0.0, 5.0, 11.0, 5.0, 11.0);
+    private static final VoxelShape NORTH_SHAPE = Block.box(5.0, 5.0, 0.0, 11.0, 11.0, 5.0);
+    private static final VoxelShape SOUTH_SHAPE = Block.box(5.0, 5.0, 11.0, 11.0, 11.0, 16.0);
+    private static final VoxelShape EAST_SHAPE = Block.box(11.0, 5.0, 5.0, 16.0, 11.0, 11.0);
+    private static final VoxelShape WEST_SHAPE = Block.box(0.0, 5.0, 5.0, 5.0, 11.0, 11.0);
+
     public static final Properties FRAME_PROPS = Properties.of()
             .explosionResistance(30f)
             .destroyTime(3f)
@@ -55,12 +61,8 @@ public class LanteanTransporterFrame extends JSGTabbedBlock implements IItemBloc
     private boolean canConnectTo(BlockGetter level, BlockPos framePos, Direction direction) {
         BlockPos neighborPos = framePos.relative(direction);
         BlockState neighborState = level.getBlockState(neighborPos);
-        VoxelShape faceShape = neighborState
-                .getShape(level, neighborPos, CollisionContext.empty())
-                .getFaceShape(direction.getOpposite());
-        if (faceShape.isEmpty()) return false;
-
-        final double faceInset = 0.001;
+        VoxelShape neighborShape = neighborState.getShape(level, neighborPos, CollisionContext.empty());
+        if (neighborShape.isEmpty()) return false;
 
         for (int u = 0; u < 6; u++) {
             double uStart = (5.0 + u) / 16.0;
@@ -73,14 +75,14 @@ public class LanteanTransporterFrame extends JSGTabbedBlock implements IItemBloc
                 double vEnd = vStart + 1.0 / 16.0;
 
                 AABB pixel = switch (direction) {
-                    case UP -> new AABB(uStart, 1.0 - faceInset, vStart, uEnd, 1.0, vEnd);
-                    case DOWN -> new AABB(uStart, 0.0, vStart, uEnd, faceInset, vEnd);
-                    case NORTH -> new AABB(uStart, vStart, 0.0, uEnd, vEnd, faceInset);
-                    case SOUTH -> new AABB(uStart, vStart, 1.0 - faceInset, uEnd, vEnd, 1.0);
-                    case WEST -> new AABB(0.0, uStart, vStart, faceInset, uEnd, vEnd);
-                    case EAST -> new AABB(1.0 - faceInset, uStart, vStart, 1.0, uEnd, vEnd);
+                    case UP -> new AABB(uStart, 10.0 / 16.0, vStart, uEnd, 11.0 / 16.0, vEnd);
+                    case DOWN -> new AABB(uStart, 5.0 / 16.0, vStart, uEnd, 6.0 / 16.0, vEnd);
+                    case NORTH -> new AABB(uStart, vStart, 10.0 / 16.0, uEnd, vEnd, 11.0 / 16.0);
+                    case SOUTH -> new AABB(uStart, vStart, 5.0 / 16.0, uEnd, vEnd, 6.0 / 16.0);
+                    case WEST -> new AABB(10.0 / 16.0, uStart, vStart, 11.0 / 16.0, uEnd, vEnd);
+                    case EAST -> new AABB(5.0 / 16.0, uStart, vStart, 6.0 / 16.0, uEnd, vEnd);
                 };
-                if (!Shapes.joinIsNotEmpty(faceShape, Shapes.create(pixel), net.minecraft.world.phys.shapes.BooleanOp.AND)) return false;
+                if (!Shapes.joinIsNotEmpty(neighborShape, Shapes.create(pixel), net.minecraft.world.phys.shapes.BooleanOp.AND)) return false;
             }
         }
         return true;
@@ -94,6 +96,33 @@ public class LanteanTransporterFrame extends JSGTabbedBlock implements IItemBloc
                 .setValue(BlockStateProperties.SOUTH, canConnectTo(level, pos, Direction.SOUTH))
                 .setValue(BlockStateProperties.EAST, canConnectTo(level, pos, Direction.EAST))
                 .setValue(BlockStateProperties.WEST, canConnectTo(level, pos, Direction.WEST));
+    }
+
+    private VoxelShape getCollisionShape(BlockState state) {
+        VoxelShape shape = HUB_SHAPE;
+        if (state.getValue(BlockStateProperties.UP)) shape = Shapes.or(shape, UP_SHAPE);
+        if (state.getValue(BlockStateProperties.DOWN)) shape = Shapes.or(shape, DOWN_SHAPE);
+        if (state.getValue(BlockStateProperties.NORTH)) shape = Shapes.or(shape, NORTH_SHAPE);
+        if (state.getValue(BlockStateProperties.SOUTH)) shape = Shapes.or(shape, SOUTH_SHAPE);
+        if (state.getValue(BlockStateProperties.EAST)) shape = Shapes.or(shape, EAST_SHAPE);
+        if (state.getValue(BlockStateProperties.WEST)) shape = Shapes.or(shape, WEST_SHAPE);
+        return shape;
+    }
+
+    @Override
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter level,
+                               @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+        return getCollisionShape(state);
+    }
+
+    @Override
+    @Nonnull
+    @SuppressWarnings("deprecation")
+    public VoxelShape getCollisionShape(@Nonnull BlockState state, @Nonnull BlockGetter level,
+                                        @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
+        return getCollisionShape(state);
     }
 
     @Nullable
@@ -118,13 +147,14 @@ public class LanteanTransporterFrame extends JSGTabbedBlock implements IItemBloc
         return updated;
     }
 
-    // @Override
-    // @Nonnull
-    // public FluidState getFluidState(@Nonnull BlockState state) {
-    //     return state.getValue(BlockStateProperties.WATERLOGGED)
-    //             ? Fluids.WATER.getSource(false)
-    //             : super.getFluidState(state);
-    // }
+    @SuppressWarnings("deprecation")
+    @Override
+    public @Nullable FluidState getFluidState(@Nonnull BlockState state) {
+        return state.getValue(BlockStateProperties.WATERLOGGED)
+                ? Fluids.WATER.getSource(false)
+                : super.getFluidState(state);
+            
+    }
 
     @Override
     protected void createBlockStateDefinition(Builder<Block, BlockState> pBuilder) {
